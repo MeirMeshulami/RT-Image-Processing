@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/empty.proto";
+
+message FrameMessage {
+    int32 frame_number = 1;
+    google.protobuf.Timestamp frame_time = 2;
+    bytes image_data = 3;
+}
+
+service FrameService {
+    rpc SendFrame(FrameMessage) returns (google.protobuf.Empty) {}
+}
+service CameraControl {
+    rpc StartCamera(google.protobuf.Empty) returns (google.protobuf.Empty) {}
+    rpc StopCamera(google.protobuf.Empty) returns (google.protobuf.Empty) {}
+}
+
