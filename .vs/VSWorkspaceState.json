@@ -1,0 +1,13 @@
+{
+  "OutputFoldersPerTargetSystem": {
+    "Local Machine": [
+      "out\\build"
+    ]
+  },
+  "ExpandedNodes": [
+    "",
+    "\\GeneralLib"
+  ],
+  "SelectedNode": "\\GeneralLib\\CaptureAndPreprocess.cpp",
+  "PreviewInSolutionExplorer": false
+}

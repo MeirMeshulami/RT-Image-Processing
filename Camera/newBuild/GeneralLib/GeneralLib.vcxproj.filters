@@ -1,0 +1,105 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="C:\Users\Meir\OneDrive\שולחן העבודה\Image-processing-BEST-V\GeneralLib\CaptureAndPreprocess.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Meir\OneDrive\שולחן העבודה\Image-processing-BEST-V\GeneralLib\DBManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Meir\OneDrive\שולחן העבודה\Image-processing-BEST-V\GeneralLib\FrameProcessor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Meir\OneDrive\שולחן העבודה\Image-processing-BEST-V\GeneralLib\FrameReceiver.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Meir\OneDrive\שולחן העבודה\Image-processing-BEST-V\GeneralLib\FrameSender.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Meir\OneDrive\שולחן העבודה\Image-processing-BEST-V\GeneralLib\FrameWithDetails.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Meir\OneDrive\שולחן העבודה\Image-processing-BEST-V\GeneralLib\JsonManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Meir\OneDrive\שולחן העבודה\Image-processing-BEST-V\GeneralLib\LogManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Meir\OneDrive\שולחן העבודה\Image-processing-BEST-V\GeneralLib\YoloDetection.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Meir\OneDrive\שולחן העבודה\Image-processing-BEST-V\Camera\newBuild\GeneralLib\service.pb.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Meir\OneDrive\שולחן העבודה\Image-processing-BEST-V\Camera\newBuild\GeneralLib\service.grpc.pb.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="C:\Users\Meir\OneDrive\שולחן העבודה\Image-processing-BEST-V\GeneralLib\CameraController.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Meir\OneDrive\שולחן העבודה\Image-processing-BEST-V\GeneralLib\CaptureAndPreprocess.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Meir\OneDrive\שולחן העבודה\Image-processing-BEST-V\GeneralLib\DBManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Meir\OneDrive\שולחן העבודה\Image-processing-BEST-V\GeneralLib\FrameProcessor.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Meir\OneDrive\שולחן העבודה\Image-processing-BEST-V\GeneralLib\FrameReceiver.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Meir\OneDrive\שולחן העבודה\Image-processing-BEST-V\GeneralLib\FrameSender.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Meir\OneDrive\שולחן העבודה\Image-processing-BEST-V\GeneralLib\FrameWithDetails.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Meir\OneDrive\שולחן העבודה\Image-processing-BEST-V\GeneralLib\JsonManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Meir\OneDrive\שולחן העבודה\Image-processing-BEST-V\GeneralLib\LogManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Meir\OneDrive\שולחן העבודה\Image-processing-BEST-V\GeneralLib\ThreadSafeQueue.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Meir\OneDrive\שולחן העבודה\Image-processing-BEST-V\GeneralLib\YoloDetection.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Meir\OneDrive\שולחן העבודה\Image-processing-BEST-V\GeneralLib\include\API.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Meir\OneDrive\שולחן העבודה\Image-processing-BEST-V\GeneralLib\include\CameraAPI.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Meir\OneDrive\שולחן העבודה\Image-processing-BEST-V\GeneralLib\include\ServerAPI.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Meir\OneDrive\שולחן העבודה\Image-processing-BEST-V\Camera\newBuild\GeneralLib\service.pb.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Meir\OneDrive\שולחן העבודה\Image-processing-BEST-V\Camera\newBuild\GeneralLib\service.grpc.pb.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="C:\Users\Meir\OneDrive\שולחן העבודה\Image-processing-BEST-V\Camera\newBuild\CMakeFiles\c0515bba136ad5187783f24cade96f95\service.pb.cc.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="C:\Users\Meir\OneDrive\שולחן העבודה\Image-processing-BEST-V\GeneralLib\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="CMake Rules">
+      <UniqueIdentifier>{D6D32CDD-4BAB-3693-9640-4F260231A404}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{EB28A050-3CB1-327C-90BE-43FC64E3A821}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{D7C9C72D-1A97-3844-99BA-F336232ABEC7}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

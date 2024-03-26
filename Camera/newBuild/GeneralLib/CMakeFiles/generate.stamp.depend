@@ -1,0 +1,38 @@
+# CMake generation dependency list for this directory.
+C:/MobileyeProjectTools/OpenCV/opencv/build/OpenCVConfig.cmake
+C:/MobileyeProjectTools/OpenCV/opencv/build/x64/vc16/lib/OpenCVConfig.cmake
+C:/MobileyeProjectTools/OpenCV/opencv/build/x64/vc16/lib/OpenCVModules-debug.cmake
+C:/MobileyeProjectTools/OpenCV/opencv/build/x64/vc16/lib/OpenCVModules-release.cmake
+C:/MobileyeProjectTools/OpenCV/opencv/build/x64/vc16/lib/OpenCVModules.cmake
+C:/Program Files/cmake-3.27.2-windows-x86_64/cmake-3.27.2-windows-x86_64/share/cmake-3.27/Modules/CMakeFindDependencyMacro.cmake
+C:/Program Files/cmake-3.27.2-windows-x86_64/cmake-3.27.2-windows-x86_64/share/cmake-3.27/Modules/CheckCSourceCompiles.cmake
+C:/Program Files/cmake-3.27.2-windows-x86_64/cmake-3.27.2-windows-x86_64/share/cmake-3.27/Modules/CheckIncludeFile.cmake
+C:/Program Files/cmake-3.27.2-windows-x86_64/cmake-3.27.2-windows-x86_64/share/cmake-3.27/Modules/CheckLibraryExists.cmake
+C:/Program Files/cmake-3.27.2-windows-x86_64/cmake-3.27.2-windows-x86_64/share/cmake-3.27/Modules/FindOpenCV.cmake
+C:/Program Files/cmake-3.27.2-windows-x86_64/cmake-3.27.2-windows-x86_64/share/cmake-3.27/Modules/FindPackageHandleStandardArgs.cmake
+C:/Program Files/cmake-3.27.2-windows-x86_64/cmake-3.27.2-windows-x86_64/share/cmake-3.27/Modules/FindPackageMessage.cmake
+C:/Program Files/cmake-3.27.2-windows-x86_64/cmake-3.27.2-windows-x86_64/share/cmake-3.27/Modules/FindThreads.cmake
+C:/Program Files/cmake-3.27.2-windows-x86_64/cmake-3.27.2-windows-x86_64/share/cmake-3.27/Modules/Internal/CheckSourceCompiles.cmake
+C:/Program Files/cmake-3.27.2-windows-x86_64/cmake-3.27.2-windows-x86_64/share/cmake-3.27/Modules/SelectLibraryConfigurations.cmake
+C:/Program Files/grpc/release/cmake/protobuf-config-version.cmake
+C:/Program Files/grpc/release/cmake/protobuf-config.cmake
+C:/Program Files/grpc/release/cmake/protobuf-generate.cmake
+C:/Program Files/grpc/release/cmake/protobuf-module.cmake
+C:/Program Files/grpc/release/cmake/protobuf-options.cmake
+C:/Program Files/grpc/release/cmake/protobuf-targets-release.cmake
+C:/Program Files/grpc/release/cmake/protobuf-targets.cmake
+C:/Program Files/grpc/release/lib/cmake/absl/abslConfig.cmake
+C:/Program Files/grpc/release/lib/cmake/absl/abslConfigVersion.cmake
+C:/Program Files/grpc/release/lib/cmake/absl/abslTargets-release.cmake
+C:/Program Files/grpc/release/lib/cmake/absl/abslTargets.cmake
+C:/Program Files/grpc/release/lib/cmake/grpc/gRPCConfig.cmake
+C:/Program Files/grpc/release/lib/cmake/grpc/gRPCConfigVersion.cmake
+C:/Program Files/grpc/release/lib/cmake/grpc/gRPCPluginTargets-release.cmake
+C:/Program Files/grpc/release/lib/cmake/grpc/gRPCPluginTargets.cmake
+C:/Program Files/grpc/release/lib/cmake/grpc/gRPCTargets-release.cmake
+C:/Program Files/grpc/release/lib/cmake/grpc/gRPCTargets.cmake
+C:/Program Files/grpc/release/lib/cmake/utf8_range/utf8_range-config.cmake
+C:/Program Files/grpc/release/lib/cmake/utf8_range/utf8_range-targets-release.cmake
+C:/Program Files/grpc/release/lib/cmake/utf8_range/utf8_range-targets.cmake
+C:/Users/Meir/OneDrive/שולחן העבודה/Image-processing-BEST-V/GeneralLib/CMakeLists.txt
+C:/Users/Meir/OneDrive/שולחן העבודה/Image-processing-BEST-V/GeneralLib/Configurations.json
