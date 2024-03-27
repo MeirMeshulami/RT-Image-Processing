@@ -1,7 +1,7 @@
 {
   "camera_settings": {
-    "similarity_threshold": 0.05,
-    "frame_capture_delay": 400
+    "threshold": 20,
+    "max_diff_pixels": 20
   },
   "grpc_settings": {
     "server_ip_address": "0.0.0.0",

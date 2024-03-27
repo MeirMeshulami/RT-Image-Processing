@@ -2,8 +2,10 @@
 #include <fstream>
 #include <filesystem>
 #include <json.hpp>
+
 #include "CaptureAndPreprocess.h"
 #include "JsonManager.h"
+#include "FrameSender.h"
 
 int main() {
 	cv::utils::logging::setLogLevel(cv::utils::logging::LOG_LEVEL_WARNING);
@@ -16,14 +18,18 @@ int main() {
 
 		LogManager::GetInstance().SetLogLevel(configJson["log_settings"]["log_level"]);
 
-		CaptureAndPreprocess captureAndPreprocess;
+		CaptureAndPreprocess camera;
 		std::atomic<bool> exitFlag(false);
 
-		std::thread cameraThread([&captureAndPreprocess, &configJson]() {
-			while (captureAndPreprocess.GetIsCameraRunning()) {
+		
+		std::thread cameraThread([&camera, &configJson]() {
+			while (camera.IsCameraRunning()) {
 				try {
+					
 					JsonManager::CheckIfJsonModified(configJson);
-					captureAndPreprocess.Run(configJson["camera_settings"]["frame_capture_delay"], configJson["camera_settings"]["similarity_threshold"]);
+					
+					FrameSender frameSender = camera.ConnectToServer();
+					camera.SendMotionFrames(frameSender);
 				}
 				catch (const std::exception& e) {
 					LOG_ERROR("An exception occurred: {}", e.what());
@@ -32,10 +38,11 @@ int main() {
 			}
 			});
 
-		std::thread keyboardThread([&captureAndPreprocess, &exitFlag]() {
+		std::thread keyboardThread([&camera, &exitFlag]() {
 			while (!exitFlag) {
 				if (GetAsyncKeyState(VK_ESCAPE) & 0x8000) {
-					captureAndPreprocess.StopRunCamera();
+					// if(cv::waitKey(100) == 27)
+					camera.StopRunCamera();
 					exitFlag = true;
 				}
 				std::this_thread::sleep_for(std::chrono::milliseconds(100)); // Sleep to avoid high CPU usage

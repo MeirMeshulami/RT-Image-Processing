@@ -14,7 +14,7 @@ option(DEBUG "Build in Debug mode" OFF)
 add_subdirectory(../GeneralLib ${CMAKE_CURRENT_BINARY_DIR}/GeneralLib)
 
 # Main executable
-add_executable(${PROJECT_NAME} Tests.cpp)
+add_executable(${PROJECT_NAME} Tests.cpp cameraTest.cpp)
 
 # Link to GeneralLib and gtest/gmock
 target_link_libraries(${PROJECT_NAME} PRIVATE GeneralLib gtest_main gmock_main)

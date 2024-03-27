@@ -7,11 +7,9 @@
 #include <QProcess>
 #include <QFileDialog>
 
-MainWindow::MainWindow(QWidget* parent)
-    : QMainWindow(parent), isLive(false)
-    , ui(new Ui::MainWindow)
+MainWindow::MainWindow(QWidget* parent): QMainWindow(parent), ui(new Ui::MainWindow), isLive(false)
 {
-    onStart();
+    
 #ifdef Q_OS_WIN
     // For Windows
     setWindowFlags(Qt::FramelessWindowHint);
@@ -19,7 +17,8 @@ MainWindow::MainWindow(QWidget* parent)
     // For macOS
     setWindowFlags(Qt::FramelessWindowHint | Qt::WindowSystemMenuHint);
 #endif
-
+    
+    ui->setupUi(this);
     // Create an instance of ServerAPIController
     serverAPIController = new ServerAPIController(&serverAPI);
 
@@ -37,12 +36,10 @@ MainWindow::MainWindow(QWidget* parent)
 
     // Show the main window
     show();
+    tear_up();
 
     lowdLogFolderPath();
-    QTimer* timer = new QTimer(this);
-    connect(timer, &QTimer::timeout, this, &MainWindow::refreshLogContent);
-    timer->start(5000);
-    //connect(ui->browseLogsBtn, &QPushButton::clicked, this, &MainWindow::on_browseLogsBtn_clicked);
+ 
 }
 
 
@@ -52,14 +49,25 @@ MainWindow::~MainWindow()
 }
 
 ///////========== Init Funcs ==========////////////
-void MainWindow::onStart(){
+void MainWindow::tear_up(){
 
-    ui->setupUi(this);
+    
+    if (!serverAPIController->isServerRunning()) {
+        serverAPIController->startServer();
+    }
+
     setWindowIcon(QIcon(R"(:logo.png)"));
 
     // display the Home page
     ui->homeBtn->setStyleSheet("border-left: 3px solid orange; background-color:#1f2329;");
     ui->stackedWidget->setCurrentIndex(0);
+}
+
+void MainWindow::tear_down(){
+    if (serverAPIController->isServerRunning()) {
+        serverAPIController->stopServer();
+    }
+    on_stopLiveBtn_clicked();
 }
 
 ///////========== Draging window Funcs ==========////////////
@@ -107,6 +115,7 @@ void MainWindow::on_minimize_clicked()
 
 void MainWindow::on_exit_clicked()
 {
+    MainWindow::tear_down();
     QCoreApplication::exit();
 }
 
@@ -203,66 +212,6 @@ void MainWindow::on_cleareBtn_clicked()
     qDeleteAll(ui->flowGrid->findChildren<QLabel *>());
 }
 
-///////========== Dashboard-Page Buttons ==========////////////
-void MainWindow::displayImg(const cv::Mat& image, QLabel* camFrame) {
-	// Convert the OpenCV Mat to QImage for display
-	QImage qImage(image.data, image.cols, image.rows, image.step, QImage::Format_BGR888);
-
-	// Scale the QImage to fit the "camFrame" QLabel
-	QPixmap pixmap = QPixmap::fromImage(qImage);
-	QPixmap scaledPixmap = pixmap.scaled(camFrame->contentsRect().size(), Qt::KeepAspectRatio);
-	camFrame->setPixmap(scaledPixmap);
-}
-void MainWindow::displayCameraOffText()
-{
-    // Create a gray frame with "Camera Off" text
-    cv::Mat grayFrame(240, 320, CV_8UC1, cv::Scalar(200));  // Gray frame with a light gray background
-
-    // Define the text to display
-    std::string text = "Camera Off";
-
-    // Define the font properties
-    cv::Point textPosition(40, 120);  // Position of the text (x, y)
-    int fontFace = cv::FONT_HERSHEY_SIMPLEX;
-    double fontScale = 2.0;
-    cv::Scalar textColor(0, 0, 255);  // Red color in BGR format
-    int thickness = 2;
-
-    // Add the text to the frame
-    cv::putText(grayFrame, text, textPosition, fontFace, fontScale, textColor, thickness);
-
-    // Display the gray frame with "Camera Off" text
-    displayFrame(grayFrame);
-}
-void MainWindow::on_liveBtn_clicked()
-{
-    if (!serverAPIController->isServerRunning()) {
-        serverAPIController->startServer();
-        isLive = true;
-    }
-    if (isLive) {
-        // Server is currently running, stop it
-        //serverAPIController->stopServer();
-        QObject::connect(serverAPIController, &ServerAPIController::frameReady, this, &MainWindow::displayFrame);
-        ui->liveBtn->setText("Live Off");
-    }
-    else {
-        // Server is not running, start it
-        ui->liveBtn->setText("Go Live");
-        QObject::disconnect(serverAPIController, &ServerAPIController::frameReady, this, &MainWindow::displayFrame);
-    }
-    // Toggle the server state
-    isLive = !isLive;
-}
-
-
-void MainWindow::displayFrame(const cv::Mat& frame) {
-    // Convert and display the frame here
-    displayImg(frame, ui->camFrame);
-    // Process events to keep the GUI responsive
-    QApplication::processEvents();
-}
-
 ///////========== Logs-Page Buttons ==========////////////
 QString MainWindow::findLatestLogFile(const QString& folderPath)
 {
@@ -351,7 +300,6 @@ void MainWindow::on_browseLogsBtn_clicked()
     isBrowsingLogFile = false;
 }
 
-
 void MainWindow::refreshLogContent()
 {
     updateLogTextBrowser();
@@ -386,7 +334,6 @@ void MainWindow::on_feautersBtn_clicked()
 }
 
 ///////========== Settings->Account Buttons ==========////////////
-
 void MainWindow::on_editName_clicked()
 {
     if (ui->editName->text() == "Edit")
@@ -424,3 +371,37 @@ void MainWindow::on_userBtn_clicked()
         }
     }
 }
+
+///////========== Dashboard-Page Buttons ==========////////////
+void MainWindow::displayFrame(const cv::Mat& image) {
+    QImage qImage(image.data, image.cols, image.rows, image.step, QImage::Format_BGR888);
+
+    QPixmap pixmap = QPixmap::fromImage(qImage);
+    QPixmap scaledPixmap = pixmap.scaled(ui->camFrame->contentsRect().size(), Qt::KeepAspectRatio);
+    ui->camFrame->setPixmap(scaledPixmap);
+
+    QApplication::processEvents();
+}
+
+void MainWindow::on_liveBtn_clicked()
+{
+    if (!isLive) {
+        QObject::connect(serverAPIController, &ServerAPIController::frameReady, this, &MainWindow::displayFrame);
+        isLive=true;
+    }
+}
+
+void MainWindow::on_stopLiveBtn_clicked()
+{
+    if(isLive) {
+        QObject::disconnect(serverAPIController, &ServerAPIController::frameReady, this, &MainWindow::displayFrame);
+        isLive=false;
+        ui->camFrame->setPixmap(QPixmap());
+        ui->camFrame->setText("Camera Offline");
+
+    }
+}
+
+
+
+

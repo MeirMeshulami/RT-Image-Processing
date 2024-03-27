@@ -4,77 +4,92 @@
 #include <thread>
 
 CaptureAndPreprocess::CaptureAndPreprocess() : mFrameCapture(cv::VideoCapture(0)), isCameraRunning(true){
-    LOG_INFO("Capture frames started.");
-    if (!mFrameCapture.isOpened()) {
-        throw std::runtime_error("Failed to open camera.");
-    }
-    LOG_DEBUG("CaptureAndPreprocess was created successfully");
+	LOG_INFO("Capture frames started.");
+	if (!mFrameCapture.isOpened()) {
+		throw std::runtime_error("Failed to open camera.");
+	}
+	LOG_DEBUG("CaptureAndPreprocess was created successfully");
+}
+FrameSender CaptureAndPreprocess::ConnectToServer() {
+	JsonManager::CheckIfJsonModified(configJson);
+
+	std::string cameraIp = configJson["grpc_settings"]["camera_ip_address"];
+	std::string cameraPort = configJson["grpc_settings"]["port_number"];
+	std::string cameraAddress(cameraIp + ":" + cameraPort);
+	
+
+	std::shared_ptr<grpc::Channel> channel =grpc::CreateChannel(cameraAddress, grpc::InsecureChannelCredentials());
+	if (!channel) {
+		throw std::runtime_error("Failed to create channel to server.");
+	}
+	FrameSender frameSender(channel);
+	LOG_INFO("Created a channel to server.");
+
+	return frameSender;
 }
 
-void CaptureAndPreprocess::Run(int frameCaptureDelay, float similarityThreshold) {
+void CaptureAndPreprocess::SendMotionFrames(FrameSender& frameSender) {
     JsonManager::CheckIfJsonModified(configJson);
 
-    std::string ip = configJson["grpc_settings"]["camera_ip_address"];
-    std::string port = configJson["grpc_settings"]["port_number"];
-    std::string cameraAddress(ip + ":" + port);
+	int frameNum = 0;
+	cv::Mat previousFrame;
+	mFrameCapture.read(previousFrame);
 
-    FrameSender frameSender(grpc::CreateChannel(cameraAddress, grpc::InsecureChannelCredentials()));
-    LOG_INFO ("Created a channel to server.");
+	bool success = frameSender.SendFrame(previousFrame, frameNum++, std::chrono::system_clock::now());
 
-    int frameNum = 0;
-    cv::Mat previousFrame;
-    mFrameCapture.read(previousFrame);
+	if (!success) {
+		throw std::invalid_argument("Error: Failed to send the initial frame.");
+	}
 
-    bool success = frameSender.SendFrame(previousFrame, frameNum++, std::chrono::system_clock::now());
+	while (isCameraRunning) {
+		cv::Mat currentFrame;
 
-    if (!success) {
-        throw std::invalid_argument("Error: Failed to send the initial frame.");
-    }
+		if (mFrameCapture.read(currentFrame)) {
+			std::chrono::system_clock::time_point frameTime = std::chrono::system_clock::now();
+			
+			double threshold = configJson["camera_settings"]["threshold"];
+			auto numMotionPixels = CalculateSimilarity(currentFrame, previousFrame, threshold);
 
-    while (isCameraRunning) {
-        cv::Mat currentFrame;
+			int maxDiffPixels = configJson["camera_settings"]["max_diff_pixels"];
 
-        if (mFrameCapture.read(currentFrame)) {
-            std::chrono::system_clock::time_point frameTime = std::chrono::system_clock::now();
-
-            auto similarity = CalculateSimilarity(currentFrame, previousFrame);
-
-            if (similarity > similarityThreshold) {
-                success = frameSender.SendFrame(currentFrame, frameNum++, frameTime);
-                if (!success) {
-                    throw std::invalid_argument("Error: Failed to send a frame.");
-                }
-                previousFrame = currentFrame.clone();
-            }
-        }
-    }
+			if (numMotionPixels > maxDiffPixels) {
+				success = frameSender.SendFrame(currentFrame, frameNum++, frameTime);
+				if (!success) {
+					throw std::invalid_argument("Error: Failed to send a frame.");
+				}
+				previousFrame = currentFrame;
+			}
+		}
+	}
 }
 
-float CaptureAndPreprocess::CalculateSimilarity(const cv::Mat& currentFrame, const cv::Mat& previousFrame) {
+int CaptureAndPreprocess::CalculateSimilarity(const cv::Mat& currentFrame, const cv::Mat& previousFrame, double threshold) {
 
-    if (currentFrame.empty() || previousFrame.empty()) {
-        throw std::invalid_argument("Input frames are empty");
-    }
+	if (currentFrame.empty() || previousFrame.empty()) {
+		throw std::invalid_argument("Input frames are empty");
+	}
 
-    if (currentFrame.size() != previousFrame.size() || currentFrame.type() != previousFrame.type()) {
-        throw std::invalid_argument("Input frames have different sizes or types");
-    }
+	if (currentFrame.size() != previousFrame.size() || currentFrame.type() != previousFrame.type()) {
+		throw std::invalid_argument("Input frames have different sizes or types");
+	}
 
-    cv::Mat difference;
-    cv::absdiff(currentFrame, previousFrame, difference);
+	cv::Mat difference;
+	cv::absdiff(currentFrame, previousFrame, difference);
 
-    auto diffSum = static_cast<int>(cv::sum(difference)[0]);
+	cv::cvtColor(difference, difference, cv::COLOR_BGR2GRAY);
 
-    // Normalize the difference and return the similarity value
-    // By dividing the sum of the absolute value by 255 * the number of pixels.
-    // The return value will always be between 0.0 and 1.0.
-    return static_cast<float>(static_cast<double>(diffSum) / (currentFrame.rows * currentFrame.cols * 255));
+	cv::Mat thresholded;
+	cv::threshold(difference, thresholded, threshold, 255, cv::THRESH_BINARY);
+
+	int numMotionPixels = cv::countNonZero(thresholded);
+
+	return numMotionPixels;
 }
 
 void CaptureAndPreprocess::StopRunCamera() {
-    isCameraRunning = false;
+	isCameraRunning = false;
 }
 
-std::atomic<bool>& CaptureAndPreprocess::GetIsCameraRunning() {
-    return isCameraRunning;
+std::atomic<bool>& CaptureAndPreprocess::IsCameraRunning() {
+	return isCameraRunning;
 }

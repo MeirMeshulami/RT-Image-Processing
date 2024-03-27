@@ -26,5 +26,5 @@ void JsonManager::InitilizeJsonSettings(nlohmann::json& configJson)
 		LOG_ERROR(errorMessage);
 	}
 	lastTimeJsonModified = std::filesystem::last_write_time(JSON_FILE_PATH);
-
+	
 }

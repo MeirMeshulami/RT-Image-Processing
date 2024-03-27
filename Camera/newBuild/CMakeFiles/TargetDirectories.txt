@@ -1,6 +1,0 @@
-C:/Users/Meir/OneDrive/שולחן העבודה/Image-processing-BEST-V/Camera/newBuild/CMakeFiles/Camera.dir
-C:/Users/Meir/OneDrive/שולחן העבודה/Image-processing-BEST-V/Camera/newBuild/CMakeFiles/ALL_BUILD.dir
-C:/Users/Meir/OneDrive/שולחן העבודה/Image-processing-BEST-V/Camera/newBuild/CMakeFiles/ZERO_CHECK.dir
-C:/Users/Meir/OneDrive/שולחן העבודה/Image-processing-BEST-V/Camera/newBuild/GeneralLib/CMakeFiles/GeneralLib.dir
-C:/Users/Meir/OneDrive/שולחן העבודה/Image-processing-BEST-V/Camera/newBuild/GeneralLib/CMakeFiles/sqlite3.dir
-C:/Users/Meir/OneDrive/שולחן העבודה/Image-processing-BEST-V/Camera/newBuild/GeneralLib/CMakeFiles/ALL_BUILD.dir

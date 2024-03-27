@@ -48,4 +48,5 @@ build*
 *.db
 *.sqlite
 CMake Overview
-/CarDetection/build
+/build
+/html

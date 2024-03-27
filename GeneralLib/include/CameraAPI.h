@@ -22,7 +22,7 @@ public:
 
 	void StartCamera() {
 		SetLoggerLevel();
-		captureAndPreprocess.Run(300, 0.08);
+		captureAndPreprocess.SendMotionFrames(300, 0.08);
 	}
 	/*
 	void StopServer() {

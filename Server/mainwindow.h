@@ -27,8 +27,6 @@ protected:
     void mousePressEvent(QMouseEvent *event) override;
     void mouseMoveEvent(QMouseEvent *event) override;
     void mouseReleaseEvent(QMouseEvent *event) override;
-    void displayImg(const cv::Mat& image, QLabel* camFrame);
-    void displayCameraOffText();
     void displayFrame(const cv::Mat& frame);
     QString findLatestLogFile(const QString& folderPath);
     void updateLogTextBrowser();
@@ -67,7 +65,9 @@ private slots:
 
     void on_InformationBtn_clicked();
 
-    void onStart();
+    void tear_up();
+
+    void tear_down();
 
     void on_accountBtn_clicked();
 
@@ -79,6 +79,7 @@ private slots:
 
     void on_userBtn_clicked();
 
+    void on_stopLiveBtn_clicked();
 
 private:
     Ui::MainWindow *ui;
