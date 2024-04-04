@@ -9,7 +9,6 @@ private:
 	std::ifstream configFile;
 	static void InitilizeJsonSettings(nlohmann::json& configJson);
 public:
-	
 	static void CheckIfJsonModified(nlohmann::json& configJson);
 };
 

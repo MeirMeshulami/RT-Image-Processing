@@ -1,7 +1,7 @@
 {
   "camera_settings": {
-    "threshold": 20,
-    "max_diff_pixels": 20
+    "threshold": 100,
+    "max_diff_pixels": 70
   },
   "grpc_settings": {
     "server_ip_address": "0.0.0.0",

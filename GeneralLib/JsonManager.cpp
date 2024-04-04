@@ -1,5 +1,6 @@
-#include "JsonManager.h"
 #include <filesystem>
+#include "JsonManager.h"
+
 static std::filesystem::file_time_type lastTimeJsonModified = std::filesystem::file_time_type::min();
 void JsonManager::CheckIfJsonModified(nlohmann::json& configJson)
 {
@@ -26,5 +27,5 @@ void JsonManager::InitilizeJsonSettings(nlohmann::json& configJson)
 		LOG_ERROR(errorMessage);
 	}
 	lastTimeJsonModified = std::filesystem::last_write_time(JSON_FILE_PATH);
-	
+
 }

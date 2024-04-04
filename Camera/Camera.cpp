@@ -56,6 +56,6 @@ int main() {
 	}
 
 	LOG_INFO("Camera program shutting down.");
-
+	getchar();
 	return 0;
 }

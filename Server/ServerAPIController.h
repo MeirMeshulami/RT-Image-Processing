@@ -32,7 +32,7 @@ public slots:
                 emit frameReady(frameToShow->GetFrame());
             }
             // Add a delay to avoid busy-waiting (e.g., sleep for a few milliseconds)
-            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+            //std::this_thread::sleep_for(std::chrono::milliseconds(100));
         }
     }
 
