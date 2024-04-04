@@ -10,6 +10,7 @@ CaptureAndPreprocess::CaptureAndPreprocess() : mFrameCapture(cv::VideoCapture(0)
 	}
 	LOG_DEBUG("CaptureAndPreprocess was created successfully");
 }
+
 FrameSender CaptureAndPreprocess::ConnectToServer() {
 	JsonManager::CheckIfJsonModified(configJson);
 

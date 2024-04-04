@@ -19,6 +19,7 @@ public slots:
     bool isServerRunning() {
         return serverAPI->IsServerRunning();
     }
+
     void pushEmptyFrame(cv::Mat frame){
         serverAPI->GetFrameShowQueue()->Push(std::make_shared<FrameWithDetails>(frame, -1, std::chrono::system_clock::now()));
     }

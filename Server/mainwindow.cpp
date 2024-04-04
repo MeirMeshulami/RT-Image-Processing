@@ -1,6 +1,7 @@
 #include "mainwindow.h"
 #include "flowlayout.h"
 #include "./ui_mainwindow.h"
+
 #include <QDir>
 #include <QFile>
 #include <QMessageBox>
@@ -42,7 +43,6 @@ MainWindow::MainWindow(QWidget* parent): QMainWindow(parent), ui(new Ui::MainWin
  
 }
 
-
 MainWindow::~MainWindow()
 {
 	delete ui;
@@ -55,7 +55,7 @@ void MainWindow::tear_up(){
     if (!serverAPIController->isServerRunning()) {
         serverAPIController->startServer();
     }
-
+    loadConfiguration();
     setWindowIcon(QIcon(R"(:logo.png)"));
 
     // display the Home page
@@ -404,4 +404,36 @@ void MainWindow::on_stopLiveBtn_clicked()
 
 
 
+
+void MainWindow::loadConfiguration() {
+    configurationManager = new ConfigurationManager("Configurations.json");
+    int threshold = configurationManager->getThresholdValue();
+    ui->MotionValue->setText(QString::number(threshold));
+    ui->threasholdSlider->setValue(threshold);
+}
+
+void MainWindow::on_threasholdSlider_valueChanged(int value)
+{
+    ui->MotionValue->setText(QString::number(value));
+    configurationManager->setThresholdValue(value);
+    
+    //CameraSettings settings;
+    //settings.set_threshold(value);
+
+    //grpc::ClientContext context;
+    //google::protobuf::Empty response;
+    ////grpc::Status status =configurationManager->frameSender->stub_->UpdateCameraSettings()
+
+    //std::shared_ptr<grpc::Channel> channel = grpc::CreateChannel("camera_address:port", grpc::InsecureChannelCredentials());
+    //std::unique_ptr<ConfigurationService::Stub> stub = ConfigurationService::NewStub(channel);
+
+    //// Prepare request message with updated threshold value
+    //CameraSettings settings;
+    //settings.set_threshold(value);
+
+    //// Call UpdateCameraSettings RPC
+    //grpc::ClientContext context;
+    //google::protobuf::Empty response;
+    //grpc::Status status = stub->UpdateCameraSettings(&context, settings, &response);
+}
 

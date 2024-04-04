@@ -7,6 +7,7 @@
 #include <opencv2/opencv.hpp>
 #include "./ui_mainwindow.h"
 #include "ServerAPIController.h"
+#include "configurationmanager.h"
 
 #include <QtGui>
 #include <QStyle>
@@ -31,6 +32,7 @@ protected:
     QString findLatestLogFile(const QString& folderPath);
     void updateLogTextBrowser();
     void lowdLogFolderPath();
+    void loadConfiguration();
 public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
@@ -81,6 +83,8 @@ private slots:
 
     void on_stopLiveBtn_clicked();
 
+    void on_threasholdSlider_valueChanged(int value);
+
 private:
     Ui::MainWindow *ui;
     bool m_dragging;
@@ -88,6 +92,7 @@ private:
     QPoint m_dragLastPosition;
     bool isLive;
     ServerAPIController* serverAPIController;
+    ConfigurationManager *configurationManager;
     QString logFolderPath;
     QString currentLogFilePath;
     bool isBrowsingLogFile = false;
