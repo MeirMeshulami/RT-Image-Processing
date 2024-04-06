@@ -8,6 +8,8 @@
 
 class ConfigurationManager {
 public:
+    std::unique_ptr<ConfigurationService::Stub> configsStub;
+
     ConfigurationManager(const QString& filePath);
 
     int getThresholdValue();

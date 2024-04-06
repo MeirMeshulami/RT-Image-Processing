@@ -12,10 +12,8 @@ message FrameMessage {
 service FrameService {
     rpc SendFrame(FrameMessage) returns (google.protobuf.Empty) {}
 }
-service CameraControl {
-    rpc StartCamera(google.protobuf.Empty) returns (google.protobuf.Empty) {}
-    rpc StopCamera(google.protobuf.Empty) returns (google.protobuf.Empty) {}
-}
+
+////////////============== Configuration Service ============/////////////
 
 message CameraSettings {
     int32 threshold = 1;

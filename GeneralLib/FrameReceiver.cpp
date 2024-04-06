@@ -96,7 +96,6 @@ std::shared_ptr<std::atomic<bool>> FrameReceiver::IsFreeToDetect()
     return isFreeToDetect;
 }
 
-
 void FrameReceiver::ControlShowingFrames() {
     isShowingFrames = !isShowingFrames;
     if(isShowingFrames)

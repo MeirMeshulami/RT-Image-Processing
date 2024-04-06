@@ -46,7 +46,7 @@ public:
 		return frameProcessor.GetService()->GetFrameShowQueue();
 	}
 
-	std::shared_ptr<ThreadSafeQueue<std::shared_ptr<FrameWithDetails>>> GetFramePtocessQueue() {
+	std::shared_ptr<ThreadSafeQueue<std::shared_ptr<FrameWithDetails>>> GetFrameProcessQueue() {
 		return frameProcessor.GetService()->GetFrameProcessQueue();
 	}
 

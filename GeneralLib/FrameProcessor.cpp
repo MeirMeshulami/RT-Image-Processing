@@ -21,6 +21,7 @@ FrameProcessor::FrameProcessor() :isServerRunning(false){
     mDBManager.CreateDB(dbPath.string());
     InitializeVideoWriter();
 }
+
 void FrameProcessor::InitializeVideoWriter() {
     LOG_DEBUG("Creating video writer...");
     mVideoWriter.open(videoPath.string(), cv::VideoWriter::fourcc('M', 'J', 'P', 'G'), 3, cv::Size(640, 480));
@@ -31,6 +32,7 @@ void FrameProcessor::InitializeVideoWriter() {
 
     LOG_DEBUG("Video writer initialized.");
 }
+
 void FrameProcessor::StartServer() {
     StartFrameReceiverThread();
     isServerRunning = true;
@@ -45,6 +47,7 @@ void FrameProcessor::StartFrameProcessing() {
         StartFrameProcessingThread(i);
     }
 }
+
 void FrameProcessor::ShutdownServer() {
     ReleaseVideoWriter();
     server->Shutdown();
@@ -86,7 +89,6 @@ void FrameProcessor::CreateImageDirectory() {
     // Set the imagesDirectory to the time subfolder
     imagesDirectory = timeSubfolder;
 }
-
 
 void FrameProcessor::StartFrameReceiverThread() {
     LOG_DEBUG("Starting frame receiver thread...");
@@ -186,6 +188,7 @@ void FrameProcessor::RunFrameReceiver() {
 
     server->Wait();
 }
+
 std::shared_ptr<FrameReceiver> FrameProcessor::GetService() {
     return service;
 }

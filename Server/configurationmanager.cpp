@@ -1,9 +1,11 @@
 #include "configurationmanager.h"
 
-ConfigurationManager::ConfigurationManager(const QString& filePath) : filePath(filePath) {
+ConfigurationManager::ConfigurationManager(const QString& filePath) :
+    filePath(filePath),
+    configsStub(ConfigurationService::NewStub(grpc::CreateChannel("localhost:50052", grpc::InsecureChannelCredentials()))) {
     readSettingsFromFile();
-
 }
+
 
 void ConfigurationManager::readSettingsFromFile() {
     QFile configFile(filePath);
