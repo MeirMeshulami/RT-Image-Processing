@@ -4,7 +4,7 @@
 
 </p>
 
-![Downloads](https://img.shields.io/github/downloads/MeirMeshulami/Git-Test/total) ![Stargazers](https://img.shields.io/github/stars/MeirMeshulami/Git-Test?style=social) ![Issues](https://img.shields.io/github/issues/MeirMeshulami/Git-Test) 
+
 
 ## ✌️ About The Project
 
@@ -40,9 +40,7 @@ See the [Roadmap](/resources/Roadmap.h) and the milestones of the project step b
 
 ###
 
-<div align="center">
-	<img src="https://github-readme-stats.vercel.app/api/top-langs?username=ShmuelFine&locale=en&hide_title=false&layout=compact&card_width=320&langs_count=5&theme=dracula&hide_border=true" height="150" alt="languages graph" />
-</div>
+
 
 ###
 
@@ -56,4 +54,6 @@ See the [Roadmap](/resources/Roadmap.h) and the milestones of the project step b
   <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/cmake/cmake-original.svg" height="30" alt="cmake logo"  />
   <img width="12" />
   <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/linux/linux-original.svg" height="30" alt="linux logo"  />
+  <img width="12" />
+  <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/81/Qt_logo_neon_2022.svg/224px-Qt_logo_neon_2022.svg.png" height="30" alt="QT logo"  />
 </div>
