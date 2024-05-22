@@ -10,8 +10,9 @@
 class ServerService final : public FrameService::Service {
 private:
 	cv::VideoCapture cam;
-	nlohmann::json configJson;
+
 public:
+	JsonManager configs;
 
 	ServerService();
 

@@ -1,14 +1,18 @@
 #pragma once
+#include "LogManager.h"
 #include <fstream>
 #include <json.hpp>
-#include "LogManager.h"
 #define JSON_FILE_PATH "Configurations.json"
+
 class JsonManager
 {
 private:
+
 	std::ifstream configFile;
-	static void InitilizeJsonSettings(nlohmann::json& configJson);
+
+	void InitilizeJsonSettings();
 public:
-	static void CheckIfJsonModified(nlohmann::json& configJson);
+	nlohmann::json configJson;
+	void CheckIfJsonModified();
 };
 

@@ -5,6 +5,7 @@
 #include <QJsonParseError>
 
 #include "CoreAPI.h"
+#include "LogManager.h"
 
 
 
@@ -18,11 +19,12 @@ public:
 
 	void setThresholdValue(int value);
 
-	void sendConfigsUpdates(API* api);
+	void sendConfigsUpdates(API& api);
 
 private:
 	QString filePath;
 	QJsonObject settingsObject;
+	nlohmann::json config;
 
 	void readSettingsFromFile();
 

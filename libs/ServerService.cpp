@@ -14,7 +14,8 @@ grpc::Status ServerService::GetFrame(grpc::ServerContext* context, const FrameRe
 	cam.read(previousFrame);
 
 	while (cam.isOpened()) {
-		JsonManager::CheckIfJsonModified(configJson);
+		configs.CheckIfJsonModified();
+		auto& configJson = configs.configJson;
 
 		cv::Mat currentFrame;
 		if (!cam.read(currentFrame)) {
@@ -51,7 +52,7 @@ grpc::Status ServerService::GetFrame(grpc::ServerContext* context, const FrameRe
 
 void ServerService::RunServer() {
 
-	JsonManager::CheckIfJsonModified(configJson);
+	auto& configJson = configs.configJson;
 	std::string serverIp = configJson["grpc_settings"]["server_ip_address"];
 	std::string port = configJson["grpc_settings"]["port_number"];
 	std::string server_address(serverIp + ":" + port);
@@ -83,11 +84,11 @@ grpc::Status ServerService::UpdateConfigurations(grpc::ServerContext* context, c
 
 	if (true) {
 		response->set_success(true);
-		LOG_DEBUG("JSON upadte has sended successfully.");
+		LOG_INFO("JSON upadte has sended successfully.");
 	}
 	else {
 		response->set_success(false);
-		LOG_DEBUG("Error while sending JSON update !");
+		LOG_INFO("Error while sending JSON update !");
 	}
 	return grpc::Status::OK;
 }

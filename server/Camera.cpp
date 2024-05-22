@@ -9,17 +9,18 @@ int main() {
 	LOG_INFO("\n\n===============================================\nCamera start running...\n===============================================\n\n");
 
 	try {
-		nlohmann::json configJson;
-		JsonManager::CheckIfJsonModified(configJson);
+		ServerService service;
+		JsonManager& json = service.configs;
+		auto& configJson = json.configJson;
+		json.CheckIfJsonModified();
 
 		LogManager::GetInstance().SetLogLevel(configJson["log_settings"]["log_level"]);
 
-		ServerService service;
+
 		std::atomic<bool> exitFlag(false);
 
-		std::thread cameraThread([&service, &configJson]() {
+		std::thread cameraThread([&service, &json]() {
 			try {
-				JsonManager::CheckIfJsonModified(configJson);
 				service.RunServer();
 			}
 			catch (const std::exception& e) {

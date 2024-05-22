@@ -895,7 +895,7 @@ font-size:20pt;
              <string notr="true"/>
             </property>
             <property name="currentIndex">
-             <number>0</number>
+             <number>3</number>
             </property>
             <widget class="QWidget" name="DashboardPage">
              <layout class="QVBoxLayout" name="verticalLayout_9">
@@ -1420,8 +1420,8 @@ border-radius:5px;
                   <rect>
                    <x>0</x>
                    <y>0</y>
-                   <width>68</width>
-                   <height>28</height>
+                   <width>100</width>
+                   <height>30</height>
                   </rect>
                  </property>
                  <property name="sizePolicy">
@@ -1683,7 +1683,7 @@ QPushButton{
                       <rect>
                        <x>0</x>
                        <y>0</y>
-                       <width>534</width>
+                       <width>897</width>
                        <height>1142</height>
                       </rect>
                      </property>

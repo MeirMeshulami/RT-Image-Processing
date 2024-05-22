@@ -1,7 +1,21 @@
-#include "configurationmanager.h"
-ConfigurationManager::ConfigurationManager(){}
+#include "configsManager.h"
+ConfigurationManager::ConfigurationManager() {
+	std::ifstream file("Configurations.json");
+	if (!file) {
+		qWarning("JSON file doesn't exist! ");
+		return;
+	}
 
-ConfigurationManager::ConfigurationManager(const QString& filePath) :filePath("Configurations.json"){ readSettingsFromFile(); }
+	try {
+		file >> config;
+	}
+	catch (nlohmann::json::parse_error& e) {
+		qWarning("Error parsing JSON: {}", e.what());
+		return;
+	}
+}
+
+ConfigurationManager::ConfigurationManager(const QString& filePath) :filePath("Configurations.json") { readSettingsFromFile(); }
 
 void ConfigurationManager::readSettingsFromFile() {
 	QFile configFile(filePath);
@@ -43,28 +57,17 @@ void ConfigurationManager::setThresholdValue(int value) {
 	QJsonObject cameraSettings = settingsObject.value("camera_settings").toObject();
 	cameraSettings["threshold"] = value;
 	settingsObject["camera_settings"] = cameraSettings;
-
+	LOG_INFO("the local threshold has updated to value {}", value);
 	writeSettingsToFile();
 }
 
-void ConfigurationManager::sendConfigsUpdates(API* api) {
-	std::ifstream file("Configurations.json");
-	if (!file) {
-		qWarning("JSON file doesn't exist! ");
-		return;
-	}
-	nlohmann::json config;
-	try {
-		file >> config;
-	}
-	catch (nlohmann::json::parse_error& e) {
-		qWarning("Error parsing JSON: {}", e.what());
-		return;
-	}
-	file.close();
+void ConfigurationManager::sendConfigsUpdates(API& api) {
+
+
+	//file.close();
 	std::string jsonStr = config.dump();
-	if (api->IsConnect()) {
-		auto stub = api->GetStub();
+	if (api.IsConnect()) {
+		auto stub = api.GetStub();
 		bool success = stub->UpdateConfigurations(jsonStr);
 
 		if (!success)

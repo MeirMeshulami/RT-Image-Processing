@@ -2,7 +2,6 @@
 #include "./ui_mainwindow.h"
 #include "CheckComboBox.h"
 #include "flowlayout.h"
-#include "JsonManager.h";
 #include "mainwindow.h"
 
 #include <QDir>
@@ -38,13 +37,27 @@ void MainWindow::init() {
 	api.Connect();
 	api.moveToThread(&frameDisplayThread);
 	connect(&frameDisplayThread, &QThread::started, &api, &API::pollFramesForDisplay);
-
+	std::ifstream file("Configurations.json");
+	if (!file) {
+		LOG_INFO("JSON file doesn't exist! ");
+		return;
+	}
+	try {
+		file >> configs;
+		LOG_INFO("writing the JSON file into configs");
+	}
+	catch (nlohmann::json::parse_error& e) {
+		LOG_INFO("Error parsing JSON: {}", e.what());
+		return;
+	}
 	loadConfiguration();
 	loadComboClasses();
 	setWindowIcon(QIcon(R"(:logo.png)"));
 
 	// display the Home page
 	on_homeBtn_clicked();
+
+
 }
 
 void MainWindow::deInit() {
@@ -53,7 +66,9 @@ void MainWindow::deInit() {
 }
 
 void MainWindow::loadConfiguration() {
-	int threshold = configurationManager.getThresholdValue();
+
+	int threshold = configs["camera_settings"]["threshold"];
+	LOG_INFO("initial threshold is {}", threshold);
 	ui->MotionValue->setText(QString::number(threshold));
 	ui->threasholdSlider->setValue(threshold);
 }
@@ -72,7 +87,7 @@ void MainWindow::mouseMoveEvent(QMouseEvent* event)
 	if (m_dragging && (event->buttons() & Qt::LeftButton)) {
 		QPoint delta = event->pos() - m_dragStartPosition;
 		move(pos() + delta);
-		m_dragLastPosition = event->globalPos();  // Store the last position
+		m_dragLastPosition = event->globalPos();
 	}
 }
 
@@ -87,12 +102,12 @@ void MainWindow::mouseReleaseEvent(QMouseEvent* event)
 void MainWindow::on_extend_clicked()
 {
 	if (isFullScreen()) {
-		showNormal(); // Restore to normal size
-		ui->extend->setIcon(QIcon(R"(:/feather/square.svg)")); // Replace with your normal icon path
+		showNormal();
+		ui->extend->setIcon(QIcon(R"(:/feather/square.svg)"));
 	}
 	else {
-		showFullScreen(); // Switch to full-screen mode
-		ui->extend->setIcon(QIcon(R"(:/feather/copy.svg)")); // Replace with your full-screen icon path
+		showFullScreen();
+		ui->extend->setIcon(QIcon(R"(:/feather/copy.svg)"));
 	}
 }
 
@@ -111,23 +126,18 @@ void MainWindow::on_exit_clicked()
 void MainWindow::on_homeBtn_clicked()
 {
 	ui->homeBtn->setStyleSheet("border-left: 3px solid orange; background-color:#1f2329;");
-	// Reset styles for other buttons if necessary
-	ui->reportBtn->setStyleSheet("");  // Reset stylesheet
-	ui->dataAnalBtn->setStyleSheet("");  // Reset stylesheet
+	ui->reportBtn->setStyleSheet("");
+	ui->dataAnalBtn->setStyleSheet("");
 
-	// Switch to the HomePage in the QStackedWidget
 	ui->stackedWidget->setCurrentIndex(0);
 }
 
 void MainWindow::on_dataAnalBtn_clicked()
 {
 	ui->dataAnalBtn->setStyleSheet("border-left: 3px solid orange; background-color:#1f2329;");
+	ui->reportBtn->setStyleSheet("");
+	ui->homeBtn->setStyleSheet("");
 
-	// Reset styles for other buttons if necessary
-	ui->reportBtn->setStyleSheet("");  // Reset stylesheet
-	ui->homeBtn->setStyleSheet("");  // Reset stylesheet
-
-	// Switch to the data analysis in the QStackedWidget
 	ui->stackedWidget->setCurrentIndex(1);
 	on_refreshBtn_clicked();
 }
@@ -135,33 +145,29 @@ void MainWindow::on_dataAnalBtn_clicked()
 void MainWindow::on_reportBtn_clicked()
 {
 	ui->reportBtn->setStyleSheet("border-left: 3px solid orange; background-color:#1f2329;");
+	ui->dataAnalBtn->setStyleSheet("");
+	ui->homeBtn->setStyleSheet("");
 
-	// Reset styles for other buttons if necessary
-	ui->dataAnalBtn->setStyleSheet("");  // Reset stylesheet
-	ui->homeBtn->setStyleSheet("");  // Reset stylesheet
-
-	// Switch to the data reports in the QStackedWidget
 	ui->stackedWidget->setCurrentIndex(2);
 }
 
 void MainWindow::on_SettingsBtn_clicked()
 {
-	ui->reportBtn->setStyleSheet("");  // Reset stylesheet
-	ui->dataAnalBtn->setStyleSheet("");  // Reset stylesheet
-	ui->homeBtn->setStyleSheet("");  // Reset stylesheet
+	ui->reportBtn->setStyleSheet("");
+	ui->dataAnalBtn->setStyleSheet("");
+	ui->homeBtn->setStyleSheet("");
 	on_accountBtn_clicked();
-	// Switch to the Settings in the QStackedWidget
+
 	ui->stackedWidget->setCurrentIndex(3);
 	on_appBtn_clicked();
 }
 
 void MainWindow::on_InformationBtn_clicked()
 {
-	ui->reportBtn->setStyleSheet("");  // Reset stylesheet
-	ui->dataAnalBtn->setStyleSheet("");  // Reset stylesheet
-	ui->homeBtn->setStyleSheet("");  // Reset stylesheet
+	ui->reportBtn->setStyleSheet("");
+	ui->dataAnalBtn->setStyleSheet("");
+	ui->homeBtn->setStyleSheet("");
 
-	// Switch to the Settings in the QStackedWidget
 	ui->stackedWidget->setCurrentIndex(4);
 }
 
@@ -176,12 +182,25 @@ void MainWindow::on_refreshBtn_clicked()
 void MainWindow::on_browseCapBtn_clicked()
 {
 	QString initialFolderPath = "C:/MobileyeProjectTools/Output/images";
-	CaptureImgfolderPath = QFileDialog::getExistingDirectory(this, tr("Select Folder"), initialFolderPath);
 
-	// Check if the user selected a folder
-	if (!CaptureImgfolderPath.isEmpty()) {
-		on_cleareBtn_clicked();
-		display_capture_imgs(CaptureImgfolderPath);
+	QFileDialog dialog(this, tr("Select Folder"), initialFolderPath);
+	dialog.setFileMode(QFileDialog::Directory);  // Allow selecting directories
+	dialog.setOption(QFileDialog::ShowDirsOnly, false);  // Show files within directories
+
+	// Set name filters to display only image files
+	QStringList nameFilters;
+	nameFilters << "Images (*.png *.jpg *.jpeg *.bmp *.gif)";
+	dialog.setNameFilters(nameFilters);
+
+	// Execute the dialog and get the selected folder
+	if (dialog.exec() == QDialog::Accepted) {
+		QStringList selectedFiles = dialog.selectedFiles();
+		if (!selectedFiles.isEmpty()) {
+			// selectedFiles[0] will be the selected directory
+			CaptureImgfolderPath = selectedFiles[0];
+			on_cleareBtn_clicked();
+			display_capture_imgs(CaptureImgfolderPath);
+		}
 	}
 }
 
@@ -466,13 +485,10 @@ void MainWindow::on_userBtn_clicked()
 
 void MainWindow::on_threasholdSlider_valueChanged(int value)
 {
-	QTimer timer;
 	ui->MotionValue->setText(QString::number(value));
-	configurationManager.setThresholdValue(value);
-	timer.stop();
-	timer.start(500);
-	ConfigurationManager config;
-	config.sendConfigsUpdates(&api);
+	configs["camera_settings"]["threshold"] = value;
+	saveJson();
+	//configs.sendConfigsUpdates(api);
 }
 
 void MainWindow::on_detectCheck_stateChanged(int arg1)
@@ -495,3 +511,12 @@ void MainWindow::on_fpsCheck_stateChanged(int arg1)
 	}
 }
 
+void MainWindow::saveJson() {
+	std::ofstream configFile("Configurations.json");
+
+	// Write the JSON data to the file
+	configFile << std::setw(4) << configs;
+
+	// Close the file
+	configFile.close();
+}
