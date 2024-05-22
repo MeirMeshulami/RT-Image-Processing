@@ -1,6 +1,6 @@
 #include "ServerService.h"
 
-ServerService::ServerService() : cam(cv::VideoCapture(0)), isCameraRunning(true), isModified(false){
+ServerService::ServerService() : cam(0) {
 	if (!cam.isOpened()) {
 		throw std::runtime_error("The camera is already open in another program !");
 	}
@@ -13,7 +13,7 @@ grpc::Status ServerService::GetFrame(grpc::ServerContext* context, const FrameRe
 	cv::Mat previousFrame;
 	cam.read(previousFrame);
 
-	while (isCameraRunning) {
+	while (cam.isOpened()) {
 		JsonManager::CheckIfJsonModified(configJson);
 
 		cv::Mat currentFrame;
@@ -22,22 +22,21 @@ grpc::Status ServerService::GetFrame(grpc::ServerContext* context, const FrameRe
 			return grpc::Status(grpc::StatusCode::CANCELLED, "Error: Failed to read a frame from the camera.");
 		}
 
-		std::chrono::system_clock::time_point frameTime = std::chrono::system_clock::now();
-
 		double threshold = configJson["camera_settings"]["threshold"];
 		int maxDiffPixels = configJson["camera_settings"]["max_diff_pixels"];
-		auto numMotionPixels = CalculateSimilarity(currentFrame, previousFrame, threshold);
+		auto numMotionPixels = MotionDetector(currentFrame, previousFrame, threshold);
 
 		if (numMotionPixels > maxDiffPixels) {
 			FrameResponse response;
 			response.set_frame_number(frameNum++);
+			std::chrono::system_clock::time_point frameTime = std::chrono::system_clock::now();
 			response.mutable_frame_time()->set_seconds(std::chrono::system_clock::to_time_t(frameTime));
 			response.mutable_frame_time()->set_nanos(std::chrono::duration_cast<std::chrono::nanoseconds>(frameTime.time_since_epoch()).count() % 1000000000);
 
 			std::vector<uchar> encodedImage;
 			cv::imencode(".jpg", currentFrame, encodedImage);
 			response.set_image_data(reinterpret_cast<const char*>(encodedImage.data()), encodedImage.size());
-			LOG_DEBUG("frame {} has sended.",frameNum);
+			LOG_DEBUG("frame {} has sended.", frameNum);
 
 			if (!writer->Write(response)) {
 				LOG_INFO("Client disconnected.");
@@ -51,16 +50,27 @@ grpc::Status ServerService::GetFrame(grpc::ServerContext* context, const FrameRe
 }
 
 void ServerService::RunServer() {
+
 	JsonManager::CheckIfJsonModified(configJson);
 	std::string serverIp = configJson["grpc_settings"]["server_ip_address"];
 	std::string port = configJson["grpc_settings"]["port_number"];
-	std::string server_address(serverIp+":"+port);
-	
+	std::string server_address(serverIp + ":" + port);
+
 	grpc::ServerBuilder builder;
 	builder.AddListeningPort(server_address, grpc::InsecureServerCredentials());
 	builder.RegisterService(this);
 
 	std::unique_ptr<grpc::Server> server(builder.BuildAndStart());
+	std::thread exitThread([&server] {
+		while (true) {
+			if (GetAsyncKeyState(VK_ESCAPE) & 0x8000) {
+				server->Shutdown();
+				return;
+			}
+		}
+		});
+	exitThread.detach();
+
 	LOG_INFO("Server listening on {}", server_address);
 	server->Wait();
 }
@@ -70,7 +80,7 @@ grpc::Status ServerService::UpdateConfigurations(grpc::ServerContext* context, c
 	nlohmann::json jsonContent = nlohmann::json::parse(file);
 	std::ofstream outputFile("Configurations.json");
 	outputFile << jsonContent;
-	
+
 	if (true) {
 		response->set_success(true);
 		LOG_DEBUG("JSON upadte has sended successfully.");
@@ -82,7 +92,7 @@ grpc::Status ServerService::UpdateConfigurations(grpc::ServerContext* context, c
 	return grpc::Status::OK;
 }
 
-int ServerService::CalculateSimilarity(const cv::Mat& currentFrame, const cv::Mat& previousFrame, double threshold) {
+int ServerService::MotionDetector(const cv::Mat& currentFrame, const cv::Mat& previousFrame, double threshold) {
 
 	if (currentFrame.empty() || previousFrame.empty()) {
 		throw std::invalid_argument("Input frames are empty");
@@ -104,8 +114,3 @@ int ServerService::CalculateSimilarity(const cv::Mat& currentFrame, const cv::Ma
 
 	return numMotionPixels;
 }
-
-void ServerService::StopRunCamera() { isCameraRunning = false; }
-
-std::atomic<bool>& ServerService::IsCameraRunning() { return isCameraRunning; }
-

@@ -1,17 +1,17 @@
 #define _CRT_SECURE_NO_WARNINGS
-#include "mainwindow.h"
-#include "flowlayout.h"
 #include "./ui_mainwindow.h"
-#include "JsonManager.h";
 #include "CheckComboBox.h"
+#include "flowlayout.h"
+#include "JsonManager.h";
+#include "mainwindow.h"
 
 #include <QDir>
 #include <QFile>
-#include <QMessageBox>
-#include <QProcess>
 #include <QFileDialog>
-#include <QModelIndex>
 #include <QListWidgetItem>
+#include <QMessageBox>
+#include <QModelIndex>
+#include <QProcess>
 
 
 
@@ -25,7 +25,6 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent), ui(new Ui::MainWi
 	setWindowFlags(Qt::FramelessWindowHint | Qt::WindowSystemMenuHint);
 #endif
 	ui->setupUi(this);
-	api = new API();
 	init();
 	show();
 	lowdLogFolderPath();
@@ -36,31 +35,25 @@ MainWindow::~MainWindow() { delete ui; }
 
 ///////========== Init Funcs ==========////////////
 void MainWindow::init() {
-	if (!api->IsConnect()) {
-		api->Connect();
-	}
-
-	frameDisplayThread = new QThread();
-	api->moveToThread(frameDisplayThread);
-	QObject::connect(frameDisplayThread, &QThread::started, api, &API::pollFramesForDisplay);
+	api.Connect();
+	api.moveToThread(&frameDisplayThread);
+	connect(&frameDisplayThread, &QThread::started, &api, &API::pollFramesForDisplay);
 
 	loadConfiguration();
 	loadComboClasses();
 	setWindowIcon(QIcon(R"(:logo.png)"));
 
 	// display the Home page
-	ui->homeBtn->setStyleSheet("border-left: 3px solid orange; background-color:#1f2329;");
-	ui->stackedWidget->setCurrentIndex(0);
+	on_homeBtn_clicked();
 }
 
 void MainWindow::deInit() {
 	on_stopLiveBtn_clicked();
-
+	api.Disconnect();
 }
 
 void MainWindow::loadConfiguration() {
-	configurationManager = new ConfigurationManager("Configurations.json");
-	int threshold = configurationManager->getThresholdValue();
+	int threshold = configurationManager.getThresholdValue();
 	ui->MotionValue->setText(QString::number(threshold));
 	ui->threasholdSlider->setValue(threshold);
 }
@@ -270,7 +263,7 @@ void MainWindow::updateLogTextBrowser()
 
 void MainWindow::lowdLogFolderPath()
 {
-	logFolderPath = QString::fromStdString(api->GetLogesDirectoryPath());
+	logFolderPath = QString::fromStdString(api.GetLogesDirectoryPath());
 	logFolderPath += QString::fromStdString("\\");
 }
 
@@ -357,12 +350,17 @@ void MainWindow::displayFrame(const cv::Mat& image) {
 
 void MainWindow::on_liveBtn_clicked()
 {
-	if (!api->IsConnect()) {
-		api->Connect();
+	if (!api.IsConnect()) {
+		QMessageBox::warning(this, "Connection Error", "Camera is not connected!");
+		return;
 	}
 	if (!isLive) {
-		frameDisplayThread->start();
-		QObject::connect(api, &API::frameReady, this, &MainWindow::displayFrame);
+		connect(&api, &API::frameReady, this, &MainWindow::displayFrame);
+		// Gets frames from camera and push into a queue
+		api.StartStream();
+		// Pop frames from queue and emit displayFrame()
+		frameDisplayThread.start();
+
 		isLive = true;
 	}
 }
@@ -370,11 +368,11 @@ void MainWindow::on_liveBtn_clicked()
 void MainWindow::on_stopLiveBtn_clicked()
 {
 	if (isLive) {
-		QObject::disconnect(api, &API::frameReady, this, &MainWindow::displayFrame);
+		disconnect(&api, &API::frameReady, this, &MainWindow::displayFrame);
 		isLive = false;
 		ui->camFrame->setPixmap(QPixmap());
 		ui->camFrame->setText("Camera Offline");
-		api->Disconnect();
+		api.StopStream();
 	}
 }
 
@@ -419,12 +417,12 @@ bool MainWindow::eventFilter(QObject* obj, QEvent* event) {
 }
 
 void MainWindow::modifyClassList(const std::string className, bool isChecked) {
-    if (isChecked){
-        api->GetClassList().erase(className);
-    }
-    else{
-        api->GetClassList().insert(className);
-    }
+	if (isChecked) {
+		api.GetClassList().erase(className);
+	}
+	else {
+		api.GetClassList().insert(className);
+	}
 }
 
 ///////========== Settings->Account Buttons ==========////////////
@@ -470,28 +468,30 @@ void MainWindow::on_threasholdSlider_valueChanged(int value)
 {
 	QTimer timer;
 	ui->MotionValue->setText(QString::number(value));
-	configurationManager->setThresholdValue(value);
+	configurationManager.setThresholdValue(value);
 	timer.stop();
 	timer.start(500);
 	ConfigurationManager config;
-	config.sendConfigsUpdates(api);
+	config.sendConfigsUpdates(&api);
 }
 
 void MainWindow::on_detectCheck_stateChanged(int arg1)
 {
-    if(arg1==Qt::Checked){
-        api->detection=true;
-    }else{
-        api->detection=false;
-    }
+	if (arg1 == Qt::Checked) {
+		api.detection = true;
+	}
+	else {
+		api.detection = false;
+	}
 }
 
 void MainWindow::on_fpsCheck_stateChanged(int arg1)
 {
-    if(arg1==Qt::Checked){
-        api->displayFps=true;
-    }else{
-        api->displayFps=false;
-    }
+	if (arg1 == Qt::Checked) {
+		api.displayFps = true;
+	}
+	else {
+		api.displayFps = false;
+	}
 }
 

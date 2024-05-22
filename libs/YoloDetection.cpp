@@ -6,16 +6,12 @@ YoloDetection::YoloDetection()
 {
 	nlohmann::json configJson;
 	JsonManager::CheckIfJsonModified(configJson);
-#ifdef _WIN32
-	const std::string os = "_windows";
-#elif __linux__
-	const std::string os = "_linux";
-#endif
-	const std::filesystem::path netPath = configJson["yolo_settings"]["net_path" + os];
+
+	const std::filesystem::path netPath = configJson["yolo_settings"]["net_path"];
 	if (!std::filesystem::exists(netPath)) {
 		throw std::runtime_error("Network path does not exist: " + netPath.string());
 	}
-	const std::filesystem::path classListPath = configJson["yolo_settings"]["class_list_path" + os];
+	const std::filesystem::path classListPath = configJson["yolo_settings"]["class_list_path"];
 	if (!std::filesystem::exists(classListPath)) {
 		throw std::runtime_error("Class list path does not exist: " + classListPath.string());
 	}

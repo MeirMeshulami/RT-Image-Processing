@@ -1,7 +1,7 @@
 #include "configurationmanager.h"
 ConfigurationManager::ConfigurationManager(){}
 
-ConfigurationManager::ConfigurationManager(const QString& filePath) :filePath(filePath){ readSettingsFromFile(); }
+ConfigurationManager::ConfigurationManager(const QString& filePath) :filePath("Configurations.json"){ readSettingsFromFile(); }
 
 void ConfigurationManager::readSettingsFromFile() {
 	QFile configFile(filePath);

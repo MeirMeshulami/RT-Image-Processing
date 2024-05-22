@@ -1,16 +1,16 @@
 #pragma once
-#include <filesystem>
-#include <future>
-#include <fstream>
-#include <iostream>
-#include <unordered_set>
-#include <ctime>
+#include "ClientService.h"
+#include "DBManager.h"
 #include "Frame.h"
+#include "JsonManager.h"
 #include "ThreadSafeQueue.h"
 #include "YoloDetection.h"
-#include "DBManager.h"
-#include "JsonManager.h"
-#include "ClientService.h"
+#include <ctime>
+#include <filesystem>
+#include <fstream>
+#include <future>
+#include <iostream>
+#include <unordered_set>
 
 
 class FrameProcessor {
@@ -21,7 +21,6 @@ public:
 	std::mutex mDBMutex;
 	std::vector<std::thread> frameProcessingThreads;
 	std::thread frameReceiverThread;
-	std::thread monitorKeyboardInputThread;
 	std::atomic<bool> isConnect;
 	std::shared_ptr<ClientService> service;
 	std::shared_ptr<grpc::Channel> channel;

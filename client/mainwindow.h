@@ -103,9 +103,9 @@ private:
     QPoint m_dragStartPosition;
     QPoint m_dragLastPosition;
     bool isLive;
-    API* api;
-    ConfigurationManager *configurationManager;
-    QThread* frameDisplayThread;
+    API api;
+    ConfigurationManager configurationManager;
+    QThread frameDisplayThread;
     QString logFolderPath;
     QString currentLogFilePath;
     bool isBrowsingLogFile ;

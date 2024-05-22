@@ -9,10 +9,8 @@
     "port_number": "50051"
   },
   "yolo_settings": {
-    "class_list_path_windows": "..\\..\\resources\\CocoList.txt",
-    "class_list_path_linux": "../../resources/CocoClassList.txt",
-    "net_path_windows": "..\\..\\resources\\yolo-models\\yolov5n.onnx",
-    "net_path_linux": "../../resources/yolo-models/yolov5n.onnx",
+    "class_list_path": "../../resources/CocoList.txt",
+    "net_path": "../../resources/yolo-models/yolov5n.onnx",
     "input_width": 640,
     "input_height": 640,
     "score_threshold": 0.25,
@@ -21,17 +19,12 @@
   },
   "log_settings": {
     "log_level": "info",
-    "log_directory": "..\\..\\out\\logs"
+    "log_directory": "../../out/logs"
   },
   "output_settings": {
-    "video_path_windows": "..\\..\\out\\output_video.avi",
-    "video_path_linux": "../..//out/output_video.avi",
-
-    "db_path_windows": "..\\..\\out\\DetectionDetailsWithTime.db",
-    "db_path_linux": "../..//out/DetectionDetailsWithTime.db",
-
-    "image_path_windows": "..\\..\\out\\images\\",
-    "image_path_linux": "../..//out/images/"
+    "video_path": "../../out/output_video.avi",
+    "db_path": "../../out/DetectionDetailsWithTime.db",
+    "image_path": "../../out/images/"
   }
 
 }

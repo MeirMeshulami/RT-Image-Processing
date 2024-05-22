@@ -26,7 +26,6 @@ public:
 	}
 
 	void Disconnect() { 
-		StopStream();
 		frameProcessor.DestroyConnection(); 
 	}
 
@@ -77,10 +76,8 @@ public:
 public slots:
 	
 	void pollFramesForDisplay() {
-		StartStream();
 		YoloDetection yolo;
 		std::shared_ptr<Frame> frameToShow;
-	
 
 		while (IsConnect()) {
 			if (GetFrameShowQueue()->TryPop(frameToShow)) {

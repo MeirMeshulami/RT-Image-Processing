@@ -1,21 +1,15 @@
 #define _CRT_SECURE_NO_WARNINGS
-#include <ctime>
 #include "FrameProcessor.h"
+#include <ctime>
 
 
 FrameProcessor::FrameProcessor() :isConnect(false) {
 	JsonManager::CheckIfJsonModified(configJson);
-
-#ifdef _WIN32
-	std::string os = "_windows";
-#elif __linux__
-	std::string os = "_linux";
-#endif
-	std::string path = configJson["output_settings"]["video_path" + os];
+	std::string path = configJson["output_settings"]["video_path"];
 	videoPath = path;
-	path = configJson["output_settings"]["db_path" + os];
+	path = configJson["output_settings"]["db_path"];
 	dbPath = path;
-	path = configJson["output_settings"]["image_path" + os];
+	path = configJson["output_settings"]["image_path"];
 	imagePath = path;
 	mDBManager.CreateDB(dbPath.string());
 
@@ -31,9 +25,26 @@ void FrameProcessor::Connect() {
 void FrameProcessor::BuildConnection() {
 	LOG_INFO("Client connecting...");
 	channel = grpc::CreateChannel("localhost:50051", grpc::InsecureChannelCredentials());
-	service = std::make_shared<ClientService>(channel);
-	LOG_INFO("Client connected.");
-	isConnect = true;
+
+	auto state = channel->GetState(true);
+	int retries = 30;
+	while (state != grpc_connectivity_state::GRPC_CHANNEL_READY && retries > 0) {
+		LOG_INFO("Waiting for channel to be ready, current state: {}", state);
+
+		channel->WaitForStateChange(state, std::chrono::system_clock::now() + std::chrono::seconds(10));
+		state = channel->GetState(true);
+		retries--;
+	}
+
+	if (state == grpc_connectivity_state::GRPC_CHANNEL_READY) {
+		service = std::make_shared<ClientService>(channel);
+		LOG_INFO("Client connected.");
+		isConnect.store(true);
+	}
+	else {
+		LOG_ERROR("Failed to connect to the server after several attempts.");
+		isConnect.store(false);
+	}
 }
 
 void FrameProcessor::StartStreamFrames() {
@@ -45,8 +56,8 @@ void FrameProcessor::StartStreamFrames() {
 }
 
 void FrameProcessor::StopStreamFrames() {
+	LOG_INFO("Stopping stream..");
 	GetService()->stopStreaming.store(true);
-	isConnect.store(false);
 }
 
 void FrameProcessor::StartFrameProcessing() {
@@ -54,13 +65,13 @@ void FrameProcessor::StartFrameProcessing() {
 	CreateImageDirectory();
 }
 
-cv::Mat FrameProcessor::Detect(std::shared_ptr<Frame> frame, YoloDetection&yolo) {
+cv::Mat FrameProcessor::Detect(std::shared_ptr<Frame> frame, YoloDetection& yolo) {
 	auto start = cv::getTickCount();
 	auto detections = yolo.PreProcess(frame->GetFrame());
 	cv::Mat img = (yolo.post_process(frame->GetFrame(), detections, classes));
-	
-	
-	
+
+
+
 	/*int frameNum = image->GetFrameNum();
 	cv::Mat frame = image->GetFrame();*/
 	/*if (image->GetBoxes().size() > 0) {
@@ -78,16 +89,18 @@ cv::Mat FrameProcessor::Detect(std::shared_ptr<Frame> frame, YoloDetection&yolo)
 void FrameProcessor::DisplayFps(cv::Mat& img, long long start) {
 	auto end = cv::getTickCount();
 	auto elapsedTime = (end - start) / cv::getTickFrequency();
-	auto fps = 1.0 / elapsedTime;
+	int fps = 1 / elapsedTime;
 	std::stringstream stream;
-	stream << std::fixed << std::setprecision(2) << fps;
-	std::string fpsText_after_processing = "FPS: " + stream.str();
-	cv::putText(img, fpsText_after_processing, cv::Point(0, 30), cv::FONT_HERSHEY_SIMPLEX, 0.7, cv::Scalar(0, 255, 0), 2);
+	int maxFps = 999;
+	fps = fps > maxFps ? maxFps : fps;
+	std::string fpsText_after_processing = "FPS: " + std::to_string(fps);
+	cv::putText(img, fpsText_after_processing, cv::Point(10, 30), cv::FONT_HERSHEY_SIMPLEX, 0.7, cv::Scalar(0, 255, 0), 2);
 }
 
 void FrameProcessor::DestroyConnection() {
 	LOG_INFO("Disconnecting from camera...");
-	isConnect = false;
+	isConnect.store(false);
+
 	ReleaseVideoWriter();
 	LOG_INFO("Disconnected.");
 }

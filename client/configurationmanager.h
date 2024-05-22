@@ -1,30 +1,30 @@
+#include <QDebug>
 #include <QFile>
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonParseError>
-#include <QDebug>
 
 #include "CoreAPI.h"
 
- 
+
 
 class ConfigurationManager {
 public:
-    ConfigurationManager();
+	ConfigurationManager();
 
-    ConfigurationManager(const QString& filePath);
+	ConfigurationManager(const QString& filePath);
 
-    int getThresholdValue();
+	int getThresholdValue();
 
-    void setThresholdValue(int value);
+	void setThresholdValue(int value);
 
-    void sendConfigsUpdates(API* api);
+	void sendConfigsUpdates(API* api);
 
 private:
-    QString filePath;
-    QJsonObject settingsObject;
-    
-    void readSettingsFromFile();
+	QString filePath;
+	QJsonObject settingsObject;
 
-    void writeSettingsToFile();
+	void readSettingsFromFile();
+
+	void writeSettingsToFile();
 };
