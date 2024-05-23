@@ -14,13 +14,13 @@ CCTV is a project that performs motion detection, object detection, and recognit
 
 ## Features
 
-- **Real-time Motion Detection**: The system supports real-time motion detection, allowing it to monitor and respond to movement instantly.
-- **Object Recognition**: It can recognize multiple types of objects, making it versatile for various applications.
-- **Image/Video Capture**: The project includes functionality to capture and store images or videos of detected objects.
-- **Detection Mode Toggle**: Users can easily switch detection modes using a button or checkbox in the interface.
-- **Cross-Platform Compatibility**: The project is designed to work across multiple platforms, ensuring broad usability.
-- **Beautiful GUI with UX**: The system includes a user-friendly graphical interface designed with user experience in mind.
-- **High FPS Detection with GPU Acceleration**: Optional support for high FPS detection using CUDA for GPU acceleration.
+- **Real-time Motion Detection**: The system supports real-time motion detection, allowing it to monitor and respond to movement instantly.<br></br>
+- **Object Recognition**: It can recognize multiple types of objects, making it versatile for various applications.<br></br>
+- **Image/Video Capture**: The project includes functionality to capture and store images or videos of detected objects.<br></br>
+- **Detection Mode Toggle**: Users can easily switch detection modes using a button or checkbox in the interface.<br></br>
+- **Cross-Platform Compatibility**: The project is designed to work across multiple platforms, ensuring broad usability.<br></br>
+- **Beautiful GUI with UX**: The system includes a user-friendly graphical interface designed with user experience in mind.<br></br>
+- **High FPS Detection with GPU Acceleration**: Optional support for high FPS detection using CUDA for GPU acceleration.<br></br>
   
 <details>
   <summary><H2>Installation</H2></summary>
