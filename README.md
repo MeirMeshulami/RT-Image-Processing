@@ -29,11 +29,13 @@ CCTV is a project that performs motion detection, object detection, and recognit
    cd RT-Image-Processing
    
 <div align="center">
-       <img align="right" height="200" style=border-radius:20px src="/resources/detection_image.png"  />
-   </div>
+   <img align="right" height="200" style=border-radius:20px src="/resources/detection_image.png"  />
+</div>
    
 2. **Install [OpenCV](https://opencv.org/releases/), [gRPC](https://github.com/grpc/grpc), and [CMake](https://cmake.org/download/).**
    - Follow the instructions on their respective websites for installation.
+     
+&nbsp;
 
 3. **Optional: Install CUDA**:
 
@@ -50,7 +52,8 @@ CCTV is a project that performs motion detection, object detection, and recognit
     cmake -DOPENCV_EXTRA_MODULES_PATH=../../opencv_contrib/modules -DWITH_CUDA=ON ..
     cmake --build . --config Release
     cmake --install . --config Release
-
+    
+&nbsp;
 4. **Build the Server**:
    
     ```sh
