@@ -513,10 +513,6 @@ void MainWindow::on_fpsCheck_stateChanged(int arg1)
 
 void MainWindow::saveJson() {
 	std::ofstream configFile("Configurations.json");
-
-	// Write the JSON data to the file
 	configFile << std::setw(4) << configs;
-
-	// Close the file
 	configFile.close();
 }
