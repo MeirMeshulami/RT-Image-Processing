@@ -1,7 +1,7 @@
 # CCTV
 
 <div align="center">
-  <img align="right" height="200" style=border-radius:20px src="/resources/detection_image.png"  />
+   <img align="right" height="200" style=border-radius:20px src="/resources/app.png"  />
 </div>
 
 CCTV is a project that performs motion detection, object detection, and recognition. It can be used for various purposes such as counting specific objects or detecting, recognizing, and capturing thieves.
@@ -18,7 +18,7 @@ CCTV is a project that performs motion detection, object detection, and recognit
 - **High FPS Detection with GPU Acceleration**: Optional support for high FPS detection using CUDA for GPU acceleration.
 
   <div align="center">
-  <img align="left" height="200" style=border-radius:20px src="/resources/app.png"  />
+    <img align="right" height="200" style=border-radius:20px src="/resources/detection_image.png"  />
 </div>
 
 ## Installation
