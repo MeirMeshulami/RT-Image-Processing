@@ -39,19 +39,19 @@ CCTV is a project that performs motion detection, object detection, and recognit
 
 3. **Optional: Install CUDA**:
 
-  - For high FPS detection with GPU acceleration, install CUDA from the [NVIDIA website](https://developer.nvidia.com/cuda-downloads) and [cuDNN](https://developer.nvidia.com/cudnn).
-  - Build OpenCV with the extra modules ([opencv_contrib](https://github.com/opencv/opencv_contrib)) and CUDA support. Follow these steps:
-  - You can follow this [tutorial](https://techzizou.in/setup-opencv-dnn-cuda-module-for-windows/) for a detailed guide on setting up OpenCV with the CUDA DNN module on Windows.
-    
-    ```sh
-    git clone https://github.com/opencv/opencv.git
-    git clone https://github.com/opencv/opencv_contrib.git
-    cd opencv
-    mkdir build
-    cd build
-    cmake -DOPENCV_EXTRA_MODULES_PATH=../../opencv_contrib/modules -DWITH_CUDA=ON ..
-    cmake --build . --config Release
-    cmake --install . --config Release
+     - For high FPS detection with GPU acceleration, install CUDA from the [NVIDIA website](https://developer.nvidia.com/cuda-downloads) and [cuDNN](https://developer.nvidia.com/cudnn).
+     - Build OpenCV with the extra modules ([opencv_contrib](https://github.com/opencv/opencv_contrib)) and CUDA support. Follow these steps:
+     - You can follow this [tutorial](https://techzizou.in/setup-opencv-dnn-cuda-module-for-windows/) for a detailed guide on setting up OpenCV with the CUDA DNN module on Windows.
+       
+       ```sh
+       git clone https://github.com/opencv/opencv.git
+       git clone https://github.com/opencv/opencv_contrib.git
+       cd opencv
+       mkdir build
+       cd build
+       cmake -DOPENCV_EXTRA_MODULES_PATH=../../opencv_contrib/modules -DWITH_CUDA=ON ..
+       cmake --build . --config Release
+       cmake --install . --config Release
     
 &nbsp;
 4. **Build the Server**:
