@@ -60,6 +60,7 @@ CCTV is a project that performs motion detection, object detection, and recognit
 <details>
   <summary><H2>Build and Run</H2></summary>
    4. **Build the server**; 
+   
        ```sh
        cd server
        mkdir build
