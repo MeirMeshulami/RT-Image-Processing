@@ -21,12 +21,14 @@ CCTV is a project that performs motion detection, object detection, and recognit
 - **Cross-Platform Compatibility**: The project is designed to work across multiple platforms, ensuring broad usability.
 - **Beautiful GUI with UX**: The system includes a user-friendly graphical interface designed with user experience in mind.
 - **High FPS Detection with GPU Acceleration**: Optional support for high FPS detection using CUDA for GPU acceleration.
+<details>
+  <summary>## Installation</summary>
 
-## Installation
    1. **Clone the Project**:
       ```sh
       git clone https://github.com/MeirMeshulami/RT-Image-Processing.git
       cd RT-Image-Processing
+      ```
    
    <div align="center">
       <img align="right" height="170" style=border-radius:20px src="/resources/detection_image.png"  />
@@ -52,6 +54,8 @@ CCTV is a project that performs motion detection, object detection, and recognit
        cmake -DOPENCV_EXTRA_MODULES_PATH=../../opencv_contrib/modules -DWITH_CUDA=ON ..
        cmake --build . --config Release
        cmake --install . --config Release
+       ```
+   </details>
     
 &nbsp;
 4. **Build the Server**:
