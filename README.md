@@ -57,7 +57,6 @@ CCTV is a project that performs motion detection, object detection, and recognit
        cmake --install . --config Release
        ```
 </details>
-
 <details>
   <summary><H2>Build and Run</H2></summary>
 4. **Build the Server**:
