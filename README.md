@@ -23,17 +23,17 @@ CCTV is a project that performs motion detection, object detection, and recognit
 - **High FPS Detection with GPU Acceleration**: Optional support for high FPS detection using CUDA for GPU acceleration.
 
 ## Installation
-1. **Clone the Project**:
-   ```sh
-   git clone https://github.com/MeirMeshulami/RT-Image-Processing.git
-   cd RT-Image-Processing
+   1. **Clone the Project**:
+      ```sh
+      git clone https://github.com/MeirMeshulami/RT-Image-Processing.git
+      cd RT-Image-Processing
    
-<div align="center">
-   <img align="right" height="200" style=border-radius:20px src="/resources/detection_image.png"  />
-</div>
+   <div align="center">
+      <img align="right" height="200" style=border-radius:20px src="/resources/detection_image.png"  />
+   </div>
    
-2. **Install [OpenCV](https://opencv.org/releases/), [gRPC](https://github.com/grpc/grpc), and [CMake](https://cmake.org/download/).**
-   - Follow the instructions on their respective websites for installation.
+   2. **Install [OpenCV](https://opencv.org/releases/), [gRPC](https://github.com/grpc/grpc), and [CMake](https://cmake.org/download/).**
+      - Follow the instructions on their respective websites for installation.
      
 &nbsp;
 
@@ -64,7 +64,7 @@ CCTV is a project that performs motion detection, object detection, and recognit
     cmake --build . --config Release
 
 
-6. **Build the Client**:
+5. **Build the Client**:
    
     ```sh
     cd ../../client
@@ -74,7 +74,7 @@ CCTV is a project that performs motion detection, object detection, and recognit
     cmake --build . --config Release
 
 
-8. **Run the Application**:
+7. **Run the Application**:
   - Run the camera application:
     
     ```sh
