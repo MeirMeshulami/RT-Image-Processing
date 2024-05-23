@@ -11,6 +11,8 @@ CCTV is a project that performs motion detection, object detection, and recognit
 
 &nbsp;&nbsp;&nbsp;&nbsp;
 
+&nbsp;&nbsp;
+
 ## Features
 
 - **Real-time Motion Detection**: The system supports real-time motion detection, allowing it to monitor and respond to movement instantly.
