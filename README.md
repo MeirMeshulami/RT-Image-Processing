@@ -24,14 +24,15 @@ CCTV is a project that performs motion detection, object detection, and recognit
        <img align="right" height="200" style=border-radius:20px src="/resources/detection_image.png"  />
    </div>
    
-3. **Install [OpenCV](https://opencv.org/releases/), [gRPC](https://github.com/grpc/grpc), and [CMake](https://cmake.org/download/).**
+2. **Install [OpenCV](https://opencv.org/releases/), [gRPC](https://github.com/grpc/grpc), and [CMake](https://cmake.org/download/).**
    - Follow the instructions on their respective websites for installation.
 
-4. **Optional: Install CUDA**:
+3. **Optional: Install CUDA**:
 
   - For high FPS detection with GPU acceleration, install CUDA from the [NVIDIA website](https://developer.nvidia.com/cuda-downloads) and [cuDNN](https://developer.nvidia.com/cudnn).
   - Build OpenCV with the extra modules ([opencv_contrib](https://github.com/opencv/opencv_contrib)) and CUDA support. Follow these steps:
   - You can follow this [tutorial](https://techzizou.in/setup-opencv-dnn-cuda-module-for-windows/) for a detailed guide on setting up OpenCV with the CUDA DNN module on Windows.
+    
     ```sh
     git clone https://github.com/opencv/opencv.git
     git clone https://github.com/opencv/opencv_contrib.git
@@ -42,7 +43,8 @@ CCTV is a project that performs motion detection, object detection, and recognit
     cmake --build . --config Release
     cmake --install . --config Release
 
-3. **Build the Server**:
+4. **Build the Server**:
+   
     ```sh
     cd server
     mkdir build
@@ -51,7 +53,8 @@ CCTV is a project that performs motion detection, object detection, and recognit
     cmake --build . --config Release
 
 
-4. **Build the Client**:
+6. **Build the Client**:
+   
     ```sh
     cd ../../client
     mkdir build
@@ -60,7 +63,7 @@ CCTV is a project that performs motion detection, object detection, and recognit
     cmake --build . --config Release
 
 
-5. **Run the Application**:
+8. **Run the Application**:
   - Run the camera application:
     ```sh
     Release\camera.exe
