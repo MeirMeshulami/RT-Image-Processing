@@ -82,10 +82,7 @@ CCTV is a project that performs motion detection, object detection, and recognit
    
    6. **Run the Application**:&nbsp;
       &nbsp;
-      - Run the camera application:
-       &nbsp;
-
-
+      - Run the camera application:<br></br>
        ```sh
        Release\camera.exe
        ```
