@@ -1,10 +1,12 @@
 # CCTV
 
+<div align="center">
+  <img align="right" height="200" style=border-radius:20px src="/resources/detection_image.png"  />
+</div>
+
 CCTV is a project that performs motion detection, object detection, and recognition. It can be used for various purposes such as counting specific objects or detecting, recognizing, and capturing thieves.
 
 <div align="center">
-
-  <img align="right" height="200" style=border-radius:20px src="/resources/detection_image.png"  />
   <img align="left" height="200" style=border-radius:20px src="/resources/app.png"  />
 </div>
 
