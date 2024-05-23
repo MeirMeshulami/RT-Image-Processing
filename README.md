@@ -14,17 +14,16 @@ CCTV is a project that performs motion detection, object detection, and recognit
 - **Beautiful GUI with UX**: The system includes a user-friendly graphical interface designed with user experience in mind.
 - **High FPS Detection with GPU Acceleration**: Optional support for high FPS detection using CUDA for GPU acceleration.
 
-
-
 ## Installation
-   <div align="center">
-       <img align="right" height="200" style=border-radius:20px src="/resources/detection_image.png"  />
-   </div>
 1. **Clone the Project**:
    ```sh
    git clone https://github.com/MeirMeshulami/RT-Image-Processing.git
    cd RT-Image-Processing
-
+   
+<div align="center">
+       <img align="right" height="200" style=border-radius:20px src="/resources/detection_image.png"  />
+   </div>
+   
 3. **Install [OpenCV](https://opencv.org/releases/), [gRPC](https://github.com/grpc/grpc), and [CMake](https://cmake.org/download/).**
    - Follow the instructions on their respective websites for installation.
 
