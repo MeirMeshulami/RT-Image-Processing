@@ -1,6 +1,6 @@
 # CCTV
 <div align="center">
-   <img align="right" height="200" style="border-radius:20px; margin: 20px;" src="/resources/app.png" />
+   <img align="right" height="200" style="border-radius:20px; margin: 40px;" src="/resources/app.png" />
 </div>
 CCTV is a project that performs motion detection, object detection, and recognition. It can be used for various purposes such as counting specific objects or detecting, recognizing, and capturing thieves.
 
@@ -65,10 +65,12 @@ CCTV is a project that performs motion detection, object detection, and recognit
 
 8. **Run the Application**:
   - Run the camera application:
+    
     ```sh
     Release\camera.exe
 
   - Run the GUI application:
+    
     ```sh
     Release\GUI.exe
 
