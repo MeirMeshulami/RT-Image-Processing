@@ -1,6 +1,6 @@
 # CCTV
 <div align="center">
-   <img align="right" height="150" style="border-radius:20px; margin: 20px;" src="/resources/app.png" />
+   <img align="right" height="200" style="border-radius:20px; margin: 20px;" src="/resources/app.png" />
 </div>
 CCTV is a project that performs motion detection, object detection, and recognition. It can be used for various purposes such as counting specific objects or detecting, recognizing, and capturing thieves.
 
@@ -17,10 +17,10 @@ CCTV is a project that performs motion detection, object detection, and recognit
 
 
 ## Installation
-1. **Clone the Project**:
    <div align="center">
        <img align="right" height="200" style=border-radius:20px src="/resources/detection_image.png"  />
    </div>
+1. **Clone the Project**:
    ```sh
    git clone https://github.com/MeirMeshulami/RT-Image-Processing.git
    cd RT-Image-Processing
