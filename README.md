@@ -6,9 +6,7 @@
 
 CCTV is a project that performs motion detection, object detection, and recognition. It can be used for various purposes such as counting specific objects or detecting, recognizing, and capturing thieves.
 
-<div align="center">
-  <img align="left" height="200" style=border-radius:20px src="/resources/app.png"  />
-</div>
+
 
 ## Features
 - **Real-time Motion Detection**: The system supports real-time motion detection, allowing it to monitor and respond to movement instantly.
@@ -18,6 +16,10 @@ CCTV is a project that performs motion detection, object detection, and recognit
 - **Cross-Platform Compatibility**: The project is designed to work across multiple platforms, ensuring broad usability.
 - **Beautiful GUI with UX**: The system includes a user-friendly graphical interface designed with user experience in mind.
 - **High FPS Detection with GPU Acceleration**: Optional support for high FPS detection using CUDA for GPU acceleration.
+
+  <div align="center">
+  <img align="left" height="200" style=border-radius:20px src="/resources/app.png"  />
+</div>
 
 ## Installation
 1. **Clone the Project**:
