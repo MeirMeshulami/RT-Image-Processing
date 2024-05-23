@@ -63,7 +63,6 @@ CCTV is a project that performs motion detection, object detection, and recognit
     cmake ..
     cmake --build . --config Release
 
-
 5. **Build the Client**:
    
     ```sh
@@ -74,7 +73,7 @@ CCTV is a project that performs motion detection, object detection, and recognit
     cmake --build . --config Release
 
 
-7. **Run the Application**:
+6. **Run the Application**:
   - Run the camera application:
     
     ```sh
