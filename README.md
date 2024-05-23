@@ -10,8 +10,10 @@ CCTV is a project that performs motion detection, object detection, and recognit
 
 &nbsp;&nbsp;
 
-&nbsp;&nbsp;
----
+<br></br>
+<br></br>
+-----
+
 <details>
   <summary><H2>Features</H2></summary>
 
@@ -23,7 +25,8 @@ CCTV is a project that performs motion detection, object detection, and recognit
 - **Beautiful GUI with UX**: The system includes a user-friendly graphical interface designed with user experience in mind.<br></br>
 - **High FPS Detection with GPU Acceleration**: Optional support for high FPS detection using CUDA for GPU acceleration.<br></br>
  </details> 
- ---
+ -----
+
 <details>
   <summary><H2>Installation</H2></summary>
 
@@ -59,7 +62,8 @@ CCTV is a project that performs motion detection, object detection, and recognit
        cmake --install . --config Release
        ```
 </details>
----
+-----
+
 <details>
   <summary><H2>Build and Run</H2></summary>
    
@@ -95,7 +99,8 @@ CCTV is a project that performs motion detection, object detection, and recognit
        Release\GUI.exe
        ```
 </details>
----
+-----
+
 <br></br>
 ## Contact Information
 For support or questions, please contact meir.meshoulami@gmail.com.
