@@ -1,7 +1,6 @@
 # CCTV
 
 CCTV is a project that performs motion detection, object detection, and recognition. It can be used for various purposes such as counting specific objects or detecting, recognizing, and capturing thieves.
-
 <br></br>
 ![appCollage](https://github.com/MeirMeshulami/RT-Image-Processing/assets/137682383/5f5d8173-66e2-4632-88dd-4a17631f0436)
 
@@ -98,7 +97,7 @@ For support or questions, please contact meir.meshoulami@gmail.com.
 ###
 
 <div align="center">
-    <img align="center" height="150" style=border-radius:20px; src="/resources/yolov5.png"  />
+    <img align="center" height="130" style=border-radius:20px; src="/resources/yolov5.png"  />
 </div>
 
 ###
