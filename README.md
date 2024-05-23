@@ -4,8 +4,8 @@ CCTV is a project that performs motion detection, object detection, and recognit
 
 <div align="center">
 
-  <img align="right" height="300" style=border-radius:20px src="/resources/detection_image.png"  />
-  <img align="left" height="300" style=border-radius:20px src="/resources/app.png"  />
+  <img align="right" height="200" style=border-radius:20px src="/resources/detection_image.png"  />
+  <img align="left" height="200" style=border-radius:20px src="/resources/app.png"  />
 </div>
 
 ## Features
