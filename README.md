@@ -9,6 +9,7 @@ CCTV is a project that performs motion detection, object detection, and recognit
 - **Detection Mode Toggle**: Users can easily switch detection modes using a button or checkbox in the interface.
 - **Cross-Platform Compatibility**: The project is designed to work across multiple platforms, ensuring broad usability.
 - **Beautiful GUI with UX**: The system includes a user-friendly graphical interface designed with user experience in mind.
+- **High FPS Detection with GPU Acceleration**: Optional support for high FPS detection using CUDA for GPU acceleration.
 
 ## Installation
 1. **Clone the Project**:
@@ -19,13 +20,28 @@ CCTV is a project that performs motion detection, object detection, and recognit
 2. **Install OpenCV, gRPC, and CMake.**
    - Follow the instructions on their respective websites for installation.
 
+3. **Optional: Install CUDA**:
+
+  - For high FPS detection with GPU acceleration, install CUDA from the NVIDIA website.
+  - Build OpenCV with the extra modules (opencv_contrib) and CUDA support. Follow these steps:
+    ```sh
+    git clone https://github.com/opencv/opencv.git
+    git clone https://github.com/opencv/opencv_contrib.git
+    cd opencv
+    mkdir build
+    cd build
+    cmake -DOPENCV_EXTRA_MODULES_PATH=../../opencv_contrib/modules -DWITH_CUDA=ON ..
+    cmake --build . --config Release
+    cmake --install . --config Release
+
 3. **Build the Server**:
     ```sh
     cd server
     mkdir build
     cd build
     cmake ..
-    make
+    cmake --build . --config Release
+
 
 4. **Build the Client**:
     ```sh
@@ -33,20 +49,44 @@ CCTV is a project that performs motion detection, object detection, and recognit
     mkdir build
     cd build
     cmake ..
-    make
+    cmake --build . --config Release
+
 
 5. **Run the Application**:
   - Run the camera application:
     ```sh
-    ./camera.exe
+    Release\camera.exe
 
   - Run the GUI application:
     ```sh
-    ./GUI.exe
+    Release\GUI.exe
 
 ## Contact Information
 For support or questions, please contact meir.meshoulami@gmail.com.
 
+###
+
+
+
+###
+
+<div align="center">
+  <img src="https://miro.medium.com/v2/resize:fit:560/0*OhqRsVej30htIkDL.png" height="30" alt="grpc logo"  />
+  <img width="12" />
+  <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/cplusplus/cplusplus-original.svg" height="30" alt="cplusplus logo"  />
+  <img width="12" />
+  <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/opencv/opencv-original.svg" height="30" alt="opencv logo"  />
+  <img width="12" />
+  <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/cmake/cmake-original.svg" height="30" alt="cmake logo"  />
+  <img width="12" />
+  <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/linux/linux-original.svg" height="30" alt="linux logo"  />
+  <img width="12" />
+  <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/81/Qt_logo_neon_2022.svg/224px-Qt_logo_neon_2022.svg.png" height="30" alt="QT logo"  />
+  <img width="12" />
+  <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/38/SQLite370.svg/382px-SQLite370.svg.png" height="30" alt="SQlite logo"  />
+  <img width="12" />
+  <img src="https://upload.wikimedia.org/wikipedia/commons/7/79/Docker_%28container_engine%29_logo.png" height="30" alt="Docker logo"  />
+</div>
 
 
 
