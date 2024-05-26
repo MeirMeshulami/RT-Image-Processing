@@ -1,18 +1,19 @@
 #pragma once
-#include <grpcpp/grpcpp.h>
-#include <iostream>
-#include <opencv2/opencv.hpp>
-
 #include "JsonManager.h"
 #include "LogManager.h"
 #include "service.grpc.pb.h"
+#include <fstream>
+#include <grpcpp/grpcpp.h>
+#include <iostream>
+#include <json.hpp>
+#include <opencv2/opencv.hpp>
 
 class ServerService final : public FrameService::Service {
 private:
 	cv::VideoCapture cam;
 
 public:
-	JsonManager configs;
+	nlohmann::json configs;
 
 	ServerService();
 
@@ -23,8 +24,5 @@ public:
 	grpc::Status UpdateConfigurations(grpc::ServerContext* context, const UpdateConfig* request, ConfigAck* response);
 
 	int MotionDetector(const cv::Mat& currentFrame, const cv::Mat& previousFrame, double threshold);
-
-
-
 
 };

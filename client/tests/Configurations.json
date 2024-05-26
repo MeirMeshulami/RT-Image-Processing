@@ -1,0 +1,30 @@
+{
+  "camera_settings": {
+    "threshold": 0,
+    "max_diff_pixels": 70
+  },
+  "grpc_settings": {
+    "server_ip_address": "0.0.0.0",
+    "camera_ip_address": "localhost",
+    "port_number": "50051"
+  },
+  "yolo_settings": {
+    "class_list_path": "../../resources/CocoList.txt",
+    "net_path": "../../resources/yolo-models/yolov5n.onnx",
+    "input_width": 640,
+    "input_height": 640,
+    "score_threshold": 0.25,
+    "nms_threshold": 0.1,
+    "confidence_threshold": 0.25
+  },
+  "log_settings": {
+    "log_level": "info",
+    "log_directory": "../../out/logs"
+  },
+  "output_settings": {
+    "video_path": "../../out/output_video.avi",
+    "db_path": "../../out/DetectionDetailsWithTime.db",
+    "image_path": "../../out/images/"
+  }
+
+}

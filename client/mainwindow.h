@@ -3,6 +3,7 @@
 
 #include "./ui_mainwindow.h"
 #include "CoreAPI.h"
+#include "JsonManager.h"
 #include <opencv2/opencv.hpp>
 #include <QMainWindow>
 #include <QMouseEvent>
@@ -29,7 +30,7 @@ protected:
 	void displayFrame(const cv::Mat& frame);
 	QString findLatestLogFile(const QString& folderPath);
 	void updateLogTextBrowser();
-	void lowdLogFolderPath();
+	void loadLogFolderPath();
 	void loadConfiguration();
 	void loadComboClasses();
 	bool eventFilter(QObject* obj, QEvent* event)override;

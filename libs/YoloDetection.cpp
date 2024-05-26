@@ -4,9 +4,7 @@
 
 YoloDetection::YoloDetection()
 {
-	nlohmann::json configJson;
-	JsonManager::CheckIfJsonModified(configJson);
-
+	JsonManager::ReadSettings(configJson);
 	const std::filesystem::path netPath = configJson["yolo_settings"]["net_path"];
 	if (!std::filesystem::exists(netPath)) {
 		throw std::runtime_error("Network path does not exist: " + netPath.string());

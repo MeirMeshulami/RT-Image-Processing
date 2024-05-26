@@ -4,6 +4,7 @@ ServerService::ServerService() : cam(0) {
 	if (!cam.isOpened()) {
 		throw std::runtime_error("The camera is already open in another program !");
 	}
+	JsonManager::ReadSettings(configs);
 }
 
 grpc::Status ServerService::GetFrame(grpc::ServerContext* context, const FrameRequest* request, grpc::ServerWriter<FrameResponse>* writer) {
@@ -14,17 +15,14 @@ grpc::Status ServerService::GetFrame(grpc::ServerContext* context, const FrameRe
 	cam.read(previousFrame);
 
 	while (cam.isOpened()) {
-		configs.CheckIfJsonModified();
-		auto& configJson = configs.configJson;
-
 		cv::Mat currentFrame;
 		if (!cam.read(currentFrame)) {
 			LOG_INFO("Error: Failed to read a frame from the camera.");
 			return grpc::Status(grpc::StatusCode::CANCELLED, "Error: Failed to read a frame from the camera.");
 		}
 
-		double threshold = configJson["camera_settings"]["threshold"];
-		int maxDiffPixels = configJson["camera_settings"]["max_diff_pixels"];
+		double threshold = configs["camera_settings"]["threshold"];
+		int maxDiffPixels = configs["camera_settings"]["max_diff_pixels"];
 		auto numMotionPixels = MotionDetector(currentFrame, previousFrame, threshold);
 
 		if (numMotionPixels > maxDiffPixels) {
@@ -52,9 +50,8 @@ grpc::Status ServerService::GetFrame(grpc::ServerContext* context, const FrameRe
 
 void ServerService::RunServer() {
 
-	auto& configJson = configs.configJson;
-	std::string serverIp = configJson["grpc_settings"]["server_ip_address"];
-	std::string port = configJson["grpc_settings"]["port_number"];
+	std::string serverIp = configs["grpc_settings"]["server_ip_address"];
+	std::string port = configs["grpc_settings"]["port_number"];
 	std::string server_address(serverIp + ":" + port);
 
 	grpc::ServerBuilder builder;
@@ -77,18 +74,18 @@ void ServerService::RunServer() {
 }
 
 grpc::Status ServerService::UpdateConfigurations(grpc::ServerContext* context, const UpdateConfig* request, ConfigAck* response) {
-	std::string file = request->file();
-	nlohmann::json jsonContent = nlohmann::json::parse(file);
-	std::ofstream outputFile("Configurations.json");
-	outputFile << jsonContent;
-
-	if (true) {
+	//std::ofstream outputFile("Configurations.json");
+	//outputFile << jsonContent;
+	try {
+		std::string fileString = request->file();
+		configs = nlohmann::json::parse(fileString);
 		response->set_success(true);
 		LOG_INFO("JSON upadte has sended successfully.");
+		JsonManager::SaveConfigs(configs);
 	}
-	else {
+	catch (const std::exception e) {
 		response->set_success(false);
-		LOG_INFO("Error while sending JSON update !");
+		LOG_INFO("Error while sending JSON update ! ");
 	}
 	return grpc::Status::OK;
 }
@@ -115,3 +112,4 @@ int ServerService::MotionDetector(const cv::Mat& currentFrame, const cv::Mat& pr
 
 	return numMotionPixels;
 }
+

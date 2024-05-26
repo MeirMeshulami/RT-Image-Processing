@@ -1,6 +1,3 @@
-# Use the new behavior for CMP0135 (FetchContent download timestamp)
-set(CMAKE_POLICY_DEFAULT_CMP0135 NEW)
-
 cmake_minimum_required(VERSION 3.14)
 project(Tests VERSION 1.0)
 
@@ -10,15 +7,21 @@ set(CMAKE_CXX_STANDARD_REQUIRED TRUE)
 # Define a DEBUG option
 option(DEBUG "Build in Debug mode" OFF)
 
-# Add the source directories for client, server, and libs
-add_subdirectory(../client ${CMAKE_CURRENT_BINARY_DIR}/client)
-add_subdirectory(../server ${CMAKE_CURRENT_BINARY_DIR}/server)
-
 # Main executable
-add_executable(${PROJECT_NAME} Tests.cpp ${SERVER_SOURCES})
+add_executable(${PROJECT_NAME} client_tests.cpp)
+
+# Run MOC on the header file that contains QObject-derived classes
+set(MOC_HEADERS
+    ../CoreAPI.h
+)
+
+qt_wrap_cpp(${PROJECT_NAME}_MOC_SOURCES ${MOC_HEADERS})
 
 # Link the test executable with Google Test and the required libraries
-target_link_libraries(${PROJECT_NAME} PRIVATE gtest_main gmock_main server client)
+target_link_libraries(${PROJECT_NAME} PRIVATE gtest_main gmock_main libs Qt6::Widgets)
+
+# Append the MOC-generated sources to the target
+target_sources(${PROJECT_NAME} PRIVATE ${${PROJECT_NAME}_MOC_SOURCES})
 
 # Check if googletest target already exists
 if (NOT TARGET googletest)

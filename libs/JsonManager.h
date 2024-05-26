@@ -6,13 +6,11 @@
 
 class JsonManager
 {
-private:
 
-	std::ifstream configFile;
-
-	void InitilizeJsonSettings();
 public:
-	nlohmann::json configJson;
-	void CheckIfJsonModified();
+
+	static void ReadSettings(nlohmann::json& configs);
+
+	static void SaveConfigs(nlohmann::json& configs);
 };
 

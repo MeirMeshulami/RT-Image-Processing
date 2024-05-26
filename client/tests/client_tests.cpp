@@ -1,3 +1,4 @@
+#include "JsonManager.h"
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
@@ -8,8 +9,9 @@ using namespace ::testing;
 
 #pragma region Client
 
-TEST(ImageManipulation, clacSimilarity) {
-
+TEST(JSONSettings, loadConfigs) {
+	nlohmann::json configs;
+	JsonManager::ReadSettings(configs);
 
 }
 

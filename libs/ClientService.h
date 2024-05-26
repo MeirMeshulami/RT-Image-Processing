@@ -1,13 +1,13 @@
 #pragma once
+#include "Frame.h"
+#include "LogManager.h"
+#include "service.grpc.pb.h"
+#include "service.pb.h"
+#include "ThreadSafeQueue.h"
+#include <grpcpp/grpcpp.h>
 #include <iostream>
 #include <memory>
-#include <grpcpp/grpcpp.h>
 #include <opencv2/opencv.hpp>
-#include "service.pb.h"
-#include "service.grpc.pb.h"
-#include "LogManager.h"
-#include "ThreadSafeQueue.h"
-#include "Frame.h"
 
 
 enum QueueType {
@@ -22,9 +22,9 @@ public:
 
 	void GetFrame();
 
-	bool UpdateConfigurations(const std::string& file);
+	bool UpdateConfigs(const std::string& file);
 
-	void PushFrameIntoQueue(std::shared_ptr<Frame> frame, QueueType type);
+	void PushFrameIntoQueue(std::shared_ptr<Frame> frame);
 
 	std::shared_ptr<ThreadSafeQueue<std::shared_ptr<Frame>>> GetFrameProcessQueue();
 
@@ -44,8 +44,8 @@ public:
 	std::atomic<bool> stopStreaming;
 
 private:
-	
-	
+
+
 	std::shared_ptr<Frame> frameToDetect;
 	std::shared_ptr<std::atomic<bool>> isFreeToDetect;
 	std::atomic<bool> isShowingFrames;

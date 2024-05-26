@@ -14,14 +14,19 @@ find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets)
 find_package(OpenCV REQUIRED)
 
 # Include libs as a subdirectory
+add_subdirectory(tests)
 add_subdirectory(../libs ${CMAKE_CURRENT_BINARY_DIR}/libs)
 
 set(PROJECT_SOURCES
-        CoreAPI.h
-        mainwindow.cpp
-        mainwindow.h
-        mainwindow.ui
-	    main.cpp
+    CoreAPI.h
+    mainwindow.cpp
+    mainwindow.h
+    mainwindow.ui
+    main.cpp
+    custom/checkComboBox.cpp
+    custom/checkComboBox.h
+    custom/flowlayout.h
+    custom/flowlayout.cpp
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
@@ -29,9 +34,7 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         MANUAL_FINALIZATION
         ${PROJECT_SOURCES}
         resources.qrc
-        flowlayout.h flowlayout.cpp
         configsManager.h configsManager.cpp
-        checkComboBox.h checkComboBox.cpp
     )
 # Define target properties for Android with Qt 6 as:
 #    set_property(TARGET GUI APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR
@@ -50,6 +53,8 @@ else()
         )
     endif()
 endif()
+
+set_target_properties(${PROJECT_NAME} PROPERTIES AUTOMOC TRUE)
 target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 target_link_libraries(GUI PRIVATE Qt${QT_VERSION_MAJOR}::Widgets)
 

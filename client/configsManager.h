@@ -15,10 +15,6 @@ public:
 
 	ConfigurationManager(const QString& filePath);
 
-	int getThresholdValue();
-
-	void setThresholdValue(int value);
-
 	void sendConfigsUpdates(API& api);
 
 private:

@@ -1,32 +1,31 @@
 #pragma once
-#include <QObject>
-#include <opencv2/core/utils/logger.hpp>
 #include "FrameProcessor.h"
-#include "LogManager.h"
 #include "JsonManager.h"
+#include "LogManager.h"
+#include <opencv2/core/utils/logger.hpp>
+#include <QObject>
 
 class API : public QObject {
 	Q_OBJECT
 private:
 	FrameProcessor frameProcessor;
-	nlohmann::json configJson;
-
 public:
-	bool detection ;
-	bool displayFps ;
+	bool detection;
+	bool displayFps;
 
-	explicit API():detection(false), displayFps(false){ LOG_INFO("\n\n===============================================\nApplication start running...\n===============================================\n\n"); }
+	explicit API() :detection(false), displayFps(false) {
+		LOG_INFO("\n\n===============================================\nApplication start running...\n===============================================\n\n");
+	}
 
 
 	bool IsConnect() { return frameProcessor.isConnect; }
 
 	void Connect() {
-		SetLoggerLevel();
 		frameProcessor.Connect();
 	}
 
-	void Disconnect() { 
-		frameProcessor.DestroyConnection(); 
+	void Disconnect() {
+		frameProcessor.DestroyConnection();
 	}
 
 	void StartStream() { frameProcessor.StartStreamFrames(); }
@@ -47,19 +46,7 @@ public:
 		return frameProcessor.GetService()->GetFrameProcessQueue();
 	}
 
-	void SetLoggerLevel()
-	{
-		JsonManager::CheckIfJsonModified(configJson);
-		// First the QT has to change the level to the json file and then you have to call this function which will update the level in the program
-		LogManager::GetInstance().SetLogLevel(configJson["log_settings"]["log_level"]);
-	}
-
-	std::string GetLogesDirectoryPath() {
-		JsonManager::CheckIfJsonModified(configJson);
-		return configJson["log_settings"]["log_directory"];
-	}
-
-    std::unordered_set<std::string> &GetClassList() { return frameProcessor.classes; };
+	std::unordered_set<std::string>& GetClassList() { return frameProcessor.classes; };
 
 	void pushEmptyFrame(cv::Mat frame) {
 		GetFrameProcessQueue()->Push(std::make_shared<Frame>(frame, -1, std::chrono::system_clock::now()));
@@ -74,7 +61,7 @@ public:
 
 
 public slots:
-	
+
 	void pollFramesForDisplay() {
 		YoloDetection yolo;
 		std::shared_ptr<Frame> frameToShow;

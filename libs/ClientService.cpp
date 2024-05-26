@@ -7,10 +7,8 @@
 ClientService::ClientService(std::shared_ptr<grpc::Channel> channel)
 	: stub_(FrameService::NewStub(channel)),
 	isShowingFrames(true),
-	isProcessingFrames(true),
 	stopStreaming(false)
 {
-	frameProcessQueue = std::make_shared<ThreadSafeQueue<std::shared_ptr<Frame>>>();
 	frameShowQueue = std::make_shared<ThreadSafeQueue<std::shared_ptr<Frame>>>();
 	isFreeToDetect = std::make_shared<std::atomic<bool>>(true);
 	if (!stub_)
@@ -35,7 +33,7 @@ void ClientService::GetFrame() {
 	else {
 		LOG_DEBUG("Reader has created successfully !");
 	}
-	
+
 	while (reader->Read(&response)) {
 		const auto& imageData = response.image_data();
 		std::vector<uchar> buffer(imageData.begin(), imageData.end());
@@ -51,7 +49,7 @@ void ClientService::GetFrame() {
 
 			LOG_DEBUG("Received frame {} with timestamp {}", resFrameNum, frameTimePoint);
 			auto currentFrame = std::make_shared<Frame>(receivedFrame, resFrameNum, frameTimePoint);
-			PushFrameIntoQueue(currentFrame, SHOW);
+			PushFrameIntoQueue(currentFrame);
 			LOG_INFO("Frame {} pushed into the show queues.", resFrameNum);
 		}
 		if (stopStreaming) {
@@ -60,7 +58,7 @@ void ClientService::GetFrame() {
 			break;
 		}
 	}
-	
+
 
 	grpc::Status status = reader->Finish();
 	if (!status.ok()) {
@@ -69,11 +67,11 @@ void ClientService::GetFrame() {
 	return;
 }
 
-bool ClientService::UpdateConfigurations(const std::string& file) {
+bool ClientService::UpdateConfigs(const std::string& file) {
 	UpdateConfig request;
 	ConfigAck ack;
 	grpc::ClientContext context;
-	
+
 	request.set_file(file);
 	LOG_DEBUG("Sending configs updates...");
 	grpc::Status status = stub_->UpdateConfigurations(&context, request, &ack);
@@ -82,40 +80,25 @@ bool ClientService::UpdateConfigurations(const std::string& file) {
 		LOG_INFO("Config update has arrived.");
 	}
 	else {
-		LOG_ERROR("Config send failed: {}", status.error_message()); 
+		LOG_ERROR("Config send failed: {}", status.error_message());
 	}
 
 	return ack.success();
 }
 
-void ClientService::PushFrameIntoQueue(std::shared_ptr<Frame> frame, QueueType type) {
-	bool isRunning = false;
-	std::shared_ptr<ThreadSafeQueue<std::shared_ptr<Frame>>> queue;
-	if (type == SHOW)
+void ClientService::PushFrameIntoQueue(std::shared_ptr<Frame> frame) {
+	if (isShowingFrames)
 	{
-		isRunning = isShowingFrames;
-		queue = frameShowQueue;
-	}
-	else if (type == PROCESS)
-	{
-		isRunning = isProcessingFrames;
-		queue = frameProcessQueue;
-	}
-	if (isRunning)
-	{
-		if (queue->GetQueueSize() > 30)
+		if (frameShowQueue->GetQueueSize() > 30)
 		{
 			std::shared_ptr<Frame> toThrowOut;
-			queue->TryPop(toThrowOut);
-			std::string queueType = type == PROCESS ? "frameProcessQueue" : "frameShowQueue";
-			LOG_DEBUG("{} size= {}", queueType, queue->GetQueueSize());
-			LOG_ERROR("The {} reached its maximum capacity ({}) and popped out frame number {}.", queueType, queue->GetQueueSize(), toThrowOut->GetFrameNum());
+			frameShowQueue->TryPop(toThrowOut);
+			LOG_DEBUG("frameShowQueue size= {}", frameShowQueue->GetQueueSize());
+			LOG_ERROR("The frameShowQueue reached its maximum capacity ({}) and popped out frame number {}.", frameShowQueue->GetQueueSize(), toThrowOut->GetFrameNum());
 		}
-		queue->Push(frame);
+		frameShowQueue->Push(frame);
 	}
 }
-
-std::shared_ptr<ThreadSafeQueue<std::shared_ptr<Frame>>> ClientService::GetFrameProcessQueue() { return frameProcessQueue; }
 
 std::shared_ptr<ThreadSafeQueue<std::shared_ptr<Frame>>> ClientService::GetFrameShowQueue() { return frameShowQueue; }
 

@@ -1,20 +1,20 @@
 #include "CheckComboBox.h"
 
-CheckComboBox::CheckComboBox(QWidget *parent) : QComboBox(parent), listWidget(new QListWidget(this)) {
+CheckComboBox::CheckComboBox(QWidget* parent) : QComboBox(parent), listWidget(new QListWidget(this)) {
     setModel(listWidget->model());
     setView(listWidget);
 
     connect(listWidget, &QListWidget::itemPressed, this, &CheckComboBox::onItemChanged);
 }
 
-void CheckComboBox::addItem(const QString &text, const QVariant &data) {
-    QListWidgetItem *item = new QListWidgetItem(text, listWidget);
+void CheckComboBox::addItem(const QString& text, const QVariant& data) {
+    QListWidgetItem* item = new QListWidgetItem(text, listWidget);
     item->setFlags(item->flags() | Qt::ItemIsUserCheckable);
     item->setCheckState(Qt::Unchecked);
     item->setData(Qt::UserRole, data);
 }
 
-void CheckComboBox::onItemChanged(QListWidgetItem *item) {
+void CheckComboBox::onItemChanged(QListWidgetItem* item) {
 
     bool isChecked = item->checkState() == Qt::Checked;
     item->setCheckState(isChecked ? Qt::Unchecked : Qt::Checked);
@@ -23,6 +23,3 @@ void CheckComboBox::onItemChanged(QListWidgetItem *item) {
 
     emit checkedItemsChanged(classItem, isChecked);
 }
-
-
-

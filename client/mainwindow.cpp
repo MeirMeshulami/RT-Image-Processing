@@ -1,8 +1,9 @@
 #define _CRT_SECURE_NO_WARNINGS
 #include "./ui_mainwindow.h"
-#include "CheckComboBox.h"
-#include "flowlayout.h"
+#include "custom/CheckComboBox.h"
+#include "custom/flowlayout.h"
 #include "mainwindow.h"
+
 
 #include <QDir>
 #include <QFile>
@@ -26,7 +27,7 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent), ui(new Ui::MainWi
 	ui->setupUi(this);
 	init();
 	show();
-	lowdLogFolderPath();
+	loadLogFolderPath();
 	CaptureImgfolderPath = "C:/MobileyeProjectTools/Output/images";
 }
 
@@ -37,27 +38,13 @@ void MainWindow::init() {
 	api.Connect();
 	api.moveToThread(&frameDisplayThread);
 	connect(&frameDisplayThread, &QThread::started, &api, &API::pollFramesForDisplay);
-	std::ifstream file("Configurations.json");
-	if (!file) {
-		LOG_INFO("JSON file doesn't exist! ");
-		return;
-	}
-	try {
-		file >> configs;
-		LOG_INFO("writing the JSON file into configs");
-	}
-	catch (nlohmann::json::parse_error& e) {
-		LOG_INFO("Error parsing JSON: {}", e.what());
-		return;
-	}
+
 	loadConfiguration();
 	loadComboClasses();
 	setWindowIcon(QIcon(R"(:logo.png)"));
 
 	// display the Home page
 	on_homeBtn_clicked();
-
-
 }
 
 void MainWindow::deInit() {
@@ -66,7 +53,7 @@ void MainWindow::deInit() {
 }
 
 void MainWindow::loadConfiguration() {
-
+	JsonManager::ReadSettings(configs);
 	int threshold = configs["camera_settings"]["threshold"];
 	LOG_INFO("initial threshold is {}", threshold);
 	ui->MotionValue->setText(QString::number(threshold));
@@ -256,7 +243,7 @@ void MainWindow::updateLogTextBrowser()
 		return; // Don't update the log content while browsing
 	}
 
-	lowdLogFolderPath();
+	loadLogFolderPath();
 	QString latestLogFile = findLatestLogFile(logFolderPath);
 	if (!latestLogFile.isEmpty())
 	{
@@ -280,9 +267,9 @@ void MainWindow::updateLogTextBrowser()
 	}
 }
 
-void MainWindow::lowdLogFolderPath()
+void MainWindow::loadLogFolderPath()
 {
-	logFolderPath = QString::fromStdString(api.GetLogesDirectoryPath());
+	logFolderPath = QString::fromStdString(configs["log_settings"]["log_directory"]);
 	logFolderPath += QString::fromStdString("\\");
 }
 

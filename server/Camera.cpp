@@ -10,16 +10,10 @@ int main() {
 
 	try {
 		ServerService service;
-		JsonManager& json = service.configs;
-		auto& configJson = json.configJson;
-		json.CheckIfJsonModified();
-
-		LogManager::GetInstance().SetLogLevel(configJson["log_settings"]["log_level"]);
+		LogManager::GetInstance().SetLogLevel(service.configs["log_settings"]["log_level"]);
 
 
-		std::atomic<bool> exitFlag(false);
-
-		std::thread cameraThread([&service, &json]() {
+		std::thread cameraThread([&service]() {
 			try {
 				service.RunServer();
 			}

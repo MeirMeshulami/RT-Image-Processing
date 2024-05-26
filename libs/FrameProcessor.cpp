@@ -4,7 +4,7 @@
 
 
 FrameProcessor::FrameProcessor() :isConnect(false) {
-	JsonManager::CheckIfJsonModified(configJson);
+	JsonManager::ReadSettings(configJson);
 	std::string path = configJson["output_settings"]["video_path"];
 	videoPath = path;
 	path = configJson["output_settings"]["db_path"];

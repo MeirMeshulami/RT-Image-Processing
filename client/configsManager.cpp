@@ -48,19 +48,6 @@ void ConfigurationManager::writeSettingsToFile() {
 	configFile.close();
 }
 
-int ConfigurationManager::getThresholdValue() {
-	QJsonObject cameraSettings = settingsObject.value("camera_settings").toObject();
-	return cameraSettings.value("threshold").toInt();
-}
-
-void ConfigurationManager::setThresholdValue(int value) {
-	QJsonObject cameraSettings = settingsObject.value("camera_settings").toObject();
-	cameraSettings["threshold"] = value;
-	settingsObject["camera_settings"] = cameraSettings;
-	LOG_INFO("the local threshold has updated to value {}", value);
-	writeSettingsToFile();
-}
-
 void ConfigurationManager::sendConfigsUpdates(API& api) {
 
 
@@ -68,7 +55,7 @@ void ConfigurationManager::sendConfigsUpdates(API& api) {
 	std::string jsonStr = config.dump();
 	if (api.IsConnect()) {
 		auto stub = api.GetStub();
-		bool success = stub->UpdateConfigurations(jsonStr);
+		bool success = stub->UpdateConfigs(jsonStr);
 
 		if (!success)
 			qWarning("Error while sending JSON update !");
