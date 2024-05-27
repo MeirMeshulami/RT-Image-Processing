@@ -3,7 +3,7 @@
 #include <ctime>
 
 
-FrameProcessor::FrameProcessor() :isConnect(false) {
+FrameProcessor::FrameProcessor() {
 	JsonManager::ReadSettings(configJson);
 	std::string path = configJson["output_settings"]["video_path"];
 	videoPath = path;
@@ -13,55 +13,11 @@ FrameProcessor::FrameProcessor() :isConnect(false) {
 	imagePath = path;
 	mDBManager.CreateDB(dbPath.string());
 
-	InitializeVideoWriter();
-}
-
-void FrameProcessor::Connect() {
-	LOG_DEBUG("Starting frame receiver thread...");
-	frameReceiverThread = std::thread(&FrameProcessor::BuildConnection, this);
-	frameReceiverThread.detach();
-}
-
-void FrameProcessor::BuildConnection() {
-	LOG_INFO("Client connecting...");
-	channel = grpc::CreateChannel("localhost:50051", grpc::InsecureChannelCredentials());
-
-	auto state = channel->GetState(true);
-	int retries = 30;
-	while (state != grpc_connectivity_state::GRPC_CHANNEL_READY && retries > 0) {
-		LOG_INFO("Waiting for channel to be ready, current state: {}", state);
-
-		channel->WaitForStateChange(state, std::chrono::system_clock::now() + std::chrono::seconds(10));
-		state = channel->GetState(true);
-		retries--;
-	}
-
-	if (state == grpc_connectivity_state::GRPC_CHANNEL_READY) {
-		service = std::make_shared<ClientService>(channel);
-		LOG_INFO("Client connected.");
-		isConnect.store(true);
-	}
-	else {
-		LOG_ERROR("Failed to connect to the server after several attempts.");
-		isConnect.store(false);
-	}
-}
-
-void FrameProcessor::StartStreamFrames() {
-	std::thread streamThread([&] {
-		GetService()->stopStreaming.store(false);
-		GetService()->GetFrame();
-		});
-	streamThread.detach();
-}
-
-void FrameProcessor::StopStreamFrames() {
-	LOG_INFO("Stopping stream..");
-	GetService()->stopStreaming.store(true);
+	InitVideoWriter();
 }
 
 void FrameProcessor::StartFrameProcessing() {
-	InitializeTable();
+	InitTable();
 	CreateImageDirectory();
 }
 
@@ -97,21 +53,13 @@ void FrameProcessor::DisplayFps(cv::Mat& img, long long start) {
 	cv::putText(img, fpsText_after_processing, cv::Point(10, 30), cv::FONT_HERSHEY_SIMPLEX, 0.7, cv::Scalar(0, 255, 0), 2);
 }
 
-void FrameProcessor::DestroyConnection() {
-	LOG_INFO("Disconnecting from camera...");
-	isConnect.store(false);
-
-	ReleaseVideoWriter();
-	LOG_INFO("Disconnected.");
-}
-
 void FrameProcessor::ReleaseVideoWriter() {
 	LOG_INFO("Releasing video writer...");
 	mVideoWriter.release();
 	LOG_INFO("Video writer released.");
 }
 
-cv::Scalar FrameProcessor::CalculateAverageRGB(const cv::Rect& box, const cv::Mat& frame) {
+cv::Scalar FrameProcessor::CalcAverageRGB(const cv::Rect& box, const cv::Mat& frame) {
 	cv::Mat subImg = frame(box);
 	cv::Scalar avgColor = cv::mean(subImg);
 	return avgColor;
@@ -122,7 +70,7 @@ void FrameProcessor::SaveFrameAsImage(const cv::Mat& frame, const int frameNum) 
 	cv::imwrite(imagesDirectory.string() + "/" + imageName, frame);
 }
 
-void FrameProcessor::InitializeVideoWriter() {
+void FrameProcessor::InitVideoWriter() {
 	LOG_DEBUG("Creating video writer...");
 	mVideoWriter.open(videoPath.string(), cv::VideoWriter::fourcc('M', 'J', 'P', 'G'), 3, cv::Size(640, 480));
 
@@ -133,7 +81,7 @@ void FrameProcessor::InitializeVideoWriter() {
 	LOG_DEBUG("Video writer initialized.");
 }
 
-void FrameProcessor::InitializeTable() {
+void FrameProcessor::InitTable() {
 	LOG_INFO("Creating database table...");
 	mDBManager.CreateTable();
 	LOG_INFO("Database table created.");

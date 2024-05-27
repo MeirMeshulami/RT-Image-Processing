@@ -27,20 +27,21 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent), ui(new Ui::MainWi
 	ui->setupUi(this);
 	init();
 	show();
-	loadLogFolderPath();
-	CaptureImgfolderPath = "C:/MobileyeProjectTools/Output/images";
+
+
 }
 
 MainWindow::~MainWindow() { delete ui; }
 
 ///////========== Init Funcs ==========////////////
 void MainWindow::init() {
-	api.Connect();
+	api.Connect("localhost:50051");
 	api.moveToThread(&frameDisplayThread);
 	connect(&frameDisplayThread, &QThread::started, &api, &API::pollFramesForDisplay);
 
-	loadConfiguration();
+	loadConfigs();
 	loadComboClasses();
+	loadLogFolderPath();
 	setWindowIcon(QIcon(R"(:logo.png)"));
 
 	// display the Home page
@@ -50,11 +51,15 @@ void MainWindow::init() {
 void MainWindow::deInit() {
 	on_stopLiveBtn_clicked();
 	api.Disconnect();
+
+	frameDisplayThread.quit();
+	frameDisplayThread.wait();
 }
 
-void MainWindow::loadConfiguration() {
+void MainWindow::loadConfigs() {
 	JsonManager::ReadSettings(configs);
 	int threshold = configs["camera_settings"]["threshold"];
+	//CaptureImgFolderPath = configs["output_settings"]["output_settings"];
 	LOG_INFO("initial threshold is {}", threshold);
 	ui->MotionValue->setText(QString::number(threshold));
 	ui->threasholdSlider->setValue(threshold);
@@ -162,7 +167,7 @@ void MainWindow::on_InformationBtn_clicked()
 void MainWindow::on_refreshBtn_clicked()
 {
 	on_cleareBtn_clicked();
-	display_capture_imgs(CaptureImgfolderPath);
+	display_capture_imgs(CaptureImgFolderPath);
 
 }
 
@@ -184,9 +189,9 @@ void MainWindow::on_browseCapBtn_clicked()
 		QStringList selectedFiles = dialog.selectedFiles();
 		if (!selectedFiles.isEmpty()) {
 			// selectedFiles[0] will be the selected directory
-			CaptureImgfolderPath = selectedFiles[0];
+			CaptureImgFolderPath = selectedFiles[0];
 			on_cleareBtn_clicked();
-			display_capture_imgs(CaptureImgfolderPath);
+			display_capture_imgs(CaptureImgFolderPath);
 		}
 	}
 }
@@ -503,3 +508,4 @@ void MainWindow::saveJson() {
 	configFile << std::setw(4) << configs;
 	configFile.close();
 }
+

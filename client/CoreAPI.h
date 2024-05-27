@@ -1,4 +1,5 @@
 #pragma once
+#include "ClientService.h"
 #include "FrameProcessor.h"
 #include "JsonManager.h"
 #include "LogManager.h"
@@ -9,6 +10,7 @@ class API : public QObject {
 	Q_OBJECT
 private:
 	FrameProcessor frameProcessor;
+	ClientService client;
 public:
 	bool detection;
 	bool displayFps;
@@ -17,40 +19,27 @@ public:
 		LOG_INFO("\n\n===============================================\nApplication start running...\n===============================================\n\n");
 	}
 
+	bool IsConnect() { return client.isConnect; }
 
-	bool IsConnect() { return frameProcessor.isConnect; }
-
-	void Connect() {
-		frameProcessor.Connect();
+	void Connect(std::string serverAddress) {
+		client.Connect(serverAddress);
 	}
 
 	void Disconnect() {
-		frameProcessor.DestroyConnection();
+		client.DestroyConnection();
 	}
 
-	void StartStream() { frameProcessor.StartStreamFrames(); }
+	void StartStream() { client.StartStreamFrames(); }
 
-	void StopStream() { frameProcessor.StopStreamFrames(); }
+	void StopStream() { client.StopStreamFrames(); }
 
-	void StartFrameProcessing() { frameProcessor.StartFrameProcessing(); }
-
-	void StopShowingFrames() { frameProcessor.GetService()->ControlShowingFrames(); }
-
-	void StopProcessingFrames() { frameProcessor.GetService()->ControlProcessingFrames(); }
+	//void StartFrameProcessing() { frameProcessor.StartFrameProcessing(); }
 
 	std::shared_ptr<ThreadSafeQueue<std::shared_ptr<Frame>>> GetFrameShowQueue() {
-		return frameProcessor.GetService()->GetFrameShowQueue();
-	}
-
-	std::shared_ptr<ThreadSafeQueue<std::shared_ptr<Frame>>> GetFrameProcessQueue() {
-		return frameProcessor.GetService()->GetFrameProcessQueue();
+		return client.GetFrameShowQueue();
 	}
 
 	std::unordered_set<std::string>& GetClassList() { return frameProcessor.classes; };
-
-	void pushEmptyFrame(cv::Mat frame) {
-		GetFrameProcessQueue()->Push(std::make_shared<Frame>(frame, -1, std::chrono::system_clock::now()));
-	}
 
 	std::shared_ptr<ClientService> GetStub() {
 		auto service = frameProcessor.GetService();
@@ -58,8 +47,6 @@ public:
 			LOG_ERROR("Service is null !");
 		return service;
 	}
-
-
 public slots:
 
 	void pollFramesForDisplay() {

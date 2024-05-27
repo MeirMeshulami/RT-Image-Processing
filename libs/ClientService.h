@@ -10,15 +10,13 @@
 #include <opencv2/opencv.hpp>
 
 
-enum QueueType {
-	SHOW = 0,
-	PROCESS = 1
-};
 
 class ClientService {
 public:
 
-	ClientService(std::shared_ptr<grpc::Channel> channel);
+	ClientService();
+
+	void Connect(std::string serverAddress);
 
 	void GetFrame();
 
@@ -26,28 +24,22 @@ public:
 
 	void PushFrameIntoQueue(std::shared_ptr<Frame> frame);
 
-	std::shared_ptr<ThreadSafeQueue<std::shared_ptr<Frame>>> GetFrameProcessQueue();
-
 	std::shared_ptr<ThreadSafeQueue<std::shared_ptr<Frame>>> GetFrameShowQueue();
 
 	std::shared_ptr<Frame> GetFrameToDetect();
 
-	std::shared_ptr<std::atomic<bool>> IsFreeToDetect();
+	void DestroyConnection();
 
-	void ControlShowingFrames();
+	void StartStreamFrames();
 
-	void ControlProcessingFrames();
+	void StopStreamFrames();
 
-	std::shared_ptr<ThreadSafeQueue<std::shared_ptr<Frame>>> frameProcessQueue;
 	std::shared_ptr<ThreadSafeQueue<std::shared_ptr<Frame>>> frameShowQueue;
 	std::unique_ptr<FrameService::Stub> stub_;
 	std::atomic<bool> stopStreaming;
+	std::atomic<bool> isConnect;
 
 private:
-
-
 	std::shared_ptr<Frame> frameToDetect;
-	std::shared_ptr<std::atomic<bool>> isFreeToDetect;
-	std::atomic<bool> isShowingFrames;
-	std::atomic<bool> isProcessingFrames;
+	std::shared_ptr<grpc::Channel> channel;
 };

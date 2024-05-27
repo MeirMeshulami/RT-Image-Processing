@@ -1,13 +1,13 @@
 #pragma once
-#include <unordered_set>
-#include <opencv2/opencv.hpp>
-#include <opencv2/dnn.hpp>
-#include <string>
+#include "JsonManager.h"
+#include "LogManager.h"
 #include <filesystem>
 #include <fstream>
 #include <json.hpp>
-#include "LogManager.h"
-#include "JsonManager.h"
+#include <opencv2/dnn.hpp>
+#include <opencv2/opencv.hpp>
+#include <string>
+#include <unordered_set>
 
 const auto BLACK = cv::Scalar(0, 0, 0);
 const auto BLUE = cv::Scalar(255, 178, 50);
@@ -29,8 +29,8 @@ private:
 	const double NMS_THRESHOLD = 0.45;
 	const double CONFIDENCE_THRESHOLD = 0.45;
 	std::mutex yoloMutex;
-	
-	
+
+
 	std::vector<int> classIds;
 	std::vector<float> confidences;
 	std::vector<cv::Rect> boxes;
@@ -40,7 +40,7 @@ private:
 	float confidenceThreshold;
 	float scoreThreshold;
 	float nmsThreshold;
-	
+
 	void draw_label(cv::Mat& input_image, std::string label, int left, int top);
 
 
@@ -50,7 +50,7 @@ public:
 	YoloDetection();
 
 	std::vector<cv::Mat> PreProcess(const cv::Mat& inputImage);
-	
+
 	cv::Mat post_process(cv::Mat& input_image, std::vector<cv::Mat>& outputs, std::unordered_set<std::string>& classes);
 };
 

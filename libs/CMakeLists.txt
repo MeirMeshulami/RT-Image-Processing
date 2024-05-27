@@ -7,16 +7,17 @@ set(CMAKE_CXX_STANDARD_REQUIRED TRUE)
 # Set the gRPC and Protobuf package path for Debug/Release
 if (WIN32)
     configure_file(${CMAKE_CURRENT_SOURCE_DIR}/Configurations.json ${CMAKE_BINARY_DIR}/Configurations.json COPYONLY) # For VS debugger
-    if(DEBUG)
-        set(CMAKE_BUILD_TYPE Debug)
-        set(CMAKE_PREFIX_PATH "C:/Program Files/grpc/debug")
-        configure_file(${CMAKE_CURRENT_SOURCE_DIR}/Configurations.json ${CMAKE_BINARY_DIR}/Debug/Configurations.json COPYONLY)
-        message("cmake prefix path: Debug")
-    else()
+
+    if(Release)
         set(CMAKE_BUILD_TYPE Release)
         set(CMAKE_PREFIX_PATH "C:/Program Files/grpc/release")
         configure_file(${CMAKE_CURRENT_SOURCE_DIR}/Configurations.json ${CMAKE_BINARY_DIR}/Release/Configurations.json COPYONLY)
         message("cmake prefix path: Release")
+    else()
+        set(CMAKE_BUILD_TYPE Debug)
+        set(CMAKE_PREFIX_PATH "C:/Program Files/grpc/debug")
+        configure_file(${CMAKE_CURRENT_SOURCE_DIR}/Configurations.json ${CMAKE_BINARY_DIR}/Debug/Configurations.json COPYONLY)
+        message("cmake prefix path: Debug")
     endif()
 endif()
 

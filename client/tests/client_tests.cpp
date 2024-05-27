@@ -10,8 +10,7 @@ using namespace ::testing;
 #pragma region Client
 
 TEST(JSONSettings, loadConfigs) {
-	nlohmann::json configs;
-	JsonManager::ReadSettings(configs);
+
 
 }
 

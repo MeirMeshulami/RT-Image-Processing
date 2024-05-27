@@ -31,7 +31,7 @@ protected:
 	QString findLatestLogFile(const QString& folderPath);
 	void updateLogTextBrowser();
 	void loadLogFolderPath();
-	void loadConfiguration();
+	void loadConfigs();
 	void loadComboClasses();
 	bool eventFilter(QObject* obj, QEvent* event)override;
 	void saveJson();
@@ -108,9 +108,8 @@ private:
 	QString logFolderPath;
 	QString currentLogFilePath;
 	bool isBrowsingLogFile;
-	QString CaptureImgfolderPath;
+	QString CaptureImgFolderPath;
 	nlohmann::json configs;
-
 };
 
 #endif // MAINWINDOW_H

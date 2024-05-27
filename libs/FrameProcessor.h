@@ -15,13 +15,9 @@
 
 class FrameProcessor {
 public:
-	std::shared_ptr<ThreadSafeQueue<Frame>> FrameProcessQueue;
 	cv::VideoWriter mVideoWriter;
 	DBManager mDBManager;
 	std::mutex mDBMutex;
-	std::vector<std::thread> frameProcessingThreads;
-	std::thread frameReceiverThread;
-	std::atomic<bool> isConnect;
 	std::shared_ptr<ClientService> service;
 	std::shared_ptr<grpc::Channel> channel;
 	std::filesystem::path videoPath;
@@ -31,9 +27,9 @@ public:
 	nlohmann::json configJson;
 	std::unordered_set<std::string>classes;
 
-	void InitializeVideoWriter();
+	void InitVideoWriter();
 
-	void InitializeTable();
+	void InitTable();
 
 	void CreateImageDirectory();
 
@@ -41,7 +37,7 @@ public:
 
 	cv::Mat Detect(std::shared_ptr<Frame> image, YoloDetection& yolo);
 
-	cv::Scalar CalculateAverageRGB(const cv::Rect& box, const cv::Mat& frame);
+	cv::Scalar CalcAverageRGB(const cv::Rect& box, const cv::Mat& frame);
 
 	void SaveFrameAsImage(const cv::Mat& frame, const int frameNum);
 
