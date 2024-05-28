@@ -2,14 +2,17 @@
 #define MAINWINDOW_H
 
 #include "./ui_mainwindow.h"
-#include "CoreAPI.h"
+#include "custom/CheckComboBox.h"
+#include "custom/flowlayout.h"
 #include "JsonManager.h"
+#include "settings.h"
+
+#include <cctv/core.h>
 #include <opencv2/opencv.hpp>
+#include <QLayout>
 #include <QMainWindow>
 #include <QMouseEvent>
 #include <QPoint>
-
-#include <QLayout>
 #include <QRect>
 #include <QStyle>
 #include <QtGui>
@@ -27,17 +30,19 @@ protected:
 	void mousePressEvent(QMouseEvent* event) override;
 	void mouseMoveEvent(QMouseEvent* event) override;
 	void mouseReleaseEvent(QMouseEvent* event) override;
-	void displayFrame(const cv::Mat& frame);
 	QString findLatestLogFile(const QString& folderPath);
 	void updateLogTextBrowser();
 	void loadLogFolderPath();
 	void loadConfigs();
-	void loadComboClasses();
+	void loadComboBoxClasses();
 	bool eventFilter(QObject* obj, QEvent* event)override;
-	void saveJson();
+	std::string getServerAddress();
 public:
 	MainWindow(QWidget* parent = nullptr);
 	~MainWindow();
+
+signals:
+	void frameReady(const cv::Mat& frame);
 
 private slots:
 
@@ -97,19 +102,27 @@ private slots:
 
 	void on_fpsCheck_stateChanged(int arg1);
 
+	void pollFramesForDisplay();
+
+	void displayFrame(const cv::Mat& frame);
+
+	void on_applyBtn_clicked();
+
 private:
 	Ui::MainWindow* ui;
 	bool m_dragging;
 	QPoint m_dragStartPosition;
 	QPoint m_dragLastPosition;
-	bool isLive;
+	std::atomic<bool> isLive;
 	API api;
-	QThread frameDisplayThread;
+	QThread* frameDisplayThread;
 	QString logFolderPath;
 	QString currentLogFilePath;
 	bool isBrowsingLogFile;
 	QString CaptureImgFolderPath;
 	nlohmann::json configs;
+	bool detection = false;
+	bool displayFps = false;
 };
 
 #endif // MAINWINDOW_H

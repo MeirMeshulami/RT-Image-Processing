@@ -22,7 +22,6 @@ void JsonManager::ReadSettings(nlohmann::json& configs) {
 	configFile.close();
 
 	LOG_DEBUG("JSON configuration file parsed successfully.");
-	LOG_DEBUG("Configuration: {}", configs.dump());
 }
 
 void JsonManager::SaveConfigs(nlohmann::json& configs) {

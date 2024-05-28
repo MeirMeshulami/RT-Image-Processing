@@ -1,10 +1,9 @@
 #define _CRT_SECURE_NO_WARNINGS
 #include "./ui_mainwindow.h"
-#include "custom/CheckComboBox.h"
-#include "custom/flowlayout.h"
+
 #include "mainwindow.h"
 
-
+#include <iostream>
 #include <QDir>
 #include <QFile>
 #include <QFileDialog>
@@ -12,6 +11,8 @@
 #include <QMessageBox>
 #include <QModelIndex>
 #include <QProcess>
+#include <string>
+#include <windows.h>
 
 
 
@@ -27,20 +28,20 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent), ui(new Ui::MainWi
 	ui->setupUi(this);
 	init();
 	show();
-
-
 }
 
 MainWindow::~MainWindow() { delete ui; }
 
 ///////========== Init Funcs ==========////////////
 void MainWindow::init() {
-	api.Connect("localhost:50051");
-	api.moveToThread(&frameDisplayThread);
-	connect(&frameDisplayThread, &QThread::started, &api, &API::pollFramesForDisplay);
-
 	loadConfigs();
-	loadComboClasses();
+	api.Connect(getServerAddress());
+	frameDisplayThread = new QThread(this);
+
+	connect(frameDisplayThread, &QThread::started, this, &MainWindow::pollFramesForDisplay);
+	this->moveToThread(frameDisplayThread);
+
+	loadComboBoxClasses();
 	loadLogFolderPath();
 	setWindowIcon(QIcon(R"(:logo.png)"));
 
@@ -51,14 +52,12 @@ void MainWindow::init() {
 void MainWindow::deInit() {
 	on_stopLiveBtn_clicked();
 	api.Disconnect();
-
-	frameDisplayThread.quit();
-	frameDisplayThread.wait();
 }
 
 void MainWindow::loadConfigs() {
 	JsonManager::ReadSettings(configs);
 	int threshold = configs["camera_settings"]["threshold"];
+
 	//CaptureImgFolderPath = configs["output_settings"]["output_settings"];
 	LOG_INFO("initial threshold is {}", threshold);
 	ui->MotionValue->setText(QString::number(threshold));
@@ -365,33 +364,42 @@ void MainWindow::on_liveBtn_clicked()
 		QMessageBox::warning(this, "Connection Error", "Camera is not connected!");
 		return;
 	}
-	if (!isLive) {
-		connect(&api, &API::frameReady, this, &MainWindow::displayFrame);
-		// Gets frames from camera and push into a queue
-		api.StartStream();
-		// Pop frames from queue and emit displayFrame()
-		frameDisplayThread.start();
-
-		isLive = true;
+	bool wasLive = isLive.exchange(true);
+	if (wasLive) {
+		return;
 	}
+
+	connect(this, &MainWindow::frameReady, this, &MainWindow::displayFrame);
+	// Gets frames from camera and push into a queue
+	api.StartStream();
+	// Pop frames from queue and emit displayFrame()
+	frameDisplayThread->start();
 }
 
 void MainWindow::on_stopLiveBtn_clicked()
 {
-	if (isLive) {
-		disconnect(&api, &API::frameReady, this, &MainWindow::displayFrame);
-		isLive = false;
-		ui->camFrame->setPixmap(QPixmap());
-		ui->camFrame->setText("Camera Offline");
-		api.StopStream();
+	bool wasLive = isLive.exchange(false);
+	if (!wasLive) {
+		return;
 	}
+	api.StopStream();
+	disconnect(this, &MainWindow::frameReady, this, &MainWindow::displayFrame);
+
+	if (frameDisplayThread->isRunning()) {
+		frameDisplayThread->quit();
+		frameDisplayThread->wait();
+	}
+	ui->camFrame->setPixmap(QPixmap());
+	ui->camFrame->setText("Camera Offline");
+
+
 }
 
-void MainWindow::loadComboClasses() {
-	QFile file("../../resources/CocoList.txt");
+void MainWindow::loadComboBoxClasses() {
+	std::string cocoPath = configs["yolo_settings"]["class_list_path"];
+	QFile file(QString::fromStdString(cocoPath));
 	if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
 		qErrnoWarning("Can't load the class list!");
-		std::cout << "Can't load the class list!" << std::endl;
 		return;
 	}
 
@@ -479,33 +487,60 @@ void MainWindow::on_threasholdSlider_valueChanged(int value)
 {
 	ui->MotionValue->setText(QString::number(value));
 	configs["camera_settings"]["threshold"] = value;
-	saveJson();
 	//configs.sendConfigsUpdates(api);
 }
 
 void MainWindow::on_detectCheck_stateChanged(int arg1)
 {
 	if (arg1 == Qt::Checked) {
-		api.detection = true;
+		detection = true;
 	}
 	else {
-		api.detection = false;
+		detection = false;
 	}
 }
 
 void MainWindow::on_fpsCheck_stateChanged(int arg1)
 {
 	if (arg1 == Qt::Checked) {
-		api.displayFps = true;
+		displayFps = true;
 	}
 	else {
-		api.displayFps = false;
+		displayFps = false;
 	}
 }
 
-void MainWindow::saveJson() {
-	std::ofstream configFile("Configurations.json");
-	configFile << std::setw(4) << configs;
-	configFile.close();
+void MainWindow::pollFramesForDisplay() {
+	std::shared_ptr<Frame> frameToShow;
+
+	while (isLive.load()) {
+		if (api.GetFrameShowQueue()->TryPop(frameToShow)) {
+			auto img = frameToShow->GetFrame();
+			auto start = cv::getTickCount();
+			if (detection) {
+				img = api.Detect(frameToShow);
+			}
+			if (displayFps) {
+				api.DisplayFPS(img, start);
+			}
+			//LOG_INFO("displaying frame No. {} ", frameToShow->GetFrameNum());
+
+			emit frameReady(img);
+
+		}
+	}
+}
+
+std::string MainWindow::getServerAddress() {
+	std::string serverIP = configs["grpc_settings"]["camera_ip_address"];
+	std::string port = configs["grpc_settings"]["port_number"];
+	std::string serverAddress = serverIP + ":" + port;
+
+	return serverAddress;
+}
+
+void MainWindow::on_applyBtn_clicked()
+{
+
 }
 

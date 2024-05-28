@@ -8,9 +8,9 @@ ClientService::ClientService() : stopStreaming(false), frameShowQueue(std::make_
 
 void ClientService::Connect(std::string serverAddress) {
 	LOG_DEBUG("Starting frame receiver thread...");
-	std::thread connectionThread([&] {
+	std::thread connectionThread([serverAddress, this] {
 		LOG_INFO("Client connecting...");
-		channel = grpc::CreateChannel("localhost:50051", grpc::InsecureChannelCredentials());
+		channel = grpc::CreateChannel(serverAddress, grpc::InsecureChannelCredentials());
 		stub_ = FrameService::NewStub(channel);
 		if (!stub_)
 			LOG_ERROR("Cannot create a channel !");

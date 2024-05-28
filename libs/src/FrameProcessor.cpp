@@ -21,7 +21,8 @@ void FrameProcessor::StartFrameProcessing() {
 	CreateImageDirectory();
 }
 
-cv::Mat FrameProcessor::Detect(std::shared_ptr<Frame> frame, YoloDetection& yolo) {
+cv::Mat FrameProcessor::Detect(std::shared_ptr<Frame> frame) {
+	YoloDetection yolo;
 	auto start = cv::getTickCount();
 	auto detections = yolo.PreProcess(frame->GetFrame());
 	cv::Mat img = (yolo.post_process(frame->GetFrame(), detections, classes));
@@ -45,7 +46,7 @@ cv::Mat FrameProcessor::Detect(std::shared_ptr<Frame> frame, YoloDetection& yolo
 void FrameProcessor::DisplayFps(cv::Mat& img, long long start) {
 	auto end = cv::getTickCount();
 	auto elapsedTime = (end - start) / cv::getTickFrequency();
-	int fps = 1 / elapsedTime;
+	unsigned int fps = 1 / elapsedTime;
 	std::stringstream stream;
 	int maxFps = 999;
 	fps = fps > maxFps ? maxFps : fps;

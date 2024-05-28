@@ -35,25 +35,15 @@ public:
 
 	void ReleaseVideoWriter();
 
-	cv::Mat Detect(std::shared_ptr<Frame> image, YoloDetection& yolo);
+	cv::Mat Detect(std::shared_ptr<Frame> image);
 
 	cv::Scalar CalcAverageRGB(const cv::Rect& box, const cv::Mat& frame);
 
 	void SaveFrameAsImage(const cv::Mat& frame, const int frameNum);
 
-	void BuildConnection();
-
 	FrameProcessor();
 
-	void Connect();
-
 	void StartFrameProcessing();
-
-	void DestroyConnection();
-
-	void StartStreamFrames();
-
-	void StopStreamFrames();
 
 	std::shared_ptr<ClientService> GetService();
 

@@ -1,21 +1,14 @@
 #pragma once
 #include "ClientService.h"
 #include "FrameProcessor.h"
-#include "JsonManager.h"
-#include "LogManager.h"
-#include <opencv2/core/utils/logger.hpp>
-#include <QObject>
 
-class API : public QObject {
-	Q_OBJECT
+class API {
 private:
 	FrameProcessor frameProcessor;
 	ClientService client;
 public:
-	bool detection;
-	bool displayFps;
 
-	explicit API() :detection(false), displayFps(false) {
+	explicit API() {
 		LOG_INFO("\n\n===============================================\nApplication start running...\n===============================================\n\n");
 	}
 
@@ -29,11 +22,17 @@ public:
 		client.DestroyConnection();
 	}
 
+	cv::Mat Detect(std::shared_ptr<Frame>& frame) {
+		return frameProcessor.Detect(frame);
+	}
+
+	void DisplayFPS(cv::Mat& img, long long start) {
+		frameProcessor.DisplayFps(img, start);
+	}
+
 	void StartStream() { client.StartStreamFrames(); }
 
 	void StopStream() { client.StopStreamFrames(); }
-
-	//void StartFrameProcessing() { frameProcessor.StartFrameProcessing(); }
 
 	std::shared_ptr<ThreadSafeQueue<std::shared_ptr<Frame>>> GetFrameShowQueue() {
 		return client.GetFrameShowQueue();
@@ -47,30 +46,5 @@ public:
 			LOG_ERROR("Service is null !");
 		return service;
 	}
-public slots:
-
-	void pollFramesForDisplay() {
-		YoloDetection yolo;
-		std::shared_ptr<Frame> frameToShow;
-
-		while (IsConnect()) {
-			if (GetFrameShowQueue()->TryPop(frameToShow)) {
-				auto img = frameToShow->GetFrame();
-				auto start = cv::getTickCount();
-				if (detection) {
-					img = frameProcessor.Detect(frameToShow, yolo);
-				}
-				if (displayFps) {
-					frameProcessor.DisplayFps(img, start);
-				}
-				//LOG_INFO("displaying frame No. {} ", frameToShow->GetFrameNum());
-
-				emit frameReady(img);
-			}
-		}
-	}
-
-signals:
-	void frameReady(const cv::Mat& frame);
 
 };

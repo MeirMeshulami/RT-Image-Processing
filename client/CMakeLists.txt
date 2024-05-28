@@ -3,7 +3,7 @@ set(CMAKE_CXX_STANDARD 17)
 project(GUI VERSION 0.1 LANGUAGES CXX)
 
 set(CMAKE_AUTOUIC ON)
-set(CMAKE_AUTOMOC ON)
+# set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 
 set(CMAKE_CXX_STANDARD 17)
@@ -18,43 +18,31 @@ add_subdirectory(tests)
 add_subdirectory(../libs ${CMAKE_CURRENT_BINARY_DIR}/libs)
 
 set(PROJECT_SOURCES
-    CoreAPI.h
-    mainwindow.cpp
-    mainwindow.h
-    mainwindow.ui
-    main.cpp
-    custom/checkComboBox.cpp
-    custom/checkComboBox.h
-    custom/flowlayout.h
-    custom/flowlayout.cpp
+    src/mainwindow.cpp
+    src/mainwindow.h
+    src/mainwindow.ui
+    src/main.cpp
+    src/settings.cpp
+    src/settings.h
+    src/custom/checkComboBox.cpp
+    src/custom/checkComboBox.h
+    src/custom/flowlayout.h
+    src/custom/flowlayout.cpp
+    resources.qrc
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
-    qt_add_executable(GUI
-        MANUAL_FINALIZATION
-        ${PROJECT_SOURCES}
-        resources.qrc
-    )
-# Define target properties for Android with Qt 6 as:
-#    set_property(TARGET GUI APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR
-#                 ${CMAKE_CURRENT_SOURCE_DIR}/android)
-# For more information, see https://doc.qt.io/qt-6/qt-add-executable.html#target-creation
+    qt_add_executable(GUI MANUAL_FINALIZATION ${PROJECT_SOURCES})
 else()
-    if(ANDROID)
-        add_library(GUI SHARED
-            ${PROJECT_SOURCES}
-        )
-# Define properties for Android with Qt 5 after find_package() calls as:
-#    set(ANDROID_PACKAGE_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/android")
-    else()
-        add_executable(GUI
-            ${PROJECT_SOURCES}
-        )
-    endif()
+    add_executable(GUI ${PROJECT_SOURCES})
 endif()
 
 set_target_properties(${PROJECT_NAME} PROPERTIES AUTOMOC TRUE)
-target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+target_include_directories(${PROJECT_NAME} PUBLIC
+    ${CMAKE_CURRENT_SOURCE_DIR} 
+    ${CMAKE_CURRENT_SOURCE_DIR}/src
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/custom
+ )
 target_link_libraries(GUI PRIVATE Qt${QT_VERSION_MAJOR}::Widgets)
 
 # Link to libs and GUI

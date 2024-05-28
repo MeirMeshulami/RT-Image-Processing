@@ -1,5 +1,6 @@
 cmake_minimum_required(VERSION 3.14)
 project(libs VERSION 1.0)
+cmake_policy(SET CMP0111 NEW)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED TRUE)
@@ -9,15 +10,15 @@ if (WIN32)
     configure_file(${CMAKE_CURRENT_SOURCE_DIR}/Configurations.json ${CMAKE_BINARY_DIR}/Configurations.json COPYONLY) # For VS debugger
 
     if(Release)
-        set(CMAKE_BUILD_TYPE Release)
-        set(CMAKE_PREFIX_PATH "C:/Program Files/grpc/release")
-        configure_file(${CMAKE_CURRENT_SOURCE_DIR}/Configurations.json ${CMAKE_BINARY_DIR}/Release/Configurations.json COPYONLY)
-        message("cmake prefix path: Release")
+      set(CMAKE_BUILD_TYPE Release)
+      set(CMAKE_PREFIX_PATH "C:/Program Files/grpc/release")
+      configure_file(${CMAKE_CURRENT_SOURCE_DIR}/Configurations.json ${CMAKE_BINARY_DIR}/Release/Configurations.json COPYONLY)
+      message("cmake prefix path: Release")
     else()
-        set(CMAKE_BUILD_TYPE Debug)
-        set(CMAKE_PREFIX_PATH "C:/Program Files/grpc/debug")
-        configure_file(${CMAKE_CURRENT_SOURCE_DIR}/Configurations.json ${CMAKE_BINARY_DIR}/Debug/Configurations.json COPYONLY)
-        message("cmake prefix path: Debug")
+      set(CMAKE_BUILD_TYPE Debug)
+      set(CMAKE_PREFIX_PATH "C:/Program Files/grpc/debug")
+      configure_file(${CMAKE_CURRENT_SOURCE_DIR}/Configurations.json ${CMAKE_BINARY_DIR}/Debug/Configurations.json COPYONLY)
+      message("cmake prefix path: Debug")
     endif()
 endif()
 
@@ -65,9 +66,10 @@ add_custom_command(
     --plugin=protoc-gen-grpc="${_GRPC_CPP_PLUGIN_EXECUTABLE}" "${proto}"
     DEPENDS "${proto}")
 
-# List and add header and source files
-file(GLOB SOURCE_FILES "*.h" "*.cpp" "${CMAKE_CURRENT_SOURCE_DIR}/include/*.h")
+# List and add header and source files and API
+file(GLOB SOURCE_FILES "src/*.h" "src/*.cpp")
 add_library(${PROJECT_NAME} ${SOURCE_FILES} ${proto_hdrs} ${grpc_hdrs} ${proto_srcs} ${grpc_srcs})
+target_include_directories(${PROJECT_NAME} PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include" "${CMAKE_CURRENT_SOURCE_DIR}/src")
 
 # Include SOURCE_DIR and BINARY_DIR
 target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR} "${CMAKE_CURRENT_SOURCE_DIR}/include")

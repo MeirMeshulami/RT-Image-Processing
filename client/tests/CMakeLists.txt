@@ -11,17 +11,17 @@ option(DEBUG "Build in Debug mode" OFF)
 add_executable(${PROJECT_NAME} client_tests.cpp)
 
 # Run MOC on the header file that contains QObject-derived classes
-set(MOC_HEADERS
-    ../CoreAPI.h
-)
+# set(MOC_HEADERS
+#     ../CoreAPI.h
+# )
 
-qt_wrap_cpp(${PROJECT_NAME}_MOC_SOURCES ${MOC_HEADERS})
+# qt_wrap_cpp(${PROJECT_NAME}_MOC_SOURCES ${MOC_HEADERS})
 
 # Link the test executable with Google Test and the required libraries
 target_link_libraries(${PROJECT_NAME} PRIVATE gtest_main gmock_main libs Qt6::Widgets)
 
 # Append the MOC-generated sources to the target
-target_sources(${PROJECT_NAME} PRIVATE ${${PROJECT_NAME}_MOC_SOURCES})
+# target_sources(${PROJECT_NAME} PRIVATE ${${PROJECT_NAME}_MOC_SOURCES})
 
 # Check if googletest target already exists
 if (NOT TARGET googletest)
