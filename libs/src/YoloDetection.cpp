@@ -2,51 +2,22 @@
 #include "YoloDetection.h"
 #include <unordered_set>
 
-YoloDetection::YoloDetection()
+Yolo::Yolo() :isDrawLabel(false)
 {
 	JsonManager::ReadSettings(configJson);
-	const std::filesystem::path netPath = configJson["yolo_settings"]["net_path"];
-	if (!std::filesystem::exists(netPath)) {
-		throw std::runtime_error("Network path does not exist: " + netPath.string());
-	}
-	const std::filesystem::path classListPath = configJson["yolo_settings"]["class_list_path"];
-	if (!std::filesystem::exists(classListPath)) {
-		throw std::runtime_error("Class list path does not exist: " + classListPath.string());
-	}
-	net = cv::dnn::readNet(netPath.string());
-
-	net.setPreferableBackend(cv::dnn::DNN_BACKEND_CUDA);
-	net.setPreferableTarget(cv::dnn::DNN_TARGET_CUDA);
-
-	std::lock_guard<std::mutex> lock(yoloMutex);
-
-
-	inputWidth = configJson["yolo_settings"]["input_width"];
-	inputHeight = configJson["yolo_settings"]["input_height"];
-	confidenceThreshold = configJson["yolo_settings"]["confidence_threshold"];
-	scoreThreshold = configJson["yolo_settings"]["score_threshold"];
-	nmsThreshold = configJson["yolo_settings"]["nms_threshold"];
-
-	std::ifstream ifs(classListPath.string());
-	std::string line;
-	if (!ifs.is_open())
-		throw std::runtime_error("Error opening 'class list' file for yolov5");
-
-	while (getline(ifs, line))
-	{
-		classList.push_back(line);
-	}
+	LoadNet();
+	LoadClassList();
+	EnableGpuProcessing(net);
+	LoadSensitivities();
 }
 
-
-
-std::vector<cv::Mat> YoloDetection::PreProcess(const cv::Mat& inputImage)
+std::vector<cv::Mat> Yolo::PreProcess(const cv::Mat& inputImage)
 {
 	if (inputImage.empty())
 		throw std::runtime_error("empty image");
 	cv::Mat blob;
 	LOG_TRACE("before blobFromImage.");
-	cv::dnn::blobFromImage(inputImage, blob, 1. / 255., cv::Size(inputWidth, inputHeight), cv::Scalar(), true, false);
+	cv::dnn::blobFromImage(inputImage, blob, 1. / 255., cv::Size(INPUT_WIDTH, INPUT_HEIGHT), cv::Scalar(), true, false);
 	LOG_DEBUG("after blobFromImage.");
 	net.setInput(blob);
 
@@ -57,10 +28,7 @@ std::vector<cv::Mat> YoloDetection::PreProcess(const cv::Mat& inputImage)
 	return outputs;
 }
 
-
-cv::Mat YoloDetection::post_process(cv::Mat& input_image, std::vector<cv::Mat>& outputs, std::unordered_set<std::string>& classes) {
-	/*classes.insert("person");
-	classes.insert("cell phone"); */
+cv::Mat Yolo::PostProcess(cv::Mat& input_image, std::vector<cv::Mat>& outputs, std::unordered_set<std::string>& classes) {
 	// Initialize vectors to hold respective outputs while unwrapping detections.
 	std::vector<int> class_ids;
 	std::vector<float> confidences;
@@ -117,20 +85,21 @@ cv::Mat YoloDetection::post_process(cv::Mat& input_image, std::vector<cv::Mat>& 
 		int top = box.y;
 		int width = box.width;
 		int height = box.height;
-		// Draw bounding box.
-		cv::rectangle(input_image, cv::Point(left, top),
-			cv::Point(left + width, top + height), cv::Scalar(255, 0, 0),
-			3 * THICKNESS);
-		// Get the label for the class name and its confidence.
-		std::string label = cv::format("%.2f", confidences[idx]);
-		label = classList[class_ids[idx]] + ":" + label;
-		// Draw class labels.
-		draw_label(input_image, label, left, top);
+		if (isDrawLabel.load()) {
+			cv::rectangle(input_image, cv::Point(left, top),
+				cv::Point(left + width, top + height), cv::Scalar(255, 0, 0),
+				3 * THICKNESS);
+			// Get the label for the class name and its confidence.
+			std::string label = cv::format("%.2f", confidences[idx]);
+			label = classList[class_ids[idx]] + ":" + label;
+			// Draw class labels.
+			DrawLabel(input_image, label, left, top);
+		}
 	}
 	return input_image;
 }
 
-void YoloDetection::draw_label(cv::Mat& input_image, std::string label, int left, int top) {
+void Yolo::DrawLabel(cv::Mat& input_image, std::string label, int left, int top) {
 	// Display the label at the top of the bounding box.
 	int baseLine;
 	cv::Size label_size =
@@ -148,4 +117,50 @@ void YoloDetection::draw_label(cv::Mat& input_image, std::string label, int left
 		cv::FONT_HERSHEY_SIMPLEX, 0.5, cv::Scalar(0, 0, 0), 2);
 }
 
+void Yolo::EnableGpuProcessing(cv::dnn::Net& net) {
+	net.setPreferableBackend(cv::dnn::DNN_BACKEND_CUDA);
+	net.setPreferableTarget(cv::dnn::DNN_TARGET_CUDA);
+}
 
+void Yolo::LoadClassList() {
+	const std::filesystem::path classListPath = configJson["yolo_settings"]["class_list_path"];
+	if (!std::filesystem::exists(classListPath)) {
+		throw std::runtime_error("Class list path does not exist: " + classListPath.string());
+	}
+	std::ifstream ifs(classListPath.string());
+	std::string line;
+	if (!ifs.is_open())
+		throw std::runtime_error("Error opening 'class list' file for yolov5");
+
+	while (getline(ifs, line))
+	{
+		classList.push_back(line);
+	}
+}
+
+void Yolo::LoadNet() {
+	std::string netModel = configJson["yolo_settings"]["yolo_model"];
+	netModel += ".onnx";
+	const std::filesystem::path netPath = configJson["yolo_settings"]["net_path"];
+	const std::filesystem::path ModelPath = netPath / netModel;
+
+	if (!std::filesystem::exists(ModelPath)) {
+		throw std::runtime_error("Yolo model path does not exist: " + netPath.string());
+	}
+	net = cv::dnn::readNet(ModelPath.string());
+}
+
+cv::Mat Yolo::Detect(cv::Mat& inputImage) {
+	auto detections = PreProcess(inputImage);
+	cv::Mat img = PostProcess(inputImage, detections, classes);
+
+	return img;
+}
+
+void Yolo::LoadSensitivities() {
+	INPUT_WIDTH = configJson["yolo_settings"]["input_width"];
+	INPUT_HEIGHT = configJson["yolo_settings"]["input_height"];
+	CONFIDENCE_THRESHOLD = configJson["yolo_settings"]["confidence_threshold"];
+	SCORE_THRESHOLD = configJson["yolo_settings"]["score_threshold"];
+	NMS_THRESHOLD = configJson["yolo_settings"]["nms_threshold"];
+}

@@ -1,6 +1,6 @@
 #include "ServerService.h"
 
-ServerService::ServerService() : cam(0) {
+ServerService::ServerService() : cam(0), isSettingsChanged(false) {
 	if (!cam.isOpened()) {
 		throw std::runtime_error("The camera is already open in another program !");
 	}
@@ -21,6 +21,10 @@ grpc::Status ServerService::GetFrame(grpc::ServerContext* context, const FrameRe
 			return grpc::Status(grpc::StatusCode::CANCELLED, "Error: Failed to read a frame from the camera.");
 		}
 
+		if (isSettingsChanged.load()) {
+			JsonManager::ReadSettings(configs);
+			isSettingsChanged.store(false);
+		}
 		double threshold = configs["camera_settings"]["threshold"];
 		int maxDiffPixels = configs["camera_settings"]["max_diff_pixels"];
 		auto numMotionPixels = MotionDetector(currentFrame, previousFrame, threshold);
@@ -74,18 +78,17 @@ void ServerService::RunServer() {
 }
 
 grpc::Status ServerService::UpdateConfigurations(grpc::ServerContext* context, const UpdateConfig* request, ConfigAck* response) {
-	//std::ofstream outputFile("Configurations.json");
-	//outputFile << jsonContent;
 	try {
-		std::string fileString = request->file();
-		configs = nlohmann::json::parse(fileString);
+		nlohmann::json configs = nlohmann::json::parse(request->file());
+		configs.dump(4);
+		JsonManager::SaveSettings(configs);
 		response->set_success(true);
-		LOG_INFO("JSON upadte has sended successfully.");
-		JsonManager::SaveConfigs(configs);
+		isSettingsChanged.store(true);
+		LOG_INFO("Server settings update has sended successfully.");
 	}
 	catch (const std::exception e) {
 		response->set_success(false);
-		LOG_INFO("Error while sending JSON update ! ");
+		LOG_INFO("Error while sending settings update ! ");
 	}
 	return grpc::Status::OK;
 }

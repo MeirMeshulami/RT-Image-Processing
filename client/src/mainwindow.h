@@ -37,9 +37,12 @@ protected:
 	void loadComboBoxClasses();
 	bool eventFilter(QObject* obj, QEvent* event)override;
 	std::string getServerAddress();
+	void pollFramesForDisplay();
+	void displayFrame(const cv::Mat& frame);
 public:
 	MainWindow(QWidget* parent = nullptr);
 	~MainWindow();
+
 
 signals:
 	void frameReady(const cv::Mat& frame);
@@ -102,12 +105,9 @@ private slots:
 
 	void on_fpsCheck_stateChanged(int arg1);
 
-	void pollFramesForDisplay();
-
-	void displayFrame(const cv::Mat& frame);
-
 	void on_applyBtn_clicked();
 
+    void on_drawCheck_stateChanged(int arg1);
 private:
 	Ui::MainWindow* ui;
 	bool m_dragging;
@@ -115,14 +115,13 @@ private:
 	QPoint m_dragLastPosition;
 	std::atomic<bool> isLive;
 	API api;
-	QThread* frameDisplayThread;
 	QString logFolderPath;
 	QString currentLogFilePath;
 	bool isBrowsingLogFile;
 	QString CaptureImgFolderPath;
 	nlohmann::json configs;
-	bool detection = false;
-	bool displayFps = false;
+	std::atomic<bool> detection;
+	std::atomic<bool> displayFps;
 };
 
 #endif // MAINWINDOW_H

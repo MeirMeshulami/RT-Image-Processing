@@ -1,6 +1,5 @@
 #define _CRT_SECURE_NO_WARNINGS
 #include "./ui_mainwindow.h"
-
 #include "mainwindow.h"
 
 #include <iostream>
@@ -16,7 +15,8 @@
 
 
 
-MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent), ui(new Ui::MainWindow), isLive(false), isBrowsingLogFile(false)
+MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent), ui(new Ui::MainWindow),
+isLive(false), isBrowsingLogFile(false), detection(false), displayFps(false)
 {
 #ifdef Q_OS_WIN
 	// For Windows
@@ -34,13 +34,10 @@ MainWindow::~MainWindow() { delete ui; }
 
 ///////========== Init Funcs ==========////////////
 void MainWindow::init() {
-	loadConfigs();
+	JsonManager::ReadSettings(configs);
 	api.Connect(getServerAddress());
-	frameDisplayThread = new QThread(this);
 
-	connect(frameDisplayThread, &QThread::started, this, &MainWindow::pollFramesForDisplay);
-	this->moveToThread(frameDisplayThread);
-
+	loadConfigs();
 	loadComboBoxClasses();
 	loadLogFolderPath();
 	setWindowIcon(QIcon(R"(:logo.png)"));
@@ -55,7 +52,7 @@ void MainWindow::deInit() {
 }
 
 void MainWindow::loadConfigs() {
-	JsonManager::ReadSettings(configs);
+	ui->applyBtn->hide();
 	int threshold = configs["camera_settings"]["threshold"];
 
 	//CaptureImgFolderPath = configs["output_settings"]["output_settings"];
@@ -369,11 +366,10 @@ void MainWindow::on_liveBtn_clicked()
 		return;
 	}
 
-	connect(this, &MainWindow::frameReady, this, &MainWindow::displayFrame);
 	// Gets frames from camera and push into a queue
 	api.StartStream();
 	// Pop frames from queue and emit displayFrame()
-	frameDisplayThread->start();
+	pollFramesForDisplay();
 }
 
 void MainWindow::on_stopLiveBtn_clicked()
@@ -382,17 +378,34 @@ void MainWindow::on_stopLiveBtn_clicked()
 	if (!wasLive) {
 		return;
 	}
-	api.StopStream();
-	disconnect(this, &MainWindow::frameReady, this, &MainWindow::displayFrame);
-
-	if (frameDisplayThread->isRunning()) {
-		frameDisplayThread->quit();
-		frameDisplayThread->wait();
-	}
-	ui->camFrame->setPixmap(QPixmap());
+	ui->camFrame->clear();
 	ui->camFrame->setText("Camera Offline");
+	api.StopStream();
+}
 
+void MainWindow::pollFramesForDisplay() {
 
+	std::thread pollFramesThread([this] {
+		std::shared_ptr<Frame> frameToShow;
+		while (isLive.load()) {
+			if (api.GetFrameShowQueue()->TryPop(frameToShow)) {
+				auto img = frameToShow->GetFrame();
+				auto start = cv::getTickCount();
+				if (detection.load()) {
+					img = api.Detect(img);
+				}
+				if (displayFps) {
+					api.DisplayFPS(img, start);
+				}
+				//LOG_INFO("displaying frame No. {} ", frameToShow->GetFrameNum());
+
+				displayFrame(img);
+			}
+		}
+		ui->camFrame->clear();
+		ui->camFrame->setText("Camera Offline");
+		});
+	pollFramesThread.detach();
 }
 
 void MainWindow::loadComboBoxClasses() {
@@ -444,7 +457,7 @@ void MainWindow::modifyClassList(const std::string className, bool isChecked) {
 	}
 }
 
-///////========== Settings->Account Buttons ==========////////////
+///////========== Settings->Account  ==========////////////
 void MainWindow::on_editName_clicked()
 {
 	if (ui->editName->text() == "Edit")
@@ -483,54 +496,48 @@ void MainWindow::on_userBtn_clicked()
 	}
 }
 
+///////========== Settings->Application  ==========////////////
+
 void MainWindow::on_threasholdSlider_valueChanged(int value)
 {
 	ui->MotionValue->setText(QString::number(value));
 	configs["camera_settings"]["threshold"] = value;
-	//configs.sendConfigsUpdates(api);
+	ui->applyBtn->show();
 }
+
+///////========== CheckBoxes Pannel  ==========////////////
 
 void MainWindow::on_detectCheck_stateChanged(int arg1)
 {
 	if (arg1 == Qt::Checked) {
-		detection = true;
+		detection.store(true);
 	}
 	else {
-		detection = false;
+		detection.store(false);
 	}
 }
 
 void MainWindow::on_fpsCheck_stateChanged(int arg1)
 {
 	if (arg1 == Qt::Checked) {
-		displayFps = true;
+		displayFps.store(true);
 	}
 	else {
-		displayFps = false;
+		displayFps.store(false);
 	}
 }
 
-void MainWindow::pollFramesForDisplay() {
-	std::shared_ptr<Frame> frameToShow;
-
-	while (isLive.load()) {
-		if (api.GetFrameShowQueue()->TryPop(frameToShow)) {
-			auto img = frameToShow->GetFrame();
-			auto start = cv::getTickCount();
-			if (detection) {
-				img = api.Detect(frameToShow);
-			}
-			if (displayFps) {
-				api.DisplayFPS(img, start);
-			}
-			//LOG_INFO("displaying frame No. {} ", frameToShow->GetFrameNum());
-
-			emit frameReady(img);
-
-		}
+void MainWindow::on_drawCheck_stateChanged(int arg1)
+{
+	if (arg1 == Qt::Checked) {
+		api.IsDrawLabel().store(true);
+	}
+	else {
+		api.IsDrawLabel().store(false);
 	}
 }
 
+///////========== General Settings  ==========////////////
 std::string MainWindow::getServerAddress() {
 	std::string serverIP = configs["grpc_settings"]["camera_ip_address"];
 	std::string port = configs["grpc_settings"]["port_number"];
@@ -541,6 +548,9 @@ std::string MainWindow::getServerAddress() {
 
 void MainWindow::on_applyBtn_clicked()
 {
-
+	ui->applyBtn->hide();
+	JsonManager::SaveSettings(configs);
+	api.UpdateServerSettings(configs);
 }
+
 

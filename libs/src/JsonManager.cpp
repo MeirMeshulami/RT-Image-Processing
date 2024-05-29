@@ -24,10 +24,10 @@ void JsonManager::ReadSettings(nlohmann::json& configs) {
 	LOG_DEBUG("JSON configuration file parsed successfully.");
 }
 
-void JsonManager::SaveConfigs(nlohmann::json& configs) {
+void JsonManager::SaveSettings(nlohmann::json& configs) {
 	std::ofstream outputFile(JSON_FILE_PATH);
 	if (!outputFile.is_open()) {
-		std::string errorMsg = "Failed to open file for writing configurations.";
+		std::string errorMsg = "Failed to open JSON file for saving settings.";
 		LOG_ERROR(errorMsg);
 		throw std::runtime_error(errorMsg);
 	}
@@ -35,11 +35,11 @@ void JsonManager::SaveConfigs(nlohmann::json& configs) {
 	{
 		outputFile << configs.dump(4);
 		outputFile.close();
-		LOG_DEBUG("JSON has saved successfully.");
+		LOG_DEBUG("Settings has saved successfully.");
 	}
 	catch (const std::exception&)
 	{
-		std::string errorMsg = "Error while saving JSON.";
+		std::string errorMsg = "Error while saving settings.";
 		LOG_ERROR(errorMsg);
 		throw std::runtime_error(errorMsg);
 	}

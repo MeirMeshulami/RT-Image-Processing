@@ -6,9 +6,9 @@
 #include "ThreadSafeQueue.h"
 #include <grpcpp/grpcpp.h>
 #include <iostream>
+#include <json.hpp>
 #include <memory>
 #include <opencv2/opencv.hpp>
-
 
 
 class ClientService {
@@ -18,9 +18,7 @@ public:
 
 	void Connect(std::string serverAddress);
 
-	void GetFrame();
-
-	bool UpdateConfigs(const std::string& file);
+	void GetFrames();
 
 	void PushFrameIntoQueue(std::shared_ptr<Frame> frame);
 
@@ -34,8 +32,10 @@ public:
 
 	void StopStreamFrames();
 
+	bool UpdateServerSettings(nlohmann::json& configs);
+
 	std::shared_ptr<ThreadSafeQueue<std::shared_ptr<Frame>>> frameShowQueue;
-	std::unique_ptr<FrameService::Stub> stub_;
+	std::unique_ptr<FrameService::Stub> stub;
 	std::atomic<bool> stopStreaming;
 	std::atomic<bool> isConnect;
 

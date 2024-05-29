@@ -20,37 +20,45 @@ const int FONT_FACE = cv::FONT_HERSHEY_SIMPLEX;
 const int THICKNESS = 1;
 
 
-class YoloDetection
+class Yolo
 {
 private:
-	const double INPUT_WIDTH = 640.0;
-	const double INPUT_HEIGHT = 640.0;
-	const double SCORE_THRESHOLD = 0.5;
-	const double NMS_THRESHOLD = 0.45;
-	const double CONFIDENCE_THRESHOLD = 0.45;
-	std::mutex yoloMutex;
-
+	double INPUT_WIDTH;
+	double INPUT_HEIGHT;
+	double SCORE_THRESHOLD;
+	double NMS_THRESHOLD;
+	double CONFIDENCE_THRESHOLD;
 
 	std::vector<int> classIds;
 	std::vector<float> confidences;
 	std::vector<cv::Rect> boxes;
 	nlohmann::json configJson;
-	int inputWidth;
-	int inputHeight;
-	float confidenceThreshold;
-	float scoreThreshold;
-	float nmsThreshold;
-
-	void draw_label(cv::Mat& input_image, std::string label, int left, int top);
-
-
-public:
-	cv::dnn::Net net;
 	std::vector<std::string> classList;
-	YoloDetection();
+	cv::dnn::Net net;
+
+	void DrawLabel(cv::Mat& input_image, std::string label, int left, int top);
+
+	void EnableGpuProcessing(cv::dnn::Net& net);
 
 	std::vector<cv::Mat> PreProcess(const cv::Mat& inputImage);
 
-	cv::Mat post_process(cv::Mat& input_image, std::vector<cv::Mat>& outputs, std::unordered_set<std::string>& classes);
+	cv::Mat PostProcess(cv::Mat& input_image, std::vector<cv::Mat>& outputs, std::unordered_set<std::string>& classes);
+
+	void LoadClassList();
+
+	void LoadNet();
+
+	void LoadSensitivities();
+
+public:
+	std::unordered_set<std::string>classes;
+	std::atomic<bool>isDrawLabel;
+
+	Yolo();
+
+	cv::Mat Detect(cv::Mat& inputImage);
+
+
+
 };
 

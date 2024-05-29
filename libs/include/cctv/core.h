@@ -6,13 +6,16 @@ class API {
 private:
 	FrameProcessor frameProcessor;
 	ClientService client;
+	Yolo yolo;
 public:
 
 	explicit API() {
 		LOG_INFO("\n\n===============================================\nApplication start running...\n===============================================\n\n");
 	}
 
-	bool IsConnect() { return client.isConnect; }
+	bool IsConnect() { return client.isConnect.load(); }
+
+	std::atomic<bool>& IsDrawLabel() { return yolo.isDrawLabel; }
 
 	void Connect(std::string serverAddress) {
 		client.Connect(serverAddress);
@@ -22,9 +25,7 @@ public:
 		client.DestroyConnection();
 	}
 
-	cv::Mat Detect(std::shared_ptr<Frame>& frame) {
-		return frameProcessor.Detect(frame);
-	}
+	cv::Mat Detect(cv::Mat& frame) { return yolo.Detect(frame); }
 
 	void DisplayFPS(cv::Mat& img, long long start) {
 		frameProcessor.DisplayFps(img, start);
@@ -38,13 +39,9 @@ public:
 		return client.GetFrameShowQueue();
 	}
 
-	std::unordered_set<std::string>& GetClassList() { return frameProcessor.classes; };
+	std::unordered_set<std::string>& GetClassList() { return yolo.classes; };
 
-	std::shared_ptr<ClientService> GetStub() {
-		auto service = frameProcessor.GetService();
-		if (!service)
-			LOG_ERROR("Service is null !");
-		return service;
+	bool UpdateServerSettings(nlohmann::json& configs) {
+		return client.UpdateServerSettings(configs);
 	}
-
 };

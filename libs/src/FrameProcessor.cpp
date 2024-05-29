@@ -21,27 +21,27 @@ void FrameProcessor::StartFrameProcessing() {
 	CreateImageDirectory();
 }
 
-cv::Mat FrameProcessor::Detect(std::shared_ptr<Frame> frame) {
-	YoloDetection yolo;
-	auto start = cv::getTickCount();
-	auto detections = yolo.PreProcess(frame->GetFrame());
-	cv::Mat img = (yolo.post_process(frame->GetFrame(), detections, classes));
-
-
-
-	/*int frameNum = image->GetFrameNum();
-	cv::Mat frame = image->GetFrame();*/
-	/*if (image->GetBoxes().size() > 0) {
-		mVideoWriter.write(frame);
-		SaveFrameAsImage(frame, frameNum);
-	}
-	for (auto& box : image->GetBoxes()) {
-		auto avgRGB = CalculateAverageRGB(box, frame);
-		mDBManager.InsertData(frameNum, box, avgRGB, image->GetFrameTime());
-	}*/
-
-	return img;
-}
+//cv::Mat FrameProcessor::Detect(std::shared_ptr<Frame> frame) {
+//	Yolo yolo;
+//	auto start = cv::getTickCount();
+//	auto detections = yolo.PreProcess(frame->GetFrame());
+//	cv::Mat img = (yolo.PostProcess(frame->GetFrame(), detections, classes));
+//
+//
+//
+//	int frameNum = image->GetFrameNum();
+//	cv::Mat frame = image->GetFrame();
+//	if (image->GetBoxes().size() > 0) {
+//		mVideoWriter.write(frame);
+//		SaveFrameAsImage(frame, frameNum);
+//	}
+//	for (auto& box : image->GetBoxes()) {
+//		auto avgRGB = CalculateAverageRGB(box, frame);
+//		mDBManager.InsertData(frameNum, box, avgRGB, image->GetFrameTime());
+//	}
+//
+//	return img;
+//}
 
 void FrameProcessor::DisplayFps(cv::Mat& img, long long start) {
 	auto end = cv::getTickCount();
@@ -114,10 +114,7 @@ void FrameProcessor::CreateImageDirectory() {
 
 std::shared_ptr<ClientService> FrameProcessor::GetService() { return service; }
 
-void FrameProcessor::enableGpuProcessing(cv::dnn::Net& net) {
-	net.setPreferableBackend(cv::dnn::DNN_BACKEND_CUDA);
-	net.setPreferableTarget(cv::dnn::DNN_TARGET_CUDA);
-}
+
 
 
 

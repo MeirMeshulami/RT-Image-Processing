@@ -8,11 +8,12 @@ ClientService::ClientService() : stopStreaming(false), frameShowQueue(std::make_
 
 void ClientService::Connect(std::string serverAddress) {
 	LOG_DEBUG("Starting frame receiver thread...");
+
 	std::thread connectionThread([serverAddress, this] {
 		LOG_INFO("Client connecting...");
 		channel = grpc::CreateChannel(serverAddress, grpc::InsecureChannelCredentials());
-		stub_ = FrameService::NewStub(channel);
-		if (!stub_)
+		stub = FrameService::NewStub(channel);
+		if (!stub)
 			LOG_ERROR("Cannot create a channel !");
 		else
 			LOG_INFO("Channel has created successfully !");
@@ -40,13 +41,13 @@ void ClientService::Connect(std::string serverAddress) {
 	connectionThread.detach();
 }
 
-void ClientService::GetFrame() {
+void ClientService::GetFrames() {
 	LOG_INFO("Getting images from camera...");
 	FrameRequest request;
 	FrameResponse response;
 
 	grpc::ClientContext context;
-	std::unique_ptr<grpc::ClientReader<FrameResponse>> reader(stub_->GetFrame(&context, request));
+	std::unique_ptr<grpc::ClientReader<FrameResponse>> reader(stub->GetFrame(&context, request));
 
 	if (!reader) {
 		LOG_ERROR("Failed to create reader !");
@@ -89,25 +90,6 @@ void ClientService::GetFrame() {
 	return;
 }
 
-bool ClientService::UpdateConfigs(const std::string& file) {
-	UpdateConfig request;
-	ConfigAck ack;
-	grpc::ClientContext context;
-
-	request.set_file(file);
-	LOG_DEBUG("Sending configs updates...");
-	grpc::Status status = stub_->UpdateConfigurations(&context, request, &ack);
-
-	if (status.ok()) {
-		LOG_INFO("Config update has arrived.");
-	}
-	else {
-		LOG_ERROR("Config send failed: {}", status.error_message());
-	}
-
-	return ack.success();
-}
-
 void ClientService::PushFrameIntoQueue(std::shared_ptr<Frame> frame) {
 	if (frameShowQueue->GetQueueSize() > 30)
 	{
@@ -133,7 +115,7 @@ void ClientService::DestroyConnection() {
 void ClientService::StartStreamFrames() {
 	std::thread streamThread([&] {
 		stopStreaming.store(false);
-		GetFrame();
+		GetFrames();
 		});
 	streamThread.detach();
 }
@@ -141,4 +123,38 @@ void ClientService::StartStreamFrames() {
 void ClientService::StopStreamFrames() {
 	LOG_INFO("Stopping stream..");
 	stopStreaming.store(true);
+}
+
+bool ClientService::UpdateServerSettings(nlohmann::json& configs) {
+	if (!isConnect.load()) {
+		LOG_ERROR("Server not connected,can not send settings update !");
+		return false;
+	}
+	bool success = false;
+	std::thread serverUpdates([&] {
+		std::string configsStr = configs.dump();
+		UpdateConfig request;
+		ConfigAck ack;
+		grpc::ClientContext context;
+
+		request.set_file(configsStr);
+		LOG_DEBUG("Sending configs updates...");
+		grpc::Status status = stub->UpdateConfigurations(&context, request, &ack);
+
+		if (status.ok()) {
+			LOG_INFO("Config update has arrived.");
+		}
+		else {
+			LOG_ERROR("Config send failed: {}", status.error_message());
+		}
+		bool success = ack.success();
+		if (success) {
+			LOG_INFO("Server settings has updated successfully.");
+		}
+		else {
+			LOG_ERROR("Server settings update failed!");
+		}
+		});
+	serverUpdates.detach();
+	return success;
 }

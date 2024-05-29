@@ -11,6 +11,7 @@
 class ServerService final : public FrameService::Service {
 private:
 	cv::VideoCapture cam;
+	std::atomic<bool> isSettingsChanged;
 
 public:
 	nlohmann::json configs;

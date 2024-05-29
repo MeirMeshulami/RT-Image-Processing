@@ -11,6 +11,6 @@ public:
 
 	static void ReadSettings(nlohmann::json& configs);
 
-	static void SaveConfigs(nlohmann::json& configs);
+	static void SaveSettings(nlohmann::json& configs);
 };
 

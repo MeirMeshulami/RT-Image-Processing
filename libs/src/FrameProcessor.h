@@ -25,7 +25,7 @@ public:
 	std::filesystem::path imagePath;
 	std::filesystem::path imagesDirectory;
 	nlohmann::json configJson;
-	std::unordered_set<std::string>classes;
+
 
 	void InitVideoWriter();
 
@@ -34,8 +34,6 @@ public:
 	void CreateImageDirectory();
 
 	void ReleaseVideoWriter();
-
-	cv::Mat Detect(std::shared_ptr<Frame> image);
 
 	cv::Scalar CalcAverageRGB(const cv::Rect& box, const cv::Mat& frame);
 
@@ -46,8 +44,6 @@ public:
 	void StartFrameProcessing();
 
 	std::shared_ptr<ClientService> GetService();
-
-	void enableGpuProcessing(cv::dnn::Net& net);
 
 	void DisplayFps(cv::Mat& img, long long start);
 
