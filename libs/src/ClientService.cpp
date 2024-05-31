@@ -1,6 +1,6 @@
 #include "ClientService.h"
 #include "Frame.h"
-#include "JsonManager.h"
+#include "Settings.h"
 
 
 
@@ -73,7 +73,7 @@ void ClientService::GetFrames() {
 			LOG_DEBUG("Received frame {} with timestamp {}", resFrameNum, frameTimePoint);
 			auto currentFrame = std::make_shared<Frame>(receivedFrame, resFrameNum, frameTimePoint);
 			PushFrameIntoQueue(currentFrame);
-			LOG_INFO("Frame {} pushed into the show queues.", resFrameNum);
+			LOG_DEBUG("Frame {} pushed into the show queues.", resFrameNum);
 		}
 		if (stopStreaming) {
 			LOG_INFO("Reader has finished.");
@@ -100,10 +100,6 @@ void ClientService::PushFrameIntoQueue(std::shared_ptr<Frame> frame) {
 	}
 	frameShowQueue->Push(frame);
 }
-
-std::shared_ptr<ThreadSafeQueue<std::shared_ptr<Frame>>> ClientService::GetFrameShowQueue() { return frameShowQueue; }
-
-std::shared_ptr<Frame> ClientService::GetFrameToDetect() { return frameToDetect; }
 
 void ClientService::DestroyConnection() {
 	LOG_INFO("Disconnecting from camera...");
@@ -158,3 +154,5 @@ bool ClientService::UpdateServerSettings(nlohmann::json& configs) {
 	serverUpdates.detach();
 	return success;
 }
+
+std::shared_ptr<ThreadSafeQueue<std::shared_ptr<Frame>>> ClientService::GetFrameShowQueue() { return frameShowQueue; }

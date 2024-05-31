@@ -22,17 +22,16 @@ set(PROJECT_SOURCES
     src/mainwindow.h
     src/mainwindow.ui
     src/main.cpp
-    src/settings.cpp
-    src/settings.h
-    src/custom/checkComboBox.cpp
-    src/custom/checkComboBox.h
-    src/custom/flowlayout.h
-    src/custom/flowlayout.cpp
+    src/custom/CheckComboBox.cpp
+    src/custom/CheckComboBox.h
+    src/logreader.h 
+    src/logreader.cpp
     resources.qrc
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
-    qt_add_executable(GUI MANUAL_FINALIZATION ${PROJECT_SOURCES})
+    qt_add_executable(GUI MANUAL_FINALIZATION ${PROJECT_SOURCES}
+       )
 else()
     add_executable(GUI ${PROJECT_SOURCES})
 endif()

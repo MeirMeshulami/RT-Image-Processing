@@ -1,4 +1,3 @@
-#include "JsonManager.h"
 #include "ServerService.h"
 #include <opencv2/core/utils/logger.hpp>
 
@@ -12,17 +11,7 @@ int main() {
 		ServerService service;
 		LogManager::GetInstance().SetLogLevel(service.configs["log_settings"]["log_level"]);
 
-
-		std::thread cameraThread([&service]() {
-			try {
-				service.RunServer();
-			}
-			catch (const std::exception& e) {
-				LOG_ERROR("An exception occurred: {}", e.what());
-				LOG_INFO("Connecting...");
-			}
-			});
-		cameraThread.join();
+		service.RunServer();
 	}
 	catch (const std::exception& e) {
 		LOG_ERROR("An exception occurred: {}", e.what());

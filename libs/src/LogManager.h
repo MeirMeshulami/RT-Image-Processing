@@ -1,9 +1,9 @@
 #pragma once
-#include <spdlog/spdlog.h>
+#include <memory>
+#include <spdlog/async.h>
 #include <spdlog/sinks/daily_file_sink.h>
 #include <spdlog/sinks/stdout_color_sinks.h>
-#include <spdlog/async.h>
-#include <memory>
+#include <spdlog/spdlog.h>
 #include <vector>
 
 #define LOG_TRACE(...)    ::LogManager::GetInstance().GetCommonLogger()->trace(__VA_ARGS__)
@@ -15,20 +15,20 @@
 
 class LogManager {
 private:
-    std::shared_ptr<spdlog::logger> mCommonLogger;
+	std::shared_ptr<spdlog::logger> mCommonLogger;
 
-    LogManager();
+	LogManager();
 
 public:
-    ~LogManager();
+	~LogManager();
 
-    static LogManager& GetInstance();
+	static LogManager& GetInstance();
 
-    LogManager(const LogManager&) = delete;
+	LogManager(const LogManager&) = delete;
 
-    LogManager& operator= (const LogManager&) = delete;
+	LogManager& operator= (const LogManager&) = delete;
 
-    std::shared_ptr<spdlog::logger> GetCommonLogger();
+	std::shared_ptr<spdlog::logger> GetCommonLogger();
 
-    void SetLogLevel(const std::string level);
+	void SetLogLevel(const std::string level);
 };

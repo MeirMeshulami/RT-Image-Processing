@@ -895,7 +895,7 @@ font-size:20pt;
              <string notr="true"/>
             </property>
             <property name="currentIndex">
-             <number>0</number>
+             <number>2</number>
             </property>
             <widget class="QWidget" name="DashboardPage">
              <layout class="QVBoxLayout" name="verticalLayout_9">
@@ -1224,6 +1224,63 @@ font-size:10pt;
                         </widget>
                        </item>
                        <item>
+                        <widget class="QFrame" name="frame_19">
+                         <property name="sizePolicy">
+                          <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
+                           <horstretch>0</horstretch>
+                           <verstretch>0</verstretch>
+                          </sizepolicy>
+                         </property>
+                         <property name="frameShape">
+                          <enum>QFrame::StyledPanel</enum>
+                         </property>
+                         <property name="frameShadow">
+                          <enum>QFrame::Raised</enum>
+                         </property>
+                         <layout class="QHBoxLayout" name="horizontalLayout_31">
+                          <property name="spacing">
+                           <number>0</number>
+                          </property>
+                          <property name="leftMargin">
+                           <number>0</number>
+                          </property>
+                          <property name="topMargin">
+                           <number>0</number>
+                          </property>
+                          <property name="rightMargin">
+                           <number>0</number>
+                          </property>
+                          <property name="bottomMargin">
+                           <number>0</number>
+                          </property>
+                          <item>
+                           <widget class="CheckComboBox" name="checkComboBox">
+                            <item>
+                             <property name="text">
+                              <string>ALL</string>
+                             </property>
+                            </item>
+                            <item>
+                             <property name="text">
+                              <string>person</string>
+                             </property>
+                            </item>
+                            <item>
+                             <property name="text">
+                              <string>cell phone</string>
+                             </property>
+                            </item>
+                            <item>
+                             <property name="text">
+                              <string>chair</string>
+                             </property>
+                            </item>
+                           </widget>
+                          </item>
+                         </layout>
+                        </widget>
+                       </item>
+                       <item>
                         <spacer name="verticalSpacer_2">
                          <property name="orientation">
                           <enum>Qt::Vertical</enum>
@@ -1420,8 +1477,8 @@ border-radius:5px;
                   <rect>
                    <x>0</x>
                    <y>0</y>
-                   <width>929</width>
-                   <height>529</height>
+                   <width>100</width>
+                   <height>30</height>
                   </rect>
                  </property>
                  <property name="sizePolicy">
@@ -2987,6 +3044,13 @@ li.checked::marker { content: &quot;\2612&quot;; }
    </layout>
   </widget>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>CheckComboBox</class>
+   <extends>QComboBox</extends>
+   <header>CheckComboBox.h</header>
+  </customwidget>
+ </customwidgets>
  <resources>
   <include location="../resources.qrc"/>
  </resources>

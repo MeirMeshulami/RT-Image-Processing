@@ -1,5 +1,6 @@
 #define _CRT_SECURE_NO_WARNINGS
 #include "./ui_mainwindow.h"
+#include "logreader.h"
 #include "mainwindow.h"
 
 #include <iostream>
@@ -16,7 +17,7 @@
 
 
 MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent), ui(new Ui::MainWindow),
-isLive(false), isBrowsingLogFile(false), detection(false), displayFps(false)
+isLive(false), isBrowsingLogFile(false), detection(false), displayFps(false), record(false)
 {
 #ifdef Q_OS_WIN
 	// For Windows
@@ -26,15 +27,31 @@ isLive(false), isBrowsingLogFile(false), detection(false), displayFps(false)
 	setWindowFlags(Qt::FramelessWindowHint | Qt::WindowSystemMenuHint);
 #endif
 	ui->setupUi(this);
+
 	init();
 	show();
+
+	QString logDirectoryPath = QString::fromStdString(configs["log_settings"]["log_directory"]);
+
+	// Create and set up the log file reader
+	LogReader* logReader = new LogReader(logDirectoryPath);
+	QThread* logThread = new QThread();
+	logReader->moveToThread(logThread);
+
+	QObject::connect(logThread, &QThread::started, logReader, &LogReader::startReading);
+	QObject::connect(logReader, &LogReader::newLogMessage, ui->textBrowser, &QTextBrowser::append);
+	QObject::connect(logThread, &QThread::finished, logReader, &QObject::deleteLater);
+	QObject::connect(logThread, &QThread::finished, logThread, &QObject::deleteLater);
+
+	// Start the log file reading thread
+	logThread->start();
 }
 
 MainWindow::~MainWindow() { delete ui; }
 
 ///////========== Init Funcs ==========////////////
 void MainWindow::init() {
-	JsonManager::ReadSettings(configs);
+	Settings::ReadSettings(configs);
 	api.Connect(getServerAddress());
 
 	loadConfigs();
@@ -55,12 +72,16 @@ void MainWindow::loadConfigs() {
 	ui->applyBtn->hide();
 	int threshold = configs["camera_settings"]["threshold"];
 
-	//CaptureImgFolderPath = configs["output_settings"]["output_settings"];
 	LOG_INFO("initial threshold is {}", threshold);
 	ui->MotionValue->setText(QString::number(threshold));
 	ui->threasholdSlider->setValue(threshold);
 }
 
+void MainWindow::displayLogs() {
+	while (api.IsConnect()) {
+		QCoreApplication::processEvents();
+	}
+}
 ///////========== Draging window Funcs ==========////////////
 void MainWindow::mousePressEvent(QMouseEvent* event)
 {
@@ -163,64 +184,64 @@ void MainWindow::on_InformationBtn_clicked()
 void MainWindow::on_refreshBtn_clicked()
 {
 	on_cleareBtn_clicked();
-	display_capture_imgs(CaptureImgFolderPath);
+	//display_capture_imgs(CaptureImgFolderPath);
 
 }
 
 void MainWindow::on_browseCapBtn_clicked()
 {
-	QString initialFolderPath = "C:/MobileyeProjectTools/Output/images";
+	// QString initialFolderPath = "C:/MobileyeProjectTools/Output/images";
 
-	QFileDialog dialog(this, tr("Select Folder"), initialFolderPath);
-	dialog.setFileMode(QFileDialog::Directory);  // Allow selecting directories
-	dialog.setOption(QFileDialog::ShowDirsOnly, false);  // Show files within directories
+	// QFileDialog dialog(this, tr("Select Folder"), initialFolderPath);
+	// dialog.setFileMode(QFileDialog::Directory);  // Allow selecting directories
+	// dialog.setOption(QFileDialog::ShowDirsOnly, false);  // Show files within directories
 
-	// Set name filters to display only image files
-	QStringList nameFilters;
-	nameFilters << "Images (*.png *.jpg *.jpeg *.bmp *.gif)";
-	dialog.setNameFilters(nameFilters);
+	// // Set name filters to display only image files
+	// QStringList nameFilters;
+	// nameFilters << "Images (*.png *.jpg *.jpeg *.bmp *.gif)";
+	// dialog.setNameFilters(nameFilters);
 
-	// Execute the dialog and get the selected folder
-	if (dialog.exec() == QDialog::Accepted) {
-		QStringList selectedFiles = dialog.selectedFiles();
-		if (!selectedFiles.isEmpty()) {
-			// selectedFiles[0] will be the selected directory
-			CaptureImgFolderPath = selectedFiles[0];
-			on_cleareBtn_clicked();
-			display_capture_imgs(CaptureImgFolderPath);
-		}
-	}
+	// // Execute the dialog and get the selected folder
+	// if (dialog.exec() == QDialog::Accepted) {
+	// 	QStringList selectedFiles = dialog.selectedFiles();
+	// 	if (!selectedFiles.isEmpty()) {
+	// 		// selectedFiles[0] will be the selected directory
+	// 		//CaptureImgFolderPath = selectedFiles[0];
+	// 		on_cleareBtn_clicked();
+	// 		//display_capture_imgs(CaptureImgFolderPath);
+	// 	}
+	// }
 }
 
 void MainWindow::display_capture_imgs(const QString& folderPath) {
-	QDir directory(folderPath);
-	QStringList imageFilters;
-	imageFilters << "*.png" << "*.jpg";
-	QStringList imageFiles = directory.entryList(imageFilters, QDir::Files);
+	// QDir directory(folderPath);
+	// QStringList imageFilters;
+	// imageFilters << "*.png" << "*.jpg";
+	// QStringList imageFiles = directory.entryList(imageFilters, QDir::Files);
 
-	// Define the desired image size (e.g., 200x200 pixels)
-	int labelSizeWidth = 200;
-	int labelSizeHeight = 200;
+	// // Define the desired image size (e.g., 200x200 pixels)
+	// int labelSizeWidth = 200;
+	// int labelSizeHeight = 200;
 
-	FlowLayout* flowLayout = new FlowLayout;
-	ui->flowGrid->setLayout(flowLayout);
+	// FlowLayout* flowLayout = new FlowLayout;
+	// ui->flowGrid->setLayout(flowLayout);
 
 
-	for (const QString& imageFile : imageFiles) {
-		QLabel* imageLabel = new QLabel(this);
-		imageLabel->setGeometry(10, 10, labelSizeWidth, labelSizeHeight);
-		imageLabel->setScaledContents(false);
+	// for (const QString& imageFile : imageFiles) {
+	// 	QLabel* imageLabel = new QLabel(this);
+	// 	imageLabel->setGeometry(10, 10, labelSizeWidth, labelSizeHeight);
+	// 	imageLabel->setScaledContents(false);
 
-		QPixmap image(folderPath + "/" + imageFile);
-		imageLabel->setPixmap(image.scaled(labelSizeWidth, labelSizeHeight, Qt::KeepAspectRatio));
-		flowLayout->addWidget(imageLabel);
-	}
+	// 	QPixmap image(folderPath + "/" + imageFile);
+	// 	imageLabel->setPixmap(image.scaled(labelSizeWidth, labelSizeHeight, Qt::KeepAspectRatio));
+	// 	flowLayout->addWidget(imageLabel);
+	// }
 }
 
 void MainWindow::on_cleareBtn_clicked()
 {
-	qDeleteAll(ui->flowGrid->findChildren<FlowLayout*>());
-	qDeleteAll(ui->flowGrid->findChildren<QLabel*>());
+	// qDeleteAll(ui->flowGrid->findChildren<FlowLayout*>());
+	// qDeleteAll(ui->flowGrid->findChildren<QLabel*>());
 }
 
 ///////========== Logs-Page Buttons ==========////////////
@@ -350,9 +371,10 @@ void MainWindow::displayFrame(const cv::Mat& image) {
 
 	QPixmap pixmap = QPixmap::fromImage(qImage);
 	QPixmap scaledPixmap = pixmap.scaled(ui->camFrame->contentsRect().size(), Qt::KeepAspectRatio);
-	ui->camFrame->setPixmap(scaledPixmap);
 
-	QApplication::processEvents();
+	if (isLive.load()) {
+		ui->camFrame->setPixmap(scaledPixmap);
+	}
 }
 
 void MainWindow::on_liveBtn_clicked()
@@ -389,55 +411,34 @@ void MainWindow::pollFramesForDisplay() {
 		std::shared_ptr<Frame> frameToShow;
 		while (isLive.load()) {
 			if (api.GetFrameShowQueue()->TryPop(frameToShow)) {
-				auto img = frameToShow->GetFrame();
+				auto frame = frameToShow->GetFrame();
 				auto start = cv::getTickCount();
 				if (detection.load()) {
-					img = api.Detect(img);
+					frame = api.Detect(frame);
 				}
-				if (displayFps) {
-					api.DisplayFPS(img, start);
+				if (displayFps.load()) {
+					api.DisplayFPS(frame, start);
 				}
-				//LOG_INFO("displaying frame No. {} ", frameToShow->GetFrameNum());
+				if (record.load()) {
+					api.GetVideoWriter().write(frame);
+				}
 
-				displayFrame(img);
+				displayFrame(frame);
 			}
 		}
-		ui->camFrame->clear();
-		ui->camFrame->setText("Camera Offline");
 		});
 	pollFramesThread.detach();
 }
 
 void MainWindow::loadComboBoxClasses() {
-	std::string cocoPath = configs["yolo_settings"]["class_list_path"];
-	QFile file(QString::fromStdString(cocoPath));
-	if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
-		qErrnoWarning("Can't load the class list!");
-		return;
-	}
+	ui->checkComboBox->setPlaceholderText("Choose Objects...");
+	ui->checkComboBox->view()->viewport()->installEventFilter(this);
 
-	CheckComboBox* comboBox = new CheckComboBox(this);
-	comboBox->setPlaceholderText("Choose objects..");
-	comboBox->view()->viewport()->installEventFilter(this);
-	QTextStream in(&file);
-	while (!in.atEnd()) {
-		QString line = in.readLine();
-		QStringList classes = line.split(",", Qt::SkipEmptyParts);
-		for (const QString& className : classes) {
-			comboBox->addItem(className);
-		}
-	}
-	file.close();
 
-	QFrame* comboFrame = new QFrame(this);
-	QVBoxLayout* frameLayout = new QVBoxLayout(comboFrame);
-	frameLayout->setAlignment(Qt::AlignTop);
-	frameLayout->addWidget(comboBox);
-	ui->dashboardTools->layout()->addWidget(comboFrame);
-
-	connect(comboBox, &CheckComboBox::checkedItemsChanged, [this](std::string className, bool isChecked) {
+	connect(ui->checkComboBox, &CheckComboBox::checkedItemsChanged, [this](std::string className, bool isChecked) {
 		this->modifyClassList(className, isChecked);
 		});
+
 }
 
 bool MainWindow::eventFilter(QObject* obj, QEvent* event) {
@@ -549,8 +550,15 @@ std::string MainWindow::getServerAddress() {
 void MainWindow::on_applyBtn_clicked()
 {
 	ui->applyBtn->hide();
-	JsonManager::SaveSettings(configs);
+	Settings::SaveSettings(configs);
 	api.UpdateServerSettings(configs);
 }
+
+void MainWindow::on_lineEdit_textEdited(const QString& arg1)
+{
+	configs["grpc_settings"]["camera_ip_address"] = ui->lineEdit->text().toStdString();
+	ui->applyBtn->show();
+}
+
 
 

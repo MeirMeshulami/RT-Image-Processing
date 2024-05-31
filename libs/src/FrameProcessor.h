@@ -1,8 +1,8 @@
 #pragma once
 #include "ClientService.h"
-#include "DBManager.h"
+//#include "DBManager.h"
 #include "Frame.h"
-#include "JsonManager.h"
+#include "Settings.h"
 #include "ThreadSafeQueue.h"
 #include "YoloDetection.h"
 #include <ctime>
@@ -15,36 +15,19 @@
 
 class FrameProcessor {
 public:
-	cv::VideoWriter mVideoWriter;
-	DBManager mDBManager;
-	std::mutex mDBMutex;
-	std::shared_ptr<ClientService> service;
-	std::shared_ptr<grpc::Channel> channel;
-	std::filesystem::path videoPath;
-	std::filesystem::path dbPath;
-	std::filesystem::path imagePath;
-	std::filesystem::path imagesDirectory;
+	cv::VideoWriter videoWriter;
 	nlohmann::json configJson;
-
-
-	void InitVideoWriter();
-
-	void InitTable();
-
-	void CreateImageDirectory();
-
-	void ReleaseVideoWriter();
-
-	cv::Scalar CalcAverageRGB(const cv::Rect& box, const cv::Mat& frame);
-
-	void SaveFrameAsImage(const cv::Mat& frame, const int frameNum);
+	//DBManager mDBManager;
 
 	FrameProcessor();
 
-	void StartFrameProcessing();
-
-	std::shared_ptr<ClientService> GetService();
-
+	void InitVideoWriter();
+	void ReleaseVideoWriter();
 	void DisplayFps(cv::Mat& img, long long start);
 
+	/*void InitTable();
+	void CreateImageDirectory();
+	void SaveFrameAsImage(const cv::Mat& frame, const int frameNum);
+	void StartFrameProcessing();
+	cv::Scalar CalcAverageRGB(const cv::Rect& box, const cv::Mat& frame);*/
 };

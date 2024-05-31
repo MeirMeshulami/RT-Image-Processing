@@ -1,6 +1,6 @@
-#include "JsonManager.h"
+#include "Settings.h"
 
-void JsonManager::ReadSettings(nlohmann::json& configs) {
+void Settings::ReadSettings(nlohmann::json& configs) {
 	if (!std::filesystem::exists(JSON_FILE_PATH))
 		throw std::runtime_error("JSON configuration file does not exist.");
 
@@ -24,7 +24,7 @@ void JsonManager::ReadSettings(nlohmann::json& configs) {
 	LOG_DEBUG("JSON configuration file parsed successfully.");
 }
 
-void JsonManager::SaveSettings(nlohmann::json& configs) {
+void Settings::SaveSettings(nlohmann::json& configs) {
 	std::ofstream outputFile(JSON_FILE_PATH);
 	if (!outputFile.is_open()) {
 		std::string errorMsg = "Failed to open JSON file for saving settings.";

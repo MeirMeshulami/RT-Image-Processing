@@ -4,7 +4,7 @@ ServerService::ServerService() : cam(0), isSettingsChanged(false) {
 	if (!cam.isOpened()) {
 		throw std::runtime_error("The camera is already open in another program !");
 	}
-	JsonManager::ReadSettings(configs);
+	Settings::ReadSettings(configs);
 }
 
 grpc::Status ServerService::GetFrame(grpc::ServerContext* context, const FrameRequest* request, grpc::ServerWriter<FrameResponse>* writer) {
@@ -22,7 +22,7 @@ grpc::Status ServerService::GetFrame(grpc::ServerContext* context, const FrameRe
 		}
 
 		if (isSettingsChanged.load()) {
-			JsonManager::ReadSettings(configs);
+			Settings::ReadSettings(configs);
 			isSettingsChanged.store(false);
 		}
 		double threshold = configs["camera_settings"]["threshold"];
@@ -81,7 +81,7 @@ grpc::Status ServerService::UpdateConfigurations(grpc::ServerContext* context, c
 	try {
 		nlohmann::json configs = nlohmann::json::parse(request->file());
 		configs.dump(4);
-		JsonManager::SaveSettings(configs);
+		Settings::SaveSettings(configs);
 		response->set_success(true);
 		isSettingsChanged.store(true);
 		LOG_INFO("Server settings update has sended successfully.");

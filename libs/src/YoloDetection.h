@@ -1,6 +1,6 @@
 #pragma once
-#include "JsonManager.h"
 #include "LogManager.h"
+#include "Settings.h"
 #include <filesystem>
 #include <fstream>
 #include <json.hpp>

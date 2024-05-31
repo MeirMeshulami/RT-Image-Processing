@@ -1,4 +1,4 @@
-#include "JsonManager.h"
+#include "Settings.h"
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
@@ -9,9 +9,9 @@ using namespace ::testing;
 
 #pragma region Client
 
-TEST(JSONSettings, loadConfigs) {
+TEST(settings, loadConfigs) {
 	nlohmann::json configs;
-	JsonManager::ReadSettings(configs);
+	Settings::ReadSettings(configs);
 	std::string serverIP = configs["grpc_settings"]["camera_ip_address"];
 	//std::cout << serverIP << std::endl;
 	EXPECT_EQ("localhost", serverIP);

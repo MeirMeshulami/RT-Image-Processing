@@ -1,6 +1,7 @@
 #pragma once
 #include "ClientService.h"
 #include "FrameProcessor.h"
+#include "LogManager.h"
 
 class API {
 private:
@@ -44,4 +45,11 @@ public:
 	bool UpdateServerSettings(nlohmann::json& configs) {
 		return client.UpdateServerSettings(configs);
 	}
+
+	cv::VideoWriter& GetVideoWriter() { return frameProcessor.videoWriter; }
+
+	std::shared_ptr<spdlog::logger> GetLogger() {
+		return LogManager::GetInstance().GetCommonLogger();
+	}
 };
+

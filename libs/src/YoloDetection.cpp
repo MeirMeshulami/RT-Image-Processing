@@ -4,7 +4,7 @@
 
 Yolo::Yolo() :isDrawLabel(false)
 {
-	JsonManager::ReadSettings(configJson);
+	Settings::ReadSettings(configJson);
 	LoadNet();
 	LoadClassList();
 	EnableGpuProcessing(net);
