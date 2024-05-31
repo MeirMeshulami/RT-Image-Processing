@@ -93,7 +93,7 @@ For support or questions, please contact meir.meshoulami@gmail.com.
 ###
 
 <div align="center">
-    <img align="center" height="130" style=border-radius:20px; src="/resources/yolov5.png"  />
+    <img align="center" height="130" style=border-radius:20px; src="/resources/images/yolov5.png"  />
 </div>
 
 ###
