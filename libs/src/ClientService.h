@@ -22,6 +22,8 @@ public:
 	void StartStreamFrames();
 	void StopStreamFrames();
 	bool UpdateServerSettings(nlohmann::json& configs);
+	bool RetryToConnect();
+	void UpdateConnectionStatus();
 
 	std::atomic<bool> stopStreaming;
 	std::atomic<bool> isConnect;

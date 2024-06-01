@@ -42,7 +42,6 @@ isLive(false), isBrowsingLogFile(false), detection(false), displayFps(false), re
 	QObject::connect(logReader, &LogReader::newLogMessage, ui->textBrowser, &QTextBrowser::append);
 	QObject::connect(logThread, &QThread::finished, logReader, &QObject::deleteLater);
 	QObject::connect(logThread, &QThread::finished, logThread, &QObject::deleteLater);
-
 	// Start the log file reading thread
 	logThread->start();
 }
@@ -53,6 +52,7 @@ MainWindow::~MainWindow() { delete ui; }
 void MainWindow::init() {
 	Settings::ReadSettings(configs);
 	api.Connect(getServerAddress());
+	setConnectionStatus(api.IsConnect()); //TODO
 
 	loadConfigs();
 	loadComboBoxClasses();
@@ -72,7 +72,6 @@ void MainWindow::loadConfigs() {
 	ui->applyBtn->hide();
 	int threshold = configs["camera_settings"]["threshold"];
 
-	LOG_INFO("initial threshold is {}", threshold);
 	ui->MotionValue->setText(QString::number(threshold));
 	ui->threasholdSlider->setValue(threshold);
 }
@@ -380,8 +379,7 @@ void MainWindow::displayFrame(const cv::Mat& image) {
 void MainWindow::on_liveBtn_clicked()
 {
 	if (!api.IsConnect()) {
-		QMessageBox::warning(this, "Connection Error", "Camera is not connected!");
-		return;
+		connectionDialog();
 	}
 	bool wasLive = isLive.exchange(true);
 	if (wasLive) {
@@ -392,6 +390,28 @@ void MainWindow::on_liveBtn_clicked()
 	api.StartStream();
 	// Pop frames from queue and emit displayFrame()
 	pollFramesForDisplay();
+}
+
+void MainWindow::connectionDialog() {
+	QMessageBox msgBox(this);
+	msgBox.setWindowTitle("Connection Error");
+	msgBox.setText("Camera is not connected!");
+	msgBox.setIcon(QMessageBox::Warning);
+	QPushButton* stayOfflineButton = msgBox.addButton("Stay Offline", QMessageBox::RejectRole);
+	QPushButton* retryButton = msgBox.addButton("Retry", QMessageBox::AcceptRole);
+	msgBox.exec();
+
+	if (msgBox.clickedButton() == stayOfflineButton) {
+		std::cout << "Stay Offline button clicked." << std::endl;
+		return;
+	}
+	else if (msgBox.clickedButton() == retryButton) {
+		std::cout << "Retry button clicked." << std::endl;
+		bool sucess = api.RetryToConnect();
+		if (!sucess) {
+			QMessageBox::critical(this, "Connection Error", "Failed to connect to the server after several attempts !");
+		}
+	}
 }
 
 void MainWindow::on_stopLiveBtn_clicked()
@@ -498,7 +518,6 @@ void MainWindow::on_userBtn_clicked()
 }
 
 ///////========== Settings->Application  ==========////////////
-
 void MainWindow::on_threasholdSlider_valueChanged(int value)
 {
 	ui->MotionValue->setText(QString::number(value));
@@ -507,7 +526,6 @@ void MainWindow::on_threasholdSlider_valueChanged(int value)
 }
 
 ///////========== CheckBoxes Pannel  ==========////////////
-
 void MainWindow::on_detectCheck_stateChanged(int arg1)
 {
 	if (arg1 == Qt::Checked) {
@@ -558,6 +576,25 @@ void MainWindow::on_lineEdit_textEdited(const QString& arg1)
 {
 	configs["grpc_settings"]["camera_ip_address"] = ui->lineEdit->text().toStdString();
 	ui->applyBtn->show();
+}
+
+void MainWindow::setConnectionStatus(bool isConnected) {
+
+	/*std::thread isLiveThread([this, &isConnected] {
+		while (true) {
+			if (isConnected) {
+				QPixmap icon(":/feather/green-online.png");
+				ui->connectionIcon->setPixmap(icon);
+				ui->connectionStatus->setText("Online");
+			}
+			else {
+				QPixmap icon(":/feather/red-offline.png");
+				ui->connectionIcon->setPixmap(icon);
+				ui->connectionStatus->setText("Offline");
+			}
+		}
+		});
+	isLiveThread.detach();*/
 }
 
 

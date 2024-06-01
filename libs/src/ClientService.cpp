@@ -3,7 +3,6 @@
 #include "Settings.h"
 
 
-
 ClientService::ClientService() : stopStreaming(false), frameShowQueue(std::make_shared<ThreadSafeQueue<std::shared_ptr<Frame>>>()) {}
 
 void ClientService::Connect(std::string serverAddress) {
@@ -16,26 +15,8 @@ void ClientService::Connect(std::string serverAddress) {
 		if (!stub)
 			LOG_ERROR("Cannot create a channel !");
 		else
-			LOG_INFO("Channel has created successfully !");
-
-		auto state = channel->GetState(true);
-		int retries = 30;
-		while (state != grpc_connectivity_state::GRPC_CHANNEL_READY && retries > 0) {
-			LOG_INFO("Waiting for channel to be ready, current state: {}", state);
-
-			channel->WaitForStateChange(state, std::chrono::system_clock::now() + std::chrono::seconds(10));
-			state = channel->GetState(true);
-			retries--;
-		}
-
-		if (state == grpc_connectivity_state::GRPC_CHANNEL_READY) {
-			LOG_INFO("Client connected.");
-			isConnect.store(true);
-		}
-		else {
-			LOG_ERROR("Failed to connect to the server after several attempts.");
-			isConnect.store(false);
-		}
+			LOG_INFO("Channel has created successfully.");
+		RetryToConnect();
 		});
 
 	connectionThread.detach();
@@ -87,7 +68,6 @@ void ClientService::GetFrames() {
 	if (!status.ok()) {
 		LOG_ERROR("Error while getting frames: {} ", status.error_message());
 	}
-	return;
 }
 
 void ClientService::PushFrameIntoQueue(std::shared_ptr<Frame> frame) {
@@ -156,3 +136,39 @@ bool ClientService::UpdateServerSettings(nlohmann::json& configs) {
 }
 
 std::shared_ptr<ThreadSafeQueue<std::shared_ptr<Frame>>> ClientService::GetFrameShowQueue() { return frameShowQueue; }
+
+bool ClientService::RetryToConnect() {
+	auto state = channel->GetState(true);
+
+	//std::thread retryThread([this, &state] {
+	int maxAttempts = 30;
+	int attempt = 0;
+	int backoffSec = 5;
+	int backoffMultiplier = 1.5;
+	while (state != grpc_connectivity_state::GRPC_CHANNEL_READY && attempt < maxAttempts) {
+		LOG_INFO("Waiting for server to be ready, attempt No.: {} ,current state: {}", attempt, state);
+		channel->WaitForStateChange(state, std::chrono::system_clock::now() + std::chrono::seconds(backoffSec));
+		state = channel->GetState(true);
+		attempt++;
+		backoffSec *= backoffMultiplier;
+	}
+	UpdateConnectionStatus();
+
+	//	});
+	//retryThread.detach();
+
+	return state == grpc_connectivity_state::GRPC_CHANNEL_READY;
+}
+
+void ClientService::UpdateConnectionStatus() {
+	auto state = channel->GetState(true);
+
+	if (state != grpc_connectivity_state::GRPC_CHANNEL_READY) {
+		LOG_ERROR("Failed to connect to the server");
+		isConnect.store(false);
+	}
+	else {
+		LOG_INFO("Client connected.");
+		isConnect.store(true);
+	}
+}

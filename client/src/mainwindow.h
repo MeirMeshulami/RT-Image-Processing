@@ -39,6 +39,8 @@ protected:
 	std::string getServerAddress();
 	void pollFramesForDisplay();
 	void displayFrame(const cv::Mat& frame);
+	void connectionDialog();
+	void setConnectionStatus(bool isConnected);
 public:
 	MainWindow(QWidget* parent = nullptr);
 	~MainWindow();

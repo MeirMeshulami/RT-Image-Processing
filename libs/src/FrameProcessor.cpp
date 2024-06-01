@@ -5,7 +5,7 @@
 
 FrameProcessor::FrameProcessor() {
 	Settings::ReadSettings(configJson);
-	InitVideoWriter();
+	//InitVideoWriter(); //TODO
 }
 
 void FrameProcessor::DisplayFps(cv::Mat& img, long long start) {

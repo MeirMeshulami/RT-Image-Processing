@@ -670,6 +670,35 @@ border: 1px solid #383838;</string>
                </property>
               </widget>
              </item>
+             <item>
+              <widget class="QFrame" name="frame_21">
+               <property name="frameShape">
+                <enum>QFrame::StyledPanel</enum>
+               </property>
+               <property name="frameShadow">
+                <enum>QFrame::Raised</enum>
+               </property>
+               <layout class="QHBoxLayout" name="horizontalLayout_33">
+                <item>
+                 <widget class="QLabel" name="connectionStatus">
+                  <property name="text">
+                   <string>Offline</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QLabel" name="connectionIcon">
+                  <property name="text">
+                   <string/>
+                  </property>
+                  <property name="pixmap">
+                   <pixmap resource="../resources.qrc">:/feather/red-offline.png</pixmap>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </widget>
+             </item>
             </layout>
            </widget>
           </item>
@@ -1255,6 +1284,9 @@ font-size:10pt;
                           </property>
                           <item>
                            <widget class="CheckComboBox" name="checkComboBox">
+                            <property name="placeholderText">
+                             <string>Choose objects...</string>
+                            </property>
                             <item>
                              <property name="text">
                               <string>ALL</string>
@@ -1756,7 +1788,7 @@ QPushButton{
                       <rect>
                        <x>0</x>
                        <y>0</y>
-                       <width>897</width>
+                       <width>534</width>
                        <height>1142</height>
                       </rect>
                      </property>
@@ -2712,8 +2744,8 @@ font-size:11pt;
                       <rect>
                        <x>0</x>
                        <y>0</y>
-                       <width>462</width>
-                       <height>276</height>
+                       <width>434</width>
+                       <height>272</height>
                       </rect>
                      </property>
                      <property name="styleSheet">

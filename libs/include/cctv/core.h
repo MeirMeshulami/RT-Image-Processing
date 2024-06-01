@@ -22,6 +22,10 @@ public:
 		client.Connect(serverAddress);
 	}
 
+	bool RetryToConnect() {
+		return client.RetryToConnect();
+	}
+
 	void Disconnect() {
 		client.DestroyConnection();
 	}
