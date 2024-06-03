@@ -13,6 +13,8 @@
 #include <QProcess>
 #include <string>
 #include <windows.h>
+#include <VideoPlayer.h>
+#include <qaudiooutput.h>
 
 
 
@@ -69,11 +71,39 @@ void MainWindow::deInit() {
 }
 
 void MainWindow::loadConfigs() {
+    ////===== Camera Settings =====/////
 	ui->applyBtn->hide();
 	int threshold = configs["camera_settings"]["threshold"];
-
 	ui->MotionValue->setText(QString::number(threshold));
 	ui->threasholdSlider->setValue(threshold);
+
+    int maxDiff=configs["camera_settings"]["max_diff_pixels"];
+    ui->maxDiffValue->setText(QString::number(maxDiff));
+    ui->maxDiffSlider->setValue(maxDiff);
+
+    ////===== Network Settings =====/////
+    std::string serverIP=configs["grpc_settings"]["camera_ip_address"];
+    ui->serverIPvalue->setText(QString::fromStdString(serverIP));
+
+    std::string port=configs["grpc_settings"]["port_number"];
+    ui->portNumberBox->setValue(std::stoi(port));
+
+    ////===== Yolo Settings =====/////
+    std::string netModel= configs["yolo_settings"]["yolo_model"];
+    ui->netModelList->setCurrentText(QString::fromStdString(netModel));
+
+    ui->frameHeight->setValue(configs["yolo_settings"]["input_height"]);
+    ui->frameWidth->setValue(configs["yolo_settings"]["input_width"]);
+    ui->scoreThresholdVal->setValue(configs["yolo_settings"]["score_threshold"]);
+    ui->NMSthresholdVal->setValue(configs["yolo_settings"]["nms_threshold"]);
+    ui->confidanceThresholdVal->setValue(configs["yolo_settings"]["confidence_threshold"]);
+
+    ////===== Log Settings =====/////
+    std::string loggerLevel= configs["log_settings"]["log_level"];
+    ui->logLevel->setCurrentText(QString::fromStdString(loggerLevel));
+
+    std::string logFolder=configs["log_settings"]["log_directory"];
+    ui->outputFolderPath->setText(QString::fromStdString(logFolder));
 }
 
 void MainWindow::displayLogs() {
@@ -147,7 +177,6 @@ void MainWindow::on_dataAnalBtn_clicked()
 	ui->homeBtn->setStyleSheet("");
 
 	ui->stackedWidget->setCurrentIndex(1);
-	on_refreshBtn_clicked();
 }
 
 void MainWindow::on_reportBtn_clicked()
@@ -177,70 +206,6 @@ void MainWindow::on_InformationBtn_clicked()
 	ui->homeBtn->setStyleSheet("");
 
 	ui->stackedWidget->setCurrentIndex(4);
-}
-
-///////========== Capture-Page Buttons ==========////////////
-void MainWindow::on_refreshBtn_clicked()
-{
-	on_cleareBtn_clicked();
-	//display_capture_imgs(CaptureImgFolderPath);
-
-}
-
-void MainWindow::on_browseCapBtn_clicked()
-{
-	// QString initialFolderPath = "C:/MobileyeProjectTools/Output/images";
-
-	// QFileDialog dialog(this, tr("Select Folder"), initialFolderPath);
-	// dialog.setFileMode(QFileDialog::Directory);  // Allow selecting directories
-	// dialog.setOption(QFileDialog::ShowDirsOnly, false);  // Show files within directories
-
-	// // Set name filters to display only image files
-	// QStringList nameFilters;
-	// nameFilters << "Images (*.png *.jpg *.jpeg *.bmp *.gif)";
-	// dialog.setNameFilters(nameFilters);
-
-	// // Execute the dialog and get the selected folder
-	// if (dialog.exec() == QDialog::Accepted) {
-	// 	QStringList selectedFiles = dialog.selectedFiles();
-	// 	if (!selectedFiles.isEmpty()) {
-	// 		// selectedFiles[0] will be the selected directory
-	// 		//CaptureImgFolderPath = selectedFiles[0];
-	// 		on_cleareBtn_clicked();
-	// 		//display_capture_imgs(CaptureImgFolderPath);
-	// 	}
-	// }
-}
-
-void MainWindow::display_capture_imgs(const QString& folderPath) {
-	// QDir directory(folderPath);
-	// QStringList imageFilters;
-	// imageFilters << "*.png" << "*.jpg";
-	// QStringList imageFiles = directory.entryList(imageFilters, QDir::Files);
-
-	// // Define the desired image size (e.g., 200x200 pixels)
-	// int labelSizeWidth = 200;
-	// int labelSizeHeight = 200;
-
-	// FlowLayout* flowLayout = new FlowLayout;
-	// ui->flowGrid->setLayout(flowLayout);
-
-
-	// for (const QString& imageFile : imageFiles) {
-	// 	QLabel* imageLabel = new QLabel(this);
-	// 	imageLabel->setGeometry(10, 10, labelSizeWidth, labelSizeHeight);
-	// 	imageLabel->setScaledContents(false);
-
-	// 	QPixmap image(folderPath + "/" + imageFile);
-	// 	imageLabel->setPixmap(image.scaled(labelSizeWidth, labelSizeHeight, Qt::KeepAspectRatio));
-	// 	flowLayout->addWidget(imageLabel);
-	// }
-}
-
-void MainWindow::on_cleareBtn_clicked()
-{
-	// qDeleteAll(ui->flowGrid->findChildren<FlowLayout*>());
-	// qDeleteAll(ui->flowGrid->findChildren<QLabel*>());
 }
 
 ///////========== Logs-Page Buttons ==========////////////
@@ -525,6 +490,25 @@ void MainWindow::on_threasholdSlider_valueChanged(int value)
 	ui->applyBtn->show();
 }
 
+void MainWindow::on_maxDiffSlider_valueChanged(int value)
+{
+    ui->maxDiffValue->setText(QString::number(value));
+    configs["camera_settings"]["max_diff_pixels"] = value;
+    ui->applyBtn->show();
+}
+
+void MainWindow::on_serverIPvalue_textEdited(const QString& arg1)
+{
+    configs["grpc_settings"]["camera_ip_address"] = ui->serverIPvalue->text().toStdString();
+    ui->applyBtn->show();
+}
+
+void MainWindow::on_portNumberBox_valueChanged(int arg1)
+{
+    configs["grpc_settings"]["port_number"] = std::to_string(arg1);
+    ui->applyBtn->show();
+}
+
 ///////========== CheckBoxes Pannel  ==========////////////
 void MainWindow::on_detectCheck_stateChanged(int arg1)
 {
@@ -572,12 +556,6 @@ void MainWindow::on_applyBtn_clicked()
 	api.UpdateServerSettings(configs);
 }
 
-void MainWindow::on_lineEdit_textEdited(const QString& arg1)
-{
-	configs["grpc_settings"]["camera_ip_address"] = ui->lineEdit->text().toStdString();
-	ui->applyBtn->show();
-}
-
 void MainWindow::setConnectionStatus(bool isConnected) {
 
 	/*std::thread isLiveThread([this, &isConnected] {
@@ -596,6 +574,14 @@ void MainWindow::setConnectionStatus(bool isConnected) {
 		});
 	isLiveThread.detach();*/
 }
+
+
+
+
+
+
+
+
 
 
 

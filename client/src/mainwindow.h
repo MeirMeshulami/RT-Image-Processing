@@ -54,10 +54,8 @@ private slots:
 	void on_dataAnalBtn_clicked();
 	void on_reportBtn_clicked();
 	void on_exit_clicked();
-	void on_refreshBtn_clicked();
 	void on_extend_clicked();
 	void on_minimize_clicked();
-	void on_cleareBtn_clicked();
 	void on_liveBtn_clicked();
 	void on_SettingsBtn_clicked();
 	void on_showLogsBtn_clicked();
@@ -73,13 +71,15 @@ private slots:
 	void on_userBtn_clicked();
 	void on_stopLiveBtn_clicked();
 	void on_threasholdSlider_valueChanged(int value);
-	void display_capture_imgs(const QString& folderPath);
-	void on_browseCapBtn_clicked();
 	void modifyClassList(const std::string className, bool isChecked);	void on_detectCheck_stateChanged(int arg1);
 	void on_fpsCheck_stateChanged(int arg1);
 	void on_applyBtn_clicked();
 	void on_drawCheck_stateChanged(int arg1);
-	void on_lineEdit_textEdited(const QString& arg1);
+    void on_serverIPvalue_textEdited(const QString& arg1);
+    void on_maxDiffSlider_valueChanged(int value);
+
+
+    void on_portNumberBox_valueChanged(int arg1);
 
 private:
 	Ui::MainWindow* ui;

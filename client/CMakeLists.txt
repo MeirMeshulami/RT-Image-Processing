@@ -9,8 +9,8 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets)
-find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets)
+find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets MultimediaWidgets Multimedia)
+find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets MultimediaWidgets Multimedia)
 find_package(OpenCV REQUIRED)
 
 # Include libs as a subdirectory
@@ -31,6 +31,7 @@ set(PROJECT_SOURCES
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
     qt_add_executable(GUI MANUAL_FINALIZATION ${PROJECT_SOURCES}
+        src/custom/VideoPlayer.h src/custom/VideoPlayer.cpp
        )
 else()
     add_executable(GUI ${PROJECT_SOURCES})
@@ -42,7 +43,7 @@ target_include_directories(${PROJECT_NAME} PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/src
     ${CMAKE_CURRENT_SOURCE_DIR}/src/custom
  )
-target_link_libraries(GUI PRIVATE Qt${QT_VERSION_MAJOR}::Widgets)
+target_link_libraries(GUI PRIVATE Qt${QT_VERSION_MAJOR}::Widgets Qt6::MultimediaWidgets Qt6::Multimedia)
 
 # Link to libs and GUI
 target_link_libraries(${PROJECT_NAME} PRIVATE libs)
