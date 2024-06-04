@@ -9,7 +9,7 @@
     "port_number": "50051"
   },
   "yolo_settings": {
-    "yolo_model":"yolov5n",
+    "yolo_model": "yolov5n",
     "class_list_path": "../../resources/CocoList.txt",
     "net_path": "../../resources/yolo-models/",
     "input_width": 640,
@@ -23,9 +23,9 @@
     "log_directory": "../../out/logs"
   },
   "output_settings": {
-    "video_path": "../../out/output_video.avi",
+    "out_dir_path":"../../out/",
+    "video_path": "../../out/records/",
     "db_path": "../../out/DetectionDetailsWithTime.db",
     "image_path": "../../out/images/"
   }
-
 }

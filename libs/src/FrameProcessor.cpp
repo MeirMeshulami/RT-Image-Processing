@@ -5,7 +5,36 @@
 
 FrameProcessor::FrameProcessor() {
 	Settings::ReadSettings(configJson);
-	//InitVideoWriter(); //TODO
+}
+
+void FrameProcessor::InitVideoWriter() {
+	LOG_DEBUG("Creating video writer...");
+	std::string videoPath = configJson["output_settings"]["video_path"];
+
+	auto now = std::chrono::system_clock::now();
+	std::time_t currentTime = std::chrono::system_clock::to_time_t(now);
+
+	std::stringstream ss;
+	ss << std::put_time(std::localtime(&currentTime), "%d-%m-%Y_%H-%M-%S");
+	std::string dateTimeStr = ss.str();
+
+	videoPath += "record_" + dateTimeStr + ".mp4";
+	std::string outDir = configJson["output_settings"]["out_dir_path"];
+	std::filesystem::create_directory(outDir + "records");
+
+	videoWriter.open(videoPath, cv::VideoWriter::fourcc('M', 'P', '4', 'V'), 15, cv::Size(640, 480));
+
+	if (!videoWriter.isOpened()) {
+		throw std::runtime_error("Failed to open video writer.");
+	}
+
+	LOG_DEBUG("Video writer initialized with file: {}", videoPath);
+}
+
+void FrameProcessor::ReleaseVideoWriter() {
+	LOG_INFO("Releasing video writer...");
+	videoWriter.release();
+	LOG_INFO("Video writer released.");
 }
 
 void FrameProcessor::DisplayFps(cv::Mat& img, long long start) {
@@ -17,24 +46,6 @@ void FrameProcessor::DisplayFps(cv::Mat& img, long long start) {
 	fps = fps > maxFps ? maxFps : fps;
 	std::string fpsText_after_processing = "FPS: " + std::to_string(fps);
 	cv::putText(img, fpsText_after_processing, cv::Point(10, 30), cv::FONT_HERSHEY_SIMPLEX, 0.7, cv::Scalar(0, 255, 0), 2);
-}
-
-void FrameProcessor::ReleaseVideoWriter() {
-	LOG_INFO("Releasing video writer...");
-	videoWriter.release();
-	LOG_INFO("Video writer released.");
-}
-
-void FrameProcessor::InitVideoWriter() {
-	LOG_DEBUG("Creating video writer...");
-	std::filesystem::path videoPath = configJson["output_settings"]["video_path"];
-	videoWriter.open(videoPath.string(), cv::VideoWriter::fourcc('M', 'J', 'P', 'G'), 3, cv::Size(640, 480));
-
-	if (!videoWriter.isOpened()) {
-		throw std::runtime_error("Failed to open video writer.");
-	}
-
-	LOG_DEBUG("Video writer initialized.");
 }
 
 //void FrameProcessor::CreateImageDirectory() {

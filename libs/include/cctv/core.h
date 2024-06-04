@@ -14,7 +14,7 @@ public:
 		LOG_INFO("\n\n===============================================\nApplication start running...\n===============================================\n\n");
 	}
 
-	bool IsConnect() { return client.isConnect.load(); }
+	std::atomic<bool> IsConnect() { return client.isConnect.load(); }
 
 	std::atomic<bool>& IsDrawLabel() { return yolo.isDrawLabel; }
 
@@ -36,9 +36,15 @@ public:
 		frameProcessor.DisplayFps(img, start);
 	}
 
-	void StartStream() { client.StartStreamFrames(); }
+	void StartStream() {
+		frameProcessor.InitVideoWriter();
+		client.StartStreamFrames();
+	}
 
-	void StopStream() { client.StopStreamFrames(); }
+	void StopStream() {
+		client.StopStreamFrames();
+		frameProcessor.ReleaseVideoWriter();
+	}
 
 	std::shared_ptr<ThreadSafeQueue<std::shared_ptr<Frame>>> GetFrameShowQueue() {
 		return client.GetFrameShowQueue();

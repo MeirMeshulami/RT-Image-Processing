@@ -40,16 +40,17 @@ protected:
 	void pollFramesForDisplay();
 	void displayFrame(const cv::Mat& frame);
 	void connectionDialog();
-	void setConnectionStatus(bool isConnected);
+	void setConnectionStatus();
 public:
 	MainWindow(QWidget* parent = nullptr);
 	~MainWindow();
 
 signals:
 	void frameReady(const cv::Mat& frame);
+	void connectionStatusChanged(const bool isConnect);
 
 private slots:
-
+	void on_connection_change(bool isConnect);
 	void on_homeBtn_clicked();
 	void on_dataAnalBtn_clicked();
 	void on_reportBtn_clicked();
@@ -75,11 +76,11 @@ private slots:
 	void on_fpsCheck_stateChanged(int arg1);
 	void on_applyBtn_clicked();
 	void on_drawCheck_stateChanged(int arg1);
-    void on_serverIPvalue_textEdited(const QString& arg1);
-    void on_maxDiffSlider_valueChanged(int value);
+	void on_serverIPvalue_textEdited(const QString& arg1);
+	void on_maxDiffSlider_valueChanged(int value);
 
 
-    void on_portNumberBox_valueChanged(int arg1);
+	void on_portNumberBox_valueChanged(int arg1);
 
 private:
 	Ui::MainWindow* ui;
@@ -92,10 +93,12 @@ private:
 	bool isBrowsingLogFile;
 	nlohmann::json configs;
 	std::atomic<bool> isLive;
+	std::atomic<bool> isAppRunning;
 	std::atomic<bool> detection;
 	std::atomic<bool> displayFps;
 	std::atomic<bool> record;
 	std::shared_ptr<spdlog::logger>logger;
+	std::thread connectStatusThread;
 };
 
 #endif // MAINWINDOW_H

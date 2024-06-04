@@ -140,7 +140,6 @@ std::shared_ptr<ThreadSafeQueue<std::shared_ptr<Frame>>> ClientService::GetFrame
 bool ClientService::RetryToConnect() {
 	auto state = channel->GetState(true);
 
-	//std::thread retryThread([this, &state] {
 	int maxAttempts = 30;
 	int attempt = 0;
 	int backoffSec = 5;
@@ -153,9 +152,6 @@ bool ClientService::RetryToConnect() {
 		backoffSec *= backoffMultiplier;
 	}
 	UpdateConnectionStatus();
-
-	//	});
-	//retryThread.detach();
 
 	return state == grpc_connectivity_state::GRPC_CHANNEL_READY;
 }

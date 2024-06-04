@@ -4,6 +4,7 @@
 #include "mainwindow.h"
 
 #include <iostream>
+#include <qaudiooutput.h>
 #include <QDir>
 #include <QFile>
 #include <QFileDialog>
@@ -12,14 +13,13 @@
 #include <QModelIndex>
 #include <QProcess>
 #include <string>
-#include <windows.h>
 #include <VideoPlayer.h>
-#include <qaudiooutput.h>
+#include <windows.h>
 
 
 
 MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent), ui(new Ui::MainWindow),
-isLive(false), isBrowsingLogFile(false), detection(false), displayFps(false), record(false)
+isLive(false), isBrowsingLogFile(false), detection(false), displayFps(false), record(false), isAppRunning(true)
 {
 #ifdef Q_OS_WIN
 	// For Windows
@@ -54,7 +54,7 @@ MainWindow::~MainWindow() { delete ui; }
 void MainWindow::init() {
 	Settings::ReadSettings(configs);
 	api.Connect(getServerAddress());
-	setConnectionStatus(api.IsConnect()); //TODO
+	setConnectionStatus();
 
 	loadConfigs();
 	loadComboBoxClasses();
@@ -66,44 +66,46 @@ void MainWindow::init() {
 }
 
 void MainWindow::deInit() {
+	isAppRunning.store(false);
 	on_stopLiveBtn_clicked();
 	api.Disconnect();
+	connectStatusThread.join();
 }
 
 void MainWindow::loadConfigs() {
-    ////===== Camera Settings =====/////
+	////===== Camera Settings =====/////
 	ui->applyBtn->hide();
 	int threshold = configs["camera_settings"]["threshold"];
 	ui->MotionValue->setText(QString::number(threshold));
 	ui->threasholdSlider->setValue(threshold);
 
-    int maxDiff=configs["camera_settings"]["max_diff_pixels"];
-    ui->maxDiffValue->setText(QString::number(maxDiff));
-    ui->maxDiffSlider->setValue(maxDiff);
+	int maxDiff = configs["camera_settings"]["max_diff_pixels"];
+	ui->maxDiffValue->setText(QString::number(maxDiff));
+	ui->maxDiffSlider->setValue(maxDiff);
 
-    ////===== Network Settings =====/////
-    std::string serverIP=configs["grpc_settings"]["camera_ip_address"];
-    ui->serverIPvalue->setText(QString::fromStdString(serverIP));
+	////===== Network Settings =====/////
+	std::string serverIP = configs["grpc_settings"]["camera_ip_address"];
+	ui->serverIPvalue->setText(QString::fromStdString(serverIP));
 
-    std::string port=configs["grpc_settings"]["port_number"];
-    ui->portNumberBox->setValue(std::stoi(port));
+	std::string port = configs["grpc_settings"]["port_number"];
+	ui->portNumberBox->setValue(std::stoi(port));
 
-    ////===== Yolo Settings =====/////
-    std::string netModel= configs["yolo_settings"]["yolo_model"];
-    ui->netModelList->setCurrentText(QString::fromStdString(netModel));
+	////===== Yolo Settings =====/////
+	std::string netModel = configs["yolo_settings"]["yolo_model"];
+	ui->netModelList->setCurrentText(QString::fromStdString(netModel));
 
-    ui->frameHeight->setValue(configs["yolo_settings"]["input_height"]);
-    ui->frameWidth->setValue(configs["yolo_settings"]["input_width"]);
-    ui->scoreThresholdVal->setValue(configs["yolo_settings"]["score_threshold"]);
-    ui->NMSthresholdVal->setValue(configs["yolo_settings"]["nms_threshold"]);
-    ui->confidanceThresholdVal->setValue(configs["yolo_settings"]["confidence_threshold"]);
+	ui->frameHeight->setValue(configs["yolo_settings"]["input_height"]);
+	ui->frameWidth->setValue(configs["yolo_settings"]["input_width"]);
+	ui->scoreThresholdVal->setValue(configs["yolo_settings"]["score_threshold"]);
+	ui->NMSthresholdVal->setValue(configs["yolo_settings"]["nms_threshold"]);
+	ui->confidanceThresholdVal->setValue(configs["yolo_settings"]["confidence_threshold"]);
 
-    ////===== Log Settings =====/////
-    std::string loggerLevel= configs["log_settings"]["log_level"];
-    ui->logLevel->setCurrentText(QString::fromStdString(loggerLevel));
+	////===== Log Settings =====/////
+	std::string loggerLevel = configs["log_settings"]["log_level"];
+	ui->logLevel->setCurrentText(QString::fromStdString(loggerLevel));
 
-    std::string logFolder=configs["log_settings"]["log_directory"];
-    ui->outputFolderPath->setText(QString::fromStdString(logFolder));
+	std::string logFolder = configs["log_settings"]["log_directory"];
+	ui->outputFolderPath->setText(QString::fromStdString(logFolder));
 }
 
 void MainWindow::displayLogs() {
@@ -404,6 +406,7 @@ void MainWindow::pollFramesForDisplay() {
 				if (displayFps.load()) {
 					api.DisplayFPS(frame, start);
 				}
+				record.store(true);
 				if (record.load()) {
 					api.GetVideoWriter().write(frame);
 				}
@@ -492,21 +495,21 @@ void MainWindow::on_threasholdSlider_valueChanged(int value)
 
 void MainWindow::on_maxDiffSlider_valueChanged(int value)
 {
-    ui->maxDiffValue->setText(QString::number(value));
-    configs["camera_settings"]["max_diff_pixels"] = value;
-    ui->applyBtn->show();
+	ui->maxDiffValue->setText(QString::number(value));
+	configs["camera_settings"]["max_diff_pixels"] = value;
+	ui->applyBtn->show();
 }
 
 void MainWindow::on_serverIPvalue_textEdited(const QString& arg1)
 {
-    configs["grpc_settings"]["camera_ip_address"] = ui->serverIPvalue->text().toStdString();
-    ui->applyBtn->show();
+	configs["grpc_settings"]["camera_ip_address"] = ui->serverIPvalue->text().toStdString();
+	ui->applyBtn->show();
 }
 
 void MainWindow::on_portNumberBox_valueChanged(int arg1)
 {
-    configs["grpc_settings"]["port_number"] = std::to_string(arg1);
-    ui->applyBtn->show();
+	configs["grpc_settings"]["port_number"] = std::to_string(arg1);
+	ui->applyBtn->show();
 }
 
 ///////========== CheckBoxes Pannel  ==========////////////
@@ -556,25 +559,32 @@ void MainWindow::on_applyBtn_clicked()
 	api.UpdateServerSettings(configs);
 }
 
-void MainWindow::setConnectionStatus(bool isConnected) {
-
-	/*std::thread isLiveThread([this, &isConnected] {
-		while (true) {
-			if (isConnected) {
-				QPixmap icon(":/feather/green-online.png");
-				ui->connectionIcon->setPixmap(icon);
-				ui->connectionStatus->setText("Online");
+void MainWindow::setConnectionStatus() {
+	connect(this, &MainWindow::connectionStatusChanged, this, &MainWindow::on_connection_change);
+	connectStatusThread = std::thread([this] {
+		bool isConnect = false;
+		while (isAppRunning.load()) {
+			if (isConnect != api.IsConnect().load()) {
+				isConnect = api.IsConnect().load();
+				emit connectionStatusChanged(isConnect);
 			}
-			else {
-				QPixmap icon(":/feather/red-offline.png");
-				ui->connectionIcon->setPixmap(icon);
-				ui->connectionStatus->setText("Offline");
-			}
+			std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 		}
 		});
-	isLiveThread.detach();*/
 }
 
+void MainWindow::on_connection_change(bool isConnect) {
+	if (isConnect) {
+		QPixmap icon(":/feather/green-online.png");
+		ui->connectionIcon->setPixmap(icon);
+		ui->connectionStatus->setText("Online");
+	}
+	else {
+		QPixmap icon(":/feather/red-offline.png");
+		ui->connectionIcon->setPixmap(icon);
+		ui->connectionStatus->setText("Offline");
+	}
+}
 
 
 
