@@ -32,33 +32,24 @@ private:
 	std::vector<int> classIds;
 	std::vector<float> confidences;
 	std::vector<cv::Rect> boxes;
-	nlohmann::json configJson;
+	nlohmann::json configs;
 	std::vector<std::string> classList;
 	cv::dnn::Net net;
 
+	void GpuProcessing();
+	void LoadClassList();
+	void LoadNet();
+	void LoadSensitivities();
 	void DrawLabel(cv::Mat& input_image, std::string label, int left, int top);
-
-	void EnableGpuProcessing(cv::dnn::Net& net);
-
 	std::vector<cv::Mat> PreProcess(const cv::Mat& inputImage);
-
 	cv::Mat PostProcess(cv::Mat& input_image, std::vector<cv::Mat>& outputs, std::unordered_set<std::string>& classes);
 
-	void LoadClassList();
-
-	void LoadNet();
-
-	void LoadSensitivities();
-
 public:
+	Yolo();
+
 	std::unordered_set<std::string>classes;
 	std::atomic<bool>isDrawLabel;
 
-	Yolo();
-
 	cv::Mat Detect(cv::Mat& inputImage);
-
-
-
 };
 

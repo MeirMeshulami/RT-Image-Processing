@@ -16,7 +16,7 @@
 class FrameProcessor {
 public:
 	cv::VideoWriter videoWriter;
-	nlohmann::json configJson;
+	nlohmann::json configs;
 	//DBManager mDBManager;
 
 	FrameProcessor();

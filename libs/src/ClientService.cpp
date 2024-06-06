@@ -3,7 +3,7 @@
 #include "Settings.h"
 
 
-ClientService::ClientService() : stopStreaming(false), frameShowQueue(std::make_shared<ThreadSafeQueue<std::shared_ptr<Frame>>>()) {}
+ClientService::ClientService() : stopStreaming(false), stopRetrying(false), frameShowQueue(std::make_shared<ThreadSafeQueue<std::shared_ptr<Frame>>>()) {}
 
 void ClientService::Connect(std::string serverAddress) {
 	LOG_DEBUG("Starting frame receiver thread...");
@@ -16,7 +16,7 @@ void ClientService::Connect(std::string serverAddress) {
 			LOG_ERROR("Cannot create a channel !");
 		else
 			LOG_INFO("Channel has created successfully.");
-		RetryToConnect();
+		TryToConnect();
 		});
 
 	connectionThread.detach();
@@ -137,14 +137,14 @@ bool ClientService::UpdateServerSettings(nlohmann::json& configs) {
 
 std::shared_ptr<ThreadSafeQueue<std::shared_ptr<Frame>>> ClientService::GetFrameShowQueue() { return frameShowQueue; }
 
-bool ClientService::RetryToConnect() {
+bool ClientService::TryToConnect() {
 	auto state = channel->GetState(true);
 
 	int maxAttempts = 30;
 	int attempt = 0;
 	int backoffSec = 5;
 	int backoffMultiplier = 1.5;
-	while (state != grpc_connectivity_state::GRPC_CHANNEL_READY && attempt < maxAttempts) {
+	while (!stopRetrying && state != grpc_connectivity_state::GRPC_CHANNEL_READY && attempt < maxAttempts) {
 		LOG_INFO("Waiting for server to be ready, attempt No.: {} ,current state: {}", attempt, state);
 		channel->WaitForStateChange(state, std::chrono::system_clock::now() + std::chrono::seconds(backoffSec));
 		state = channel->GetState(true);
@@ -167,4 +167,14 @@ void ClientService::UpdateConnectionStatus() {
 		LOG_INFO("Client connected.");
 		isConnect.store(true);
 	}
+}
+
+void ClientService::Reconnect() {
+	stopRetrying.store(true);
+	reconnectThread = std::thread(&ClientService::TryToConnect, this);
+}
+
+void ClientService::StopRetrying() {
+	stopRetrying.store(true);
+	reconnectThread.detach();
 }

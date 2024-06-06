@@ -9,6 +9,7 @@
     "port_number": "50051"
   },
   "yolo_settings": {
+    "gpu_mode":"on",
     "yolo_model": "yolov5n",
     "class_list_path": "../../resources/CocoList.txt",
     "net_path": "../../resources/yolo-models/",

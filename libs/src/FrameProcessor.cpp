@@ -4,12 +4,12 @@
 
 
 FrameProcessor::FrameProcessor() {
-	Settings::ReadSettings(configJson);
+	Settings::ReadSettings(configs);
 }
 
 void FrameProcessor::InitVideoWriter() {
 	LOG_DEBUG("Creating video writer...");
-	std::string videoPath = configJson["output_settings"]["video_path"];
+	std::string videoPath = configs["output_settings"]["video_path"];
 
 	auto now = std::chrono::system_clock::now();
 	std::time_t currentTime = std::chrono::system_clock::to_time_t(now);
@@ -19,7 +19,7 @@ void FrameProcessor::InitVideoWriter() {
 	std::string dateTimeStr = ss.str();
 
 	videoPath += "record_" + dateTimeStr + ".mp4";
-	std::string outDir = configJson["output_settings"]["out_dir_path"];
+	std::string outDir = configs["output_settings"]["out_dir_path"];
 	std::filesystem::create_directory(outDir + "records");
 
 	videoWriter.open(videoPath, cv::VideoWriter::fourcc('M', 'P', '4', 'V'), 15, cv::Size(640, 480));

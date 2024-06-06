@@ -122,15 +122,21 @@ QSlider:horizontal {
     background: rgb(45, 45, 68);
     border-radius: 0px;
 }
+QSlider::groove:horizontal { 
+	background: #C9CDD0;
+	height: 50px; 
+	border-radius: 4px;
+}
 /* HANDLE BAR HORIZONTAL */
 QSlider::handle:horizontal {
     background-color: rgb(80, 80, 122);
-    width: 15px;
-    height: 15px; 
-    border-radius: 7px; 
+   width: 16px; 
+	height: 20px; 
+	line-height: 20px; 
+	margin-top: -5px; 
+	margin-bottom: -5px; 
+	border-radius: 10px; 
 }
-
-
 QSlider::handle:horizontal:hover {
     background-color: rgb(255, 0, 127);
 }
@@ -924,7 +930,7 @@ font-size:20pt;
              <string notr="true"/>
             </property>
             <property name="currentIndex">
-             <number>0</number>
+             <number>3</number>
             </property>
             <widget class="QWidget" name="DashboardPage">
              <layout class="QVBoxLayout" name="verticalLayout_9">
@@ -1521,8 +1527,8 @@ border-radius:5px;
                   <rect>
                    <x>0</x>
                    <y>0</y>
-                   <width>929</width>
-                   <height>529</height>
+                   <width>578</width>
+                   <height>151</height>
                   </rect>
                  </property>
                  <property name="sizePolicy">
@@ -1798,6 +1804,9 @@ QPushButton{
                  <layout class="QVBoxLayout" name="verticalLayout_22">
                   <item>
                    <widget class="QScrollArea" name="scrollArea_3">
+                    <property name="styleSheet">
+                     <string notr="true"/>
+                    </property>
                     <property name="widgetResizable">
                      <bool>true</bool>
                     </property>
@@ -1805,10 +1814,18 @@ QPushButton{
                      <property name="geometry">
                       <rect>
                        <x>0</x>
-                       <y>0</y>
+                       <y>-709</y>
                        <width>897</width>
-                       <height>1057</height>
+                       <height>1206</height>
                       </rect>
+                     </property>
+                     <property name="styleSheet">
+                      <string notr="true">QSpinBox, QLineEdit, QComboBox ,QDoubleSpinBox{
+    background-color: #1f232a;
+    padding: 3px 10px;
+    height: 30px;
+}
+</string>
                      </property>
                      <layout class="QVBoxLayout" name="verticalLayout_19">
                       <item>
@@ -1839,6 +1856,9 @@ padding:10px 0px;
                                <enum>QFrame::Raised</enum>
                               </property>
                               <layout class="QHBoxLayout" name="horizontalLayout_16">
+                               <property name="leftMargin">
+                                <number>0</number>
+                               </property>
                                <item>
                                 <widget class="QLabel" name="label_4">
                                  <property name="enabled">
@@ -1870,6 +1890,11 @@ padding:10px 0px;
                               <property name="styleSheet">
                                <string notr="true">QLabel {
     font-size: 11pt;
+}
+QFrame{
+	
+	
+	background-color: rgb(56, 61, 70);
 }</string>
                               </property>
                               <property name="frameShape">
@@ -1882,6 +1907,15 @@ padding:10px 0px;
                                <property name="spacing">
                                 <number>30</number>
                                </property>
+                               <property name="leftMargin">
+                                <number>30</number>
+                               </property>
+                               <property name="topMargin">
+                                <number>9</number>
+                               </property>
+                               <property name="rightMargin">
+                                <number>30</number>
+                               </property>
                                <item>
                                 <widget class="QLabel" name="label_5">
                                  <property name="font">
@@ -1892,51 +1926,66 @@ padding:10px 0px;
                                    <bold>true</bold>
                                   </font>
                                  </property>
-                                 <property name="text">
-                                  <string>Max difference</string>
-                                 </property>
-                                </widget>
-                               </item>
-                               <item>
-                                <widget class="QSlider" name="maxDiffSlider">
-                                 <property name="sizePolicy">
-                                  <sizepolicy hsizetype="Expanding" vsizetype="Maximum">
-                                   <horstretch>0</horstretch>
-                                   <verstretch>0</verstretch>
-                                  </sizepolicy>
-                                 </property>
                                  <property name="styleSheet">
-                                  <string notr="true">QSlider::handle:vertical {
-    height: 10px; /* Adjust the height to your desired value */
-}</string>
+                                  <string notr="true"/>
                                  </property>
-                                 <property name="maximum">
-                                  <number>150</number>
-                                 </property>
-                                 <property name="orientation">
-                                  <enum>Qt::Horizontal</enum>
-                                 </property>
-                                </widget>
-                               </item>
-                               <item>
-                                <widget class="QLabel" name="maxDiffValue">
                                  <property name="text">
-                                  <string>value</string>
+                                  <string>Max Difference</string>
                                  </property>
                                 </widget>
                                </item>
                                <item>
-                                <spacer name="horizontalSpacer_5">
-                                 <property name="orientation">
-                                  <enum>Qt::Horizontal</enum>
-                                 </property>
-                                 <property name="sizeHint" stdset="0">
+                                <widget class="QFrame" name="frame_11">
+                                 <property name="maximumSize">
                                   <size>
-                                   <width>40</width>
-                                   <height>20</height>
+                                   <width>300</width>
+                                   <height>16777215</height>
                                   </size>
                                  </property>
-                                </spacer>
+                                 <property name="frameShape">
+                                  <enum>QFrame::StyledPanel</enum>
+                                 </property>
+                                 <property name="frameShadow">
+                                  <enum>QFrame::Raised</enum>
+                                 </property>
+                                 <layout class="QHBoxLayout" name="horizontalLayout_38">
+                                  <item>
+                                   <widget class="QSlider" name="maxDiffSlider">
+                                    <property name="sizePolicy">
+                                     <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
+                                      <horstretch>0</horstretch>
+                                      <verstretch>0</verstretch>
+                                     </sizepolicy>
+                                    </property>
+                                    <property name="styleSheet">
+                                     <string notr="true">margin-right:15px;</string>
+                                    </property>
+                                    <property name="maximum">
+                                     <number>150</number>
+                                    </property>
+                                    <property name="orientation">
+                                     <enum>Qt::Horizontal</enum>
+                                    </property>
+                                   </widget>
+                                  </item>
+                                  <item>
+                                   <widget class="QLabel" name="maxDiffValue">
+                                    <property name="sizePolicy">
+                                     <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+                                      <horstretch>0</horstretch>
+                                      <verstretch>0</verstretch>
+                                     </sizepolicy>
+                                    </property>
+                                    <property name="styleSheet">
+                                     <string notr="true">padding-right:10px;</string>
+                                    </property>
+                                    <property name="text">
+                                     <string>value</string>
+                                    </property>
+                                   </widget>
+                                  </item>
+                                 </layout>
+                                </widget>
                                </item>
                               </layout>
                              </widget>
@@ -1952,6 +2001,9 @@ padding:10px 0px;
                               <property name="styleSheet">
                                <string notr="true">QLabel {
     font-size: 11pt;
+}
+QFrame{
+	background-color: rgb(56, 61, 70);
 }</string>
                               </property>
                               <property name="frameShape">
@@ -1964,48 +2016,80 @@ padding:10px 0px;
                                <property name="spacing">
                                 <number>30</number>
                                </property>
+                               <property name="leftMargin">
+                                <number>30</number>
+                               </property>
+                               <property name="topMargin">
+                                <number>9</number>
+                               </property>
+                               <property name="rightMargin">
+                                <number>30</number>
+                               </property>
+                               <property name="bottomMargin">
+                                <number>9</number>
+                               </property>
                                <item>
                                 <widget class="QLabel" name="label_7">
                                  <property name="text">
-                                  <string>Threshold sensitivity</string>
+                                  <string>Threshold Sensitivity</string>
                                  </property>
                                 </widget>
                                </item>
                                <item>
-                                <widget class="QSlider" name="threasholdSlider">
-                                 <property name="sizePolicy">
-                                  <sizepolicy hsizetype="Expanding" vsizetype="Maximum">
-                                   <horstretch>0</horstretch>
-                                   <verstretch>0</verstretch>
-                                  </sizepolicy>
-                                 </property>
-                                 <property name="maximum">
-                                  <number>256</number>
-                                 </property>
-                                 <property name="orientation">
-                                  <enum>Qt::Horizontal</enum>
-                                 </property>
-                                </widget>
-                               </item>
-                               <item>
-                                <widget class="QLabel" name="MotionValue">
-                                 <property name="text">
-                                  <string>value</string>
-                                 </property>
-                                </widget>
-                               </item>
-                               <item>
-                                <spacer name="horizontalSpacer_6">
-                                 <property name="orientation">
-                                  <enum>Qt::Horizontal</enum>
-                                 </property>
-                                 <property name="sizeHint" stdset="0">
+                                <widget class="QFrame" name="frame_22">
+                                 <property name="maximumSize">
                                   <size>
-                                   <width>40</width>
-                                   <height>20</height>
+                                   <width>300</width>
+                                   <height>16777215</height>
                                   </size>
                                  </property>
-                                </spacer>
+                                 <property name="styleSheet">
+                                  <string notr="true"/>
+                                 </property>
+                                 <property name="frameShape">
+                                  <enum>QFrame::StyledPanel</enum>
+                                 </property>
+                                 <property name="frameShadow">
+                                  <enum>QFrame::Raised</enum>
+                                 </property>
+                                 <layout class="QHBoxLayout" name="horizontalLayout_39">
+                                  <item>
+                                   <widget class="QSlider" name="threasholdSlider">
+                                    <property name="sizePolicy">
+                                     <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
+                                      <horstretch>0</horstretch>
+                                      <verstretch>0</verstretch>
+                                     </sizepolicy>
+                                    </property>
+                                    <property name="styleSheet">
+                                     <string notr="true">margin-right:15px;</string>
+                                    </property>
+                                    <property name="maximum">
+                                     <number>256</number>
+                                    </property>
+                                    <property name="orientation">
+                                     <enum>Qt::Horizontal</enum>
+                                    </property>
+                                   </widget>
+                                  </item>
+                                  <item>
+                                   <widget class="QLabel" name="MotionValue">
+                                    <property name="sizePolicy">
+                                     <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+                                      <horstretch>0</horstretch>
+                                      <verstretch>0</verstretch>
+                                     </sizepolicy>
+                                    </property>
+                                    <property name="styleSheet">
+                                     <string notr="true">padding-right:10px;</string>
+                                    </property>
+                                    <property name="text">
+                                     <string>value</string>
+                                    </property>
+                                   </widget>
+                                  </item>
+                                 </layout>
+                                </widget>
                                </item>
                               </layout>
                              </widget>
@@ -2031,6 +2115,9 @@ padding:10px 0px;
                             </property>
                             <item>
                              <widget class="QFrame" name="frame_5">
+                              <property name="styleSheet">
+                               <string notr="true"/>
+                              </property>
                               <property name="frameShape">
                                <enum>QFrame::StyledPanel</enum>
                               </property>
@@ -2038,6 +2125,9 @@ padding:10px 0px;
                                <enum>QFrame::Raised</enum>
                               </property>
                               <layout class="QHBoxLayout" name="horizontalLayout_18">
+                               <property name="leftMargin">
+                                <number>0</number>
+                               </property>
                                <item>
                                 <widget class="QLabel" name="label_9">
                                  <property name="font">
@@ -2063,6 +2153,11 @@ padding:10px 0px;
                             </item>
                             <item>
                              <widget class="QFrame" name="frame_7">
+                              <property name="styleSheet">
+                               <string notr="true">QFrame{
+	background-color: rgb(56, 61, 70);
+}</string>
+                              </property>
                               <property name="frameShape">
                                <enum>QFrame::StyledPanel</enum>
                               </property>
@@ -2071,7 +2166,19 @@ padding:10px 0px;
                               </property>
                               <layout class="QHBoxLayout" name="horizontalLayout_19">
                                <property name="spacing">
+                                <number>0</number>
+                               </property>
+                               <property name="leftMargin">
                                 <number>30</number>
+                               </property>
+                               <property name="topMargin">
+                                <number>0</number>
+                               </property>
+                               <property name="rightMargin">
+                                <number>30</number>
+                               </property>
+                               <property name="bottomMargin">
+                                <number>0</number>
                                </property>
                                <item>
                                 <widget class="QLabel" name="label_10">
@@ -2086,34 +2193,45 @@ padding:10px 0px;
                                 </widget>
                                </item>
                                <item>
-                                <widget class="QLineEdit" name="serverIPvalue">
-                                 <property name="styleSheet">
-                                  <string notr="true">background-color:#1f232a;
-padding:3px 10px;</string>
-                                 </property>
-                                 <property name="text">
-                                  <string>localhost</string>
-                                 </property>
-                                </widget>
-                               </item>
-                               <item>
-                                <spacer name="horizontalSpacer_7">
-                                 <property name="orientation">
-                                  <enum>Qt::Horizontal</enum>
-                                 </property>
-                                 <property name="sizeHint" stdset="0">
+                                <widget class="QFrame" name="frame_23">
+                                 <property name="maximumSize">
                                   <size>
-                                   <width>40</width>
-                                   <height>20</height>
+                                   <width>300</width>
+                                   <height>16777215</height>
                                   </size>
                                  </property>
-                                </spacer>
+                                 <property name="frameShape">
+                                  <enum>QFrame::StyledPanel</enum>
+                                 </property>
+                                 <property name="frameShadow">
+                                  <enum>QFrame::Raised</enum>
+                                 </property>
+                                 <layout class="QHBoxLayout" name="horizontalLayout_40">
+                                  <item>
+                                   <widget class="QLineEdit" name="serverIPvalue">
+                                    <property name="styleSheet">
+                                     <string notr="true">background-color:#1f232a;
+padding:3px 10px;
+height:30px</string>
+                                    </property>
+                                    <property name="text">
+                                     <string>localhost</string>
+                                    </property>
+                                   </widget>
+                                  </item>
+                                 </layout>
+                                </widget>
                                </item>
                               </layout>
                              </widget>
                             </item>
                             <item>
                              <widget class="QFrame" name="frame_6">
+                              <property name="styleSheet">
+                               <string notr="true">QFrame{
+	background-color: rgb(56, 61, 70);
+}</string>
+                              </property>
                               <property name="frameShape">
                                <enum>QFrame::StyledPanel</enum>
                               </property>
@@ -2122,7 +2240,19 @@ padding:3px 10px;</string>
                               </property>
                               <layout class="QHBoxLayout" name="horizontalLayout_20">
                                <property name="spacing">
+                                <number>0</number>
+                               </property>
+                               <property name="leftMargin">
                                 <number>30</number>
+                               </property>
+                               <property name="topMargin">
+                                <number>0</number>
+                               </property>
+                               <property name="rightMargin">
+                                <number>30</number>
+                               </property>
+                               <property name="bottomMargin">
+                                <number>0</number>
                                </property>
                                <item>
                                 <widget class="QLabel" name="label_11">
@@ -2137,37 +2267,43 @@ padding:3px 10px;</string>
                                 </widget>
                                </item>
                                <item>
-                                <widget class="QSpinBox" name="portNumberBox">
-                                 <property name="minimumSize">
+                                <widget class="QFrame" name="frame_24">
+                                 <property name="maximumSize">
                                   <size>
-                                   <width>80</width>
-                                   <height>0</height>
+                                   <width>300</width>
+                                   <height>16777215</height>
                                   </size>
                                  </property>
-                                 <property name="styleSheet">
-                                  <string notr="true">background-color:#1f232a;
-padding:3px 10px;</string>
+                                 <property name="frameShape">
+                                  <enum>QFrame::StyledPanel</enum>
                                  </property>
-                                 <property name="maximum">
-                                  <number>65535</number>
+                                 <property name="frameShadow">
+                                  <enum>QFrame::Raised</enum>
                                  </property>
-                                 <property name="value">
-                                  <number>50051</number>
-                                 </property>
+                                 <layout class="QHBoxLayout" name="horizontalLayout_41">
+                                  <item>
+                                   <widget class="QSpinBox" name="portNumberBox">
+                                    <property name="minimumSize">
+                                     <size>
+                                      <width>80</width>
+                                      <height>0</height>
+                                     </size>
+                                    </property>
+                                    <property name="styleSheet">
+                                     <string notr="true">background-color:#1f232a;
+padding:3px 10px;
+height:30px</string>
+                                    </property>
+                                    <property name="maximum">
+                                     <number>65535</number>
+                                    </property>
+                                    <property name="value">
+                                     <number>50051</number>
+                                    </property>
+                                   </widget>
+                                  </item>
+                                 </layout>
                                 </widget>
-                               </item>
-                               <item>
-                                <spacer name="horizontalSpacer_8">
-                                 <property name="orientation">
-                                  <enum>Qt::Horizontal</enum>
-                                 </property>
-                                 <property name="sizeHint" stdset="0">
-                                  <size>
-                                   <width>40</width>
-                                   <height>20</height>
-                                  </size>
-                                 </property>
-                                </spacer>
                                </item>
                               </layout>
                              </widget>
@@ -2192,6 +2328,18 @@ padding:10px 0px;
                              <number>30</number>
                             </property>
                             <item>
+                             <widget class="QLabel" name="label_12">
+                              <property name="styleSheet">
+                               <string notr="true">QLabel {
+    font-size: 17pt;
+}</string>
+                              </property>
+                              <property name="text">
+                               <string>Yolo Settings</string>
+                              </property>
+                             </widget>
+                            </item>
+                            <item>
                              <widget class="QFrame" name="frame_8">
                               <property name="frameShape">
                                <enum>QFrame::StyledPanel</enum>
@@ -2200,16 +2348,96 @@ padding:10px 0px;
                                <enum>QFrame::Raised</enum>
                               </property>
                               <layout class="QHBoxLayout" name="horizontalLayout_21">
+                               <property name="spacing">
+                                <number>0</number>
+                               </property>
+                               <property name="leftMargin">
+                                <number>0</number>
+                               </property>
+                               <property name="topMargin">
+                                <number>0</number>
+                               </property>
+                               <property name="rightMargin">
+                                <number>0</number>
+                               </property>
+                               <property name="bottomMargin">
+                                <number>0</number>
+                               </property>
                                <item>
-                                <widget class="QLabel" name="label_12">
+                                <widget class="QFrame" name="frame_9">
                                  <property name="styleSheet">
-                                  <string notr="true">QLabel {
-    font-size: 17pt;
+                                  <string notr="true">background-color: rgb(56, 61, 70);</string>
+                                 </property>
+                                 <property name="frameShape">
+                                  <enum>QFrame::StyledPanel</enum>
+                                 </property>
+                                 <property name="frameShadow">
+                                  <enum>QFrame::Raised</enum>
+                                 </property>
+                                 <layout class="QHBoxLayout" name="horizontalLayout_37">
+                                  <property name="spacing">
+                                   <number>30</number>
+                                  </property>
+                                  <property name="leftMargin">
+                                   <number>30</number>
+                                  </property>
+                                  <property name="topMargin">
+                                   <number>0</number>
+                                  </property>
+                                  <property name="rightMargin">
+                                   <number>30</number>
+                                  </property>
+                                  <property name="bottomMargin">
+                                   <number>0</number>
+                                  </property>
+                                  <item>
+                                   <widget class="QLabel" name="label_28">
+                                    <property name="styleSheet">
+                                     <string notr="true">QLabel {
+    font-size: 11pt;
 }</string>
-                                 </property>
-                                 <property name="text">
-                                  <string>Yolo Settings</string>
-                                 </property>
+                                    </property>
+                                    <property name="text">
+                                     <string>GPU Acceleration </string>
+                                    </property>
+                                   </widget>
+                                  </item>
+                                  <item>
+                                   <widget class="QFrame" name="frame_25">
+                                    <property name="maximumSize">
+                                     <size>
+                                      <width>300</width>
+                                      <height>16777215</height>
+                                     </size>
+                                    </property>
+                                    <property name="frameShape">
+                                     <enum>QFrame::StyledPanel</enum>
+                                    </property>
+                                    <property name="frameShadow">
+                                     <enum>QFrame::Raised</enum>
+                                    </property>
+                                    <layout class="QHBoxLayout" name="horizontalLayout_42">
+                                     <item>
+                                      <widget class="QComboBox" name="GpuComboBox">
+                                       <property name="styleSheet">
+                                        <string notr="true">background-color:#1f232a;</string>
+                                       </property>
+                                       <item>
+                                        <property name="text">
+                                         <string>On</string>
+                                        </property>
+                                       </item>
+                                       <item>
+                                        <property name="text">
+                                         <string>Off</string>
+                                        </property>
+                                       </item>
+                                      </widget>
+                                     </item>
+                                    </layout>
+                                   </widget>
+                                  </item>
+                                 </layout>
                                 </widget>
                                </item>
                               </layout>
@@ -2217,9 +2445,18 @@ padding:10px 0px;
                             </item>
                             <item>
                              <widget class="QFrame" name="frame_10">
+                              <property name="sizePolicy">
+                               <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                                <horstretch>0</horstretch>
+                                <verstretch>0</verstretch>
+                               </sizepolicy>
+                              </property>
                               <property name="styleSheet">
                                <string notr="true">QLabel {
     font-size: 11pt;
+}
+*{
+background-color: rgb(56, 61, 70);
 }</string>
                               </property>
                               <property name="frameShape">
@@ -2232,6 +2469,18 @@ padding:10px 0px;
                                <property name="spacing">
                                 <number>30</number>
                                </property>
+                               <property name="leftMargin">
+                                <number>30</number>
+                               </property>
+                               <property name="topMargin">
+                                <number>0</number>
+                               </property>
+                               <property name="rightMargin">
+                                <number>30</number>
+                               </property>
+                               <property name="bottomMargin">
+                                <number>0</number>
+                               </property>
                                <item>
                                 <widget class="QLabel" name="label_14">
                                  <property name="styleSheet">
@@ -2240,60 +2489,74 @@ padding:10px 0px;
 }</string>
                                  </property>
                                  <property name="text">
-                                  <string>Net model</string>
+                                  <string>Net Model</string>
                                  </property>
                                 </widget>
                                </item>
                                <item>
-                                <widget class="QComboBox" name="netModelList">
-                                 <property name="minimumSize">
+                                <widget class="QFrame" name="frame_26">
+                                 <property name="maximumSize">
                                   <size>
-                                   <width>130</width>
-                                   <height>0</height>
+                                   <width>300</width>
+                                   <height>16777215</height>
                                   </size>
                                  </property>
-                                 <property name="styleSheet">
-                                  <string notr="true">background-color:#1f232a;
+                                 <property name="frameShape">
+                                  <enum>QFrame::StyledPanel</enum>
+                                 </property>
+                                 <property name="frameShadow">
+                                  <enum>QFrame::Raised</enum>
+                                 </property>
+                                 <layout class="QHBoxLayout" name="horizontalLayout_43">
+                                  <item>
+                                   <widget class="QComboBox" name="netModelList">
+                                    <property name="minimumSize">
+                                     <size>
+                                      <width>130</width>
+                                      <height>0</height>
+                                     </size>
+                                    </property>
+                                    <property name="styleSheet">
+                                     <string notr="true">background-color:#1f232a;
 padding:3px 10px;</string>
-                                 </property>
-                                 <item>
-                                  <property name="text">
-                                   <string>yolov5n</string>
-                                  </property>
-                                 </item>
-                                 <item>
-                                  <property name="text">
-                                   <string>yolov5s</string>
-                                  </property>
-                                 </item>
-                                 <item>
-                                  <property name="text">
-                                   <string>yolov5m</string>
-                                  </property>
-                                 </item>
+                                    </property>
+                                    <item>
+                                     <property name="text">
+                                      <string>yolov5n</string>
+                                     </property>
+                                    </item>
+                                    <item>
+                                     <property name="text">
+                                      <string>yolov5s</string>
+                                     </property>
+                                    </item>
+                                    <item>
+                                     <property name="text">
+                                      <string>yolov5m</string>
+                                     </property>
+                                    </item>
+                                   </widget>
+                                  </item>
+                                 </layout>
                                 </widget>
-                               </item>
-                               <item>
-                                <spacer name="horizontalSpacer_10">
-                                 <property name="orientation">
-                                  <enum>Qt::Horizontal</enum>
-                                 </property>
-                                 <property name="sizeHint" stdset="0">
-                                  <size>
-                                   <width>40</width>
-                                   <height>20</height>
-                                  </size>
-                                 </property>
-                                </spacer>
                                </item>
                               </layout>
                              </widget>
                             </item>
-                            <item alignment="Qt::AlignLeft">
+                            <item>
                              <widget class="QFrame" name="frame_13">
+                              <property name="sizePolicy">
+                               <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                                <horstretch>0</horstretch>
+                                <verstretch>0</verstretch>
+                               </sizepolicy>
+                              </property>
                               <property name="styleSheet">
                                <string notr="true">QLabel {
     font-size: 11pt;
+}
+*{
+background-color: rgb(56, 61, 70);
 }</string>
                               </property>
                               <property name="frameShape">
@@ -2306,6 +2569,18 @@ padding:3px 10px;</string>
                                <property name="spacing">
                                 <number>30</number>
                                </property>
+                               <property name="leftMargin">
+                                <number>30</number>
+                               </property>
+                               <property name="topMargin">
+                                <number>0</number>
+                               </property>
+                               <property name="rightMargin">
+                                <number>30</number>
+                               </property>
+                               <property name="bottomMargin">
+                                <number>0</number>
+                               </property>
                                <item>
                                 <widget class="QLabel" name="label_18">
                                  <property name="styleSheet">
@@ -2314,65 +2589,86 @@ padding:3px 10px;</string>
 }</string>
                                  </property>
                                  <property name="text">
-                                  <string>Frame  size</string>
-                                 </property>
-                                </widget>
-                               </item>
-                               <item alignment="Qt::AlignRight">
-                                <widget class="QLabel" name="label_20">
-                                 <property name="text">
-                                  <string>Height</string>
+                                  <string>Frame Size</string>
                                  </property>
                                 </widget>
                                </item>
                                <item>
-                                <widget class="QSpinBox" name="frameHeight">
-                                 <property name="styleSheet">
-                                  <string notr="true">background-color:#1f232a;
+                                <widget class="QFrame" name="frame_27">
+                                 <property name="maximumSize">
+                                  <size>
+                                   <width>300</width>
+                                   <height>16777215</height>
+                                  </size>
+                                 </property>
+                                 <property name="frameShape">
+                                  <enum>QFrame::StyledPanel</enum>
+                                 </property>
+                                 <property name="frameShadow">
+                                  <enum>QFrame::Raised</enum>
+                                 </property>
+                                 <layout class="QHBoxLayout" name="horizontalLayout_44">
+                                  <property name="spacing">
+                                   <number>15</number>
+                                  </property>
+                                  <item>
+                                   <widget class="QLabel" name="label_20">
+                                    <property name="text">
+                                     <string>Height</string>
+                                    </property>
+                                   </widget>
+                                  </item>
+                                  <item>
+                                   <widget class="QSpinBox" name="frameHeight">
+                                    <property name="styleSheet">
+                                     <string notr="true">background-color:#1f232a;
 padding:3px 10px;</string>
-                                 </property>
-                                 <property name="minimum">
-                                  <number>0</number>
-                                 </property>
-                                 <property name="maximum">
-                                  <number>1920</number>
-                                 </property>
-                                 <property name="singleStep">
-                                  <number>10</number>
-                                 </property>
-                                 <property name="value">
-                                  <number>640</number>
-                                 </property>
-                                </widget>
-                               </item>
-                               <item alignment="Qt::AlignRight">
-                                <widget class="QLabel" name="label_19">
-                                 <property name="text">
-                                  <string>Width</string>
-                                 </property>
-                                </widget>
-                               </item>
-                               <item>
-                                <widget class="QSpinBox" name="frameWidth">
-                                 <property name="sizePolicy">
-                                  <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-                                   <horstretch>0</horstretch>
-                                   <verstretch>0</verstretch>
-                                  </sizepolicy>
-                                 </property>
-                                 <property name="styleSheet">
-                                  <string notr="true">background-color:#1f232a;
+                                    </property>
+                                    <property name="minimum">
+                                     <number>0</number>
+                                    </property>
+                                    <property name="maximum">
+                                     <number>1920</number>
+                                    </property>
+                                    <property name="singleStep">
+                                     <number>10</number>
+                                    </property>
+                                    <property name="value">
+                                     <number>640</number>
+                                    </property>
+                                   </widget>
+                                  </item>
+                                  <item>
+                                   <widget class="QLabel" name="label_19">
+                                    <property name="text">
+                                     <string>Width</string>
+                                    </property>
+                                   </widget>
+                                  </item>
+                                  <item>
+                                   <widget class="QSpinBox" name="frameWidth">
+                                    <property name="sizePolicy">
+                                     <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                                      <horstretch>0</horstretch>
+                                      <verstretch>0</verstretch>
+                                     </sizepolicy>
+                                    </property>
+                                    <property name="styleSheet">
+                                     <string notr="true">background-color:#1f232a;
 padding:3px 10px;</string>
-                                 </property>
-                                 <property name="maximum">
-                                  <number>1280</number>
-                                 </property>
-                                 <property name="singleStep">
-                                  <number>10</number>
-                                 </property>
-                                 <property name="value">
-                                  <number>640</number>
-                                 </property>
+                                    </property>
+                                    <property name="maximum">
+                                     <number>1280</number>
+                                    </property>
+                                    <property name="singleStep">
+                                     <number>10</number>
+                                    </property>
+                                    <property name="value">
+                                     <number>640</number>
+                                    </property>
+                                   </widget>
+                                  </item>
+                                 </layout>
                                 </widget>
                                </item>
                               </layout>
@@ -2380,6 +2676,11 @@ padding:3px 10px;</string>
                             </item>
                             <item>
                              <widget class="QFrame" name="frame_14">
+                              <property name="styleSheet">
+                               <string notr="true">*{
+background-color: rgb(56, 61, 70);
+}</string>
+                              </property>
                               <property name="frameShape">
                                <enum>QFrame::StyledPanel</enum>
                               </property>
@@ -2389,6 +2690,18 @@ padding:3px 10px;</string>
                               <layout class="QHBoxLayout" name="horizontalLayout_27">
                                <property name="spacing">
                                 <number>40</number>
+                               </property>
+                               <property name="leftMargin">
+                                <number>30</number>
+                               </property>
+                               <property name="topMargin">
+                                <number>0</number>
+                               </property>
+                               <property name="rightMargin">
+                                <number>30</number>
+                               </property>
+                               <property name="bottomMargin">
+                                <number>0</number>
                                </property>
                                <item>
                                 <widget class="QLabel" name="label_21">
@@ -2403,33 +2716,38 @@ padding:3px 10px;</string>
                                 </widget>
                                </item>
                                <item>
-                                <widget class="QDoubleSpinBox" name="scoreThresholdVal">
-                                 <property name="styleSheet">
-                                  <string notr="true">background-color:#1f232a;</string>
-                                 </property>
-                                 <property name="maximum">
-                                  <double>1.000000000000000</double>
-                                 </property>
-                                 <property name="singleStep">
-                                  <double>0.010000000000000</double>
-                                 </property>
-                                 <property name="value">
-                                  <double>0.250000000000000</double>
-                                 </property>
-                                </widget>
-                               </item>
-                               <item>
-                                <spacer name="horizontalSpacer_13">
-                                 <property name="orientation">
-                                  <enum>Qt::Horizontal</enum>
-                                 </property>
-                                 <property name="sizeHint" stdset="0">
+                                <widget class="QFrame" name="frame_28">
+                                 <property name="maximumSize">
                                   <size>
-                                   <width>40</width>
-                                   <height>20</height>
+                                   <width>300</width>
+                                   <height>16777215</height>
                                   </size>
                                  </property>
-                                </spacer>
+                                 <property name="frameShape">
+                                  <enum>QFrame::StyledPanel</enum>
+                                 </property>
+                                 <property name="frameShadow">
+                                  <enum>QFrame::Raised</enum>
+                                 </property>
+                                 <layout class="QHBoxLayout" name="horizontalLayout_45">
+                                  <item>
+                                   <widget class="QDoubleSpinBox" name="scoreThresholdVal">
+                                    <property name="styleSheet">
+                                     <string notr="true">background-color:#1f232a;</string>
+                                    </property>
+                                    <property name="maximum">
+                                     <double>1.000000000000000</double>
+                                    </property>
+                                    <property name="singleStep">
+                                     <double>0.010000000000000</double>
+                                    </property>
+                                    <property name="value">
+                                     <double>0.250000000000000</double>
+                                    </property>
+                                   </widget>
+                                  </item>
+                                 </layout>
+                                </widget>
                                </item>
                               </layout>
                              </widget>
@@ -2439,6 +2757,9 @@ padding:3px 10px;</string>
                               <property name="styleSheet">
                                <string notr="true">QLabel {
     font-size: 11pt;
+}
+*{
+background-color: rgb(56, 61, 70);
 }</string>
                               </property>
                               <property name="frameShape">
@@ -2451,6 +2772,18 @@ padding:3px 10px;</string>
                                <property name="spacing">
                                 <number>40</number>
                                </property>
+                               <property name="leftMargin">
+                                <number>30</number>
+                               </property>
+                               <property name="topMargin">
+                                <number>0</number>
+                               </property>
+                               <property name="rightMargin">
+                                <number>30</number>
+                               </property>
+                               <property name="bottomMargin">
+                                <number>0</number>
+                               </property>
                                <item>
                                 <widget class="QLabel" name="label_22">
                                  <property name="text">
@@ -2459,42 +2792,52 @@ padding:3px 10px;</string>
                                 </widget>
                                </item>
                                <item>
-                                <widget class="QDoubleSpinBox" name="NMSthresholdVal">
-                                 <property name="styleSheet">
-                                  <string notr="true">background-color:#1f232a;</string>
-                                 </property>
-                                 <property name="minimum">
-                                  <double>0.000000000000000</double>
-                                 </property>
-                                 <property name="maximum">
-                                  <double>1.000000000000000</double>
-                                 </property>
-                                 <property name="singleStep">
-                                  <double>0.010000000000000</double>
-                                 </property>
-                                 <property name="value">
-                                  <double>0.100000000000000</double>
-                                 </property>
-                                </widget>
-                               </item>
-                               <item>
-                                <spacer name="horizontalSpacer_14">
-                                 <property name="orientation">
-                                  <enum>Qt::Horizontal</enum>
-                                 </property>
-                                 <property name="sizeHint" stdset="0">
+                                <widget class="QFrame" name="frame_29">
+                                 <property name="maximumSize">
                                   <size>
-                                   <width>40</width>
-                                   <height>20</height>
+                                   <width>300</width>
+                                   <height>16777215</height>
                                   </size>
                                  </property>
-                                </spacer>
+                                 <property name="frameShape">
+                                  <enum>QFrame::StyledPanel</enum>
+                                 </property>
+                                 <property name="frameShadow">
+                                  <enum>QFrame::Raised</enum>
+                                 </property>
+                                 <layout class="QHBoxLayout" name="horizontalLayout_46">
+                                  <item>
+                                   <widget class="QDoubleSpinBox" name="NMSthresholdVal">
+                                    <property name="styleSheet">
+                                     <string notr="true">background-color:#1f232a;</string>
+                                    </property>
+                                    <property name="minimum">
+                                     <double>0.000000000000000</double>
+                                    </property>
+                                    <property name="maximum">
+                                     <double>1.000000000000000</double>
+                                    </property>
+                                    <property name="singleStep">
+                                     <double>0.010000000000000</double>
+                                    </property>
+                                    <property name="value">
+                                     <double>0.100000000000000</double>
+                                    </property>
+                                   </widget>
+                                  </item>
+                                 </layout>
+                                </widget>
                                </item>
                               </layout>
                              </widget>
                             </item>
                             <item>
                              <widget class="QFrame" name="frame_16">
+                              <property name="styleSheet">
+                               <string notr="true">*{
+background-color: rgb(56, 61, 70);
+}</string>
+                              </property>
                               <property name="frameShape">
                                <enum>QFrame::StyledPanel</enum>
                               </property>
@@ -2505,6 +2848,18 @@ padding:3px 10px;</string>
                                <property name="spacing">
                                 <number>40</number>
                                </property>
+                               <property name="leftMargin">
+                                <number>30</number>
+                               </property>
+                               <property name="topMargin">
+                                <number>0</number>
+                               </property>
+                               <property name="rightMargin">
+                                <number>30</number>
+                               </property>
+                               <property name="bottomMargin">
+                                <number>0</number>
+                               </property>
                                <item>
                                 <widget class="QLabel" name="label_23">
                                  <property name="styleSheet">
@@ -2513,38 +2868,43 @@ padding:3px 10px;</string>
 }</string>
                                  </property>
                                  <property name="text">
-                                  <string>Confidance threshold</string>
+                                  <string>Confidance Threshold</string>
                                  </property>
                                 </widget>
                                </item>
                                <item>
-                                <widget class="QDoubleSpinBox" name="confidanceThresholdVal">
-                                 <property name="styleSheet">
-                                  <string notr="true">background-color:#1f232a;</string>
-                                 </property>
-                                 <property name="maximum">
-                                  <double>1.000000000000000</double>
-                                 </property>
-                                 <property name="singleStep">
-                                  <double>0.010000000000000</double>
-                                 </property>
-                                 <property name="value">
-                                  <double>0.250000000000000</double>
-                                 </property>
-                                </widget>
-                               </item>
-                               <item>
-                                <spacer name="horizontalSpacer_15">
-                                 <property name="orientation">
-                                  <enum>Qt::Horizontal</enum>
-                                 </property>
-                                 <property name="sizeHint" stdset="0">
+                                <widget class="QFrame" name="frame_30">
+                                 <property name="maximumSize">
                                   <size>
-                                   <width>40</width>
-                                   <height>20</height>
+                                   <width>300</width>
+                                   <height>16777215</height>
                                   </size>
                                  </property>
-                                </spacer>
+                                 <property name="frameShape">
+                                  <enum>QFrame::StyledPanel</enum>
+                                 </property>
+                                 <property name="frameShadow">
+                                  <enum>QFrame::Raised</enum>
+                                 </property>
+                                 <layout class="QHBoxLayout" name="horizontalLayout_47">
+                                  <item>
+                                   <widget class="QDoubleSpinBox" name="confidanceThresholdVal">
+                                    <property name="styleSheet">
+                                     <string notr="true">background-color:#1f232a;</string>
+                                    </property>
+                                    <property name="maximum">
+                                     <double>1.000000000000000</double>
+                                    </property>
+                                    <property name="singleStep">
+                                     <double>0.010000000000000</double>
+                                    </property>
+                                    <property name="value">
+                                     <double>0.250000000000000</double>
+                                    </property>
+                                   </widget>
+                                  </item>
+                                 </layout>
+                                </widget>
                                </item>
                               </layout>
                              </widget>
@@ -2578,6 +2938,9 @@ padding:3px 10px;</string>
                               <property name="styleSheet">
                                <string notr="true">QLabel {
     font-size: 11pt;
+}
+*{
+background-color: rgb(56, 61, 70);
 }</string>
                               </property>
                               <property name="frameShape">
@@ -2590,6 +2953,18 @@ padding:3px 10px;</string>
                                <property name="spacing">
                                 <number>40</number>
                                </property>
+                               <property name="leftMargin">
+                                <number>30</number>
+                               </property>
+                               <property name="topMargin">
+                                <number>0</number>
+                               </property>
+                               <property name="rightMargin">
+                                <number>30</number>
+                               </property>
+                               <property name="bottomMargin">
+                                <number>0</number>
+                               </property>
                                <item>
                                 <widget class="QLabel" name="label_16">
                                  <property name="text">
@@ -2598,37 +2973,42 @@ padding:3px 10px;</string>
                                 </widget>
                                </item>
                                <item>
-                                <widget class="QComboBox" name="logLevel">
-                                 <property name="styleSheet">
-                                  <string notr="true">background-color:#1f232a;</string>
-                                 </property>
-                                 <property name="currentText">
-                                  <string>Info</string>
-                                 </property>
-                                 <item>
-                                  <property name="text">
-                                   <string>Info</string>
-                                  </property>
-                                 </item>
-                                 <item>
-                                  <property name="text">
-                                   <string>Debug</string>
-                                  </property>
-                                 </item>
-                                </widget>
-                               </item>
-                               <item>
-                                <spacer name="horizontalSpacer_11">
-                                 <property name="orientation">
-                                  <enum>Qt::Horizontal</enum>
-                                 </property>
-                                 <property name="sizeHint" stdset="0">
+                                <widget class="QFrame" name="frame_31">
+                                 <property name="maximumSize">
                                   <size>
-                                   <width>40</width>
-                                   <height>20</height>
+                                   <width>300</width>
+                                   <height>16777215</height>
                                   </size>
                                  </property>
-                                </spacer>
+                                 <property name="frameShape">
+                                  <enum>QFrame::StyledPanel</enum>
+                                 </property>
+                                 <property name="frameShadow">
+                                  <enum>QFrame::Raised</enum>
+                                 </property>
+                                 <layout class="QHBoxLayout" name="horizontalLayout_48">
+                                  <item>
+                                   <widget class="QComboBox" name="logLevel">
+                                    <property name="styleSheet">
+                                     <string notr="true">background-color:#1f232a;</string>
+                                    </property>
+                                    <property name="currentText">
+                                     <string>Info</string>
+                                    </property>
+                                    <item>
+                                     <property name="text">
+                                      <string>Info</string>
+                                     </property>
+                                    </item>
+                                    <item>
+                                     <property name="text">
+                                      <string>Debug</string>
+                                     </property>
+                                    </item>
+                                   </widget>
+                                  </item>
+                                 </layout>
+                                </widget>
                                </item>
                               </layout>
                              </widget>
@@ -2638,6 +3018,9 @@ padding:3px 10px;</string>
                               <property name="styleSheet">
                                <string notr="true">QLabel {
     font-size: 11pt;
+}
+*{
+background-color: rgb(56, 61, 70);
 }</string>
                               </property>
                               <property name="frameShape">
@@ -2648,44 +3031,61 @@ padding:3px 10px;</string>
                               </property>
                               <layout class="QHBoxLayout" name="horizontalLayout_24">
                                <property name="spacing">
-                                <number>15</number>
+                                <number>0</number>
+                               </property>
+                               <property name="leftMargin">
+                                <number>30</number>
+                               </property>
+                               <property name="topMargin">
+                                <number>0</number>
+                               </property>
+                               <property name="rightMargin">
+                                <number>30</number>
+                               </property>
+                               <property name="bottomMargin">
+                                <number>0</number>
                                </property>
                                <item>
                                 <widget class="QLabel" name="label_17">
                                  <property name="text">
-                                  <string>Ouput folder</string>
+                                  <string>Ouput Folder</string>
                                  </property>
                                 </widget>
                                </item>
                                <item>
-                                <widget class="QLineEdit" name="outputFolderPath">
-                                 <property name="styleSheet">
-                                  <string notr="true">background-color:#1f232a;</string>
-                                 </property>
-                                 <property name="placeholderText">
-                                  <string>Choose folder...</string>
-                                 </property>
-                                </widget>
-                               </item>
-                               <item>
-                                <widget class="QPushButton" name="outputFolderBrowse">
-                                 <property name="text">
-                                  <string>Browse</string>
-                                 </property>
-                                </widget>
-                               </item>
-                               <item>
-                                <spacer name="horizontalSpacer_12">
-                                 <property name="orientation">
-                                  <enum>Qt::Horizontal</enum>
-                                 </property>
-                                 <property name="sizeHint" stdset="0">
+                                <widget class="QFrame" name="frame_32">
+                                 <property name="maximumSize">
                                   <size>
-                                   <width>40</width>
-                                   <height>20</height>
+                                   <width>300</width>
+                                   <height>16777215</height>
                                   </size>
                                  </property>
-                                </spacer>
+                                 <property name="frameShape">
+                                  <enum>QFrame::StyledPanel</enum>
+                                 </property>
+                                 <property name="frameShadow">
+                                  <enum>QFrame::Raised</enum>
+                                 </property>
+                                 <layout class="QHBoxLayout" name="horizontalLayout_49">
+                                  <item>
+                                   <widget class="QLineEdit" name="outputFolderPath">
+                                    <property name="styleSheet">
+                                     <string notr="true">background-color:#1f232a;</string>
+                                    </property>
+                                    <property name="placeholderText">
+                                     <string>Choose folder...</string>
+                                    </property>
+                                   </widget>
+                                  </item>
+                                  <item>
+                                   <widget class="QPushButton" name="outputFolderBrowse">
+                                    <property name="text">
+                                     <string>Browse</string>
+                                    </property>
+                                   </widget>
+                                  </item>
+                                 </layout>
+                                </widget>
                                </item>
                               </layout>
                              </widget>

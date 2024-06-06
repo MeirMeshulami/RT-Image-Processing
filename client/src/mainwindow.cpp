@@ -19,7 +19,7 @@
 
 
 MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent), ui(new Ui::MainWindow),
-isLive(false), isBrowsingLogFile(false), detection(false), displayFps(false), record(false), isAppRunning(true)
+isBrowsingLogFile(false), isLive(false), isAppRunning(true), detection(false), displayFps(false), record(false), isRequiredRestart(false)
 {
 #ifdef Q_OS_WIN
 	// For Windows
@@ -33,19 +33,19 @@ isLive(false), isBrowsingLogFile(false), detection(false), displayFps(false), re
 	init();
 	show();
 
-	QString logDirectoryPath = QString::fromStdString(configs["log_settings"]["log_directory"]);
+	//QString logDirectoryPath = QString::fromStdString(configs["log_settings"]["log_directory"]);
 
-	// Create and set up the log file reader
-	LogReader* logReader = new LogReader(logDirectoryPath);
-	QThread* logThread = new QThread();
-	logReader->moveToThread(logThread);
+	//// Create and set up the log file reader
+	//LogReader* logReader = new LogReader(logDirectoryPath);
+	//QThread* logThread = new QThread();
+	//logReader->moveToThread(logThread);
 
-	QObject::connect(logThread, &QThread::started, logReader, &LogReader::startReading);
-	QObject::connect(logReader, &LogReader::newLogMessage, ui->textBrowser, &QTextBrowser::append);
-	QObject::connect(logThread, &QThread::finished, logReader, &QObject::deleteLater);
-	QObject::connect(logThread, &QThread::finished, logThread, &QObject::deleteLater);
-	// Start the log file reading thread
-	logThread->start();
+	//QObject::connect(logThread, &QThread::started, logReader, &LogReader::startReading);
+	//QObject::connect(logReader, &LogReader::newLogMessage, ui->textBrowser, &QTextBrowser::append);
+	//QObject::connect(logThread, &QThread::finished, logReader, &QObject::deleteLater);
+	//QObject::connect(logThread, &QThread::finished, logThread, &QObject::deleteLater);
+	//// Start the log file reading thread
+	//logThread->start();
 }
 
 MainWindow::~MainWindow() { delete ui; }
@@ -91,6 +91,9 @@ void MainWindow::loadConfigs() {
 	ui->portNumberBox->setValue(std::stoi(port));
 
 	////===== Yolo Settings =====/////
+	std::string gpuMode = configs["yolo_settings"]["gpu_mode"];
+	ui->GpuComboBox->setCurrentText(QString::fromStdString(gpuMode));
+
 	std::string netModel = configs["yolo_settings"]["yolo_model"];
 	ui->netModelList->setCurrentText(QString::fromStdString(netModel));
 
@@ -374,7 +377,7 @@ void MainWindow::connectionDialog() {
 	}
 	else if (msgBox.clickedButton() == retryButton) {
 		std::cout << "Retry button clicked." << std::endl;
-		bool sucess = api.RetryToConnect();
+		bool sucess = api.TryToConnect();
 		if (!sucess) {
 			QMessageBox::critical(this, "Connection Error", "Failed to connect to the server after several attempts !");
 		}
@@ -557,6 +560,17 @@ void MainWindow::on_applyBtn_clicked()
 	ui->applyBtn->hide();
 	Settings::SaveSettings(configs);
 	api.UpdateServerSettings(configs);
+	if (isRequiredRestart) {
+		QMessageBox::StandardButton reply = QMessageBox::warning(this,
+			QObject::tr("Restart Required"),
+			QObject::tr("Some setting changes require a restart.\nDo you want to restart now?"),
+			QMessageBox::Yes | QMessageBox::No);
+		if (reply == QMessageBox::Yes) {
+			restart();
+		}
+		ui->applyBtn->show();
+		return;
+	}
 }
 
 void MainWindow::setConnectionStatus() {
@@ -586,12 +600,24 @@ void MainWindow::on_connection_change(bool isConnect) {
 	}
 }
 
+void MainWindow::restart() {
+	QString applicationPath = QDir::toNativeSeparators(QCoreApplication::applicationFilePath());
+	QStringList arguments = QCoreApplication::arguments();
 
+	on_exit_clicked();
+	// Launch the new instance
+	QProcess::startDetached(applicationPath, arguments);
+}
 
+void MainWindow::on_GpuComboBox_currentTextChanged(const QString& arg1)
+{
+	if (arg1 == "On") {
+		configs["yolo_settings"]["gpu_mode"] = "On";
+	}
+	else if (arg1 == "Off") {
+		configs["yolo_settings"]["gpu_mode"] = "Off";
+	}
+	isRequiredRestart = true;
 
-
-
-
-
-
+}
 

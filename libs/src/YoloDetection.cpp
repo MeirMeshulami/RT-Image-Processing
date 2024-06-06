@@ -4,11 +4,11 @@
 
 Yolo::Yolo() :isDrawLabel(false)
 {
-	Settings::ReadSettings(configJson);
+	Settings::ReadSettings(configs);
 	LoadNet();
 	LoadClassList();
-	EnableGpuProcessing(net);
 	LoadSensitivities();
+	GpuProcessing();
 }
 
 std::vector<cv::Mat> Yolo::PreProcess(const cv::Mat& inputImage)
@@ -117,13 +117,17 @@ void Yolo::DrawLabel(cv::Mat& input_image, std::string label, int left, int top)
 		cv::FONT_HERSHEY_SIMPLEX, 0.5, cv::Scalar(0, 0, 0), 2);
 }
 
-void Yolo::EnableGpuProcessing(cv::dnn::Net& net) {
-	net.setPreferableBackend(cv::dnn::DNN_BACKEND_CUDA);
-	net.setPreferableTarget(cv::dnn::DNN_TARGET_CUDA);
+void Yolo::GpuProcessing() {
+	std::string gpuMode = configs["yolo_settings"]["gpu_mode"];
+	if (gpuMode == "On")
+	{
+		net.setPreferableBackend(cv::dnn::DNN_BACKEND_CUDA);
+		net.setPreferableTarget(cv::dnn::DNN_TARGET_CUDA);
+	}
 }
 
 void Yolo::LoadClassList() {
-	const std::filesystem::path classListPath = configJson["yolo_settings"]["class_list_path"];
+	const std::filesystem::path classListPath = configs["yolo_settings"]["class_list_path"];
 	if (!std::filesystem::exists(classListPath)) {
 		throw std::runtime_error("Class list path does not exist: " + classListPath.string());
 	}
@@ -139,9 +143,9 @@ void Yolo::LoadClassList() {
 }
 
 void Yolo::LoadNet() {
-	std::string netModel = configJson["yolo_settings"]["yolo_model"];
+	std::string netModel = configs["yolo_settings"]["yolo_model"];
 	netModel += ".onnx";
-	const std::filesystem::path netPath = configJson["yolo_settings"]["net_path"];
+	const std::filesystem::path netPath = configs["yolo_settings"]["net_path"];
 	const std::filesystem::path ModelPath = netPath / netModel;
 
 	if (!std::filesystem::exists(ModelPath)) {
@@ -158,9 +162,10 @@ cv::Mat Yolo::Detect(cv::Mat& inputImage) {
 }
 
 void Yolo::LoadSensitivities() {
-	INPUT_WIDTH = configJson["yolo_settings"]["input_width"];
-	INPUT_HEIGHT = configJson["yolo_settings"]["input_height"];
-	CONFIDENCE_THRESHOLD = configJson["yolo_settings"]["confidence_threshold"];
-	SCORE_THRESHOLD = configJson["yolo_settings"]["score_threshold"];
-	NMS_THRESHOLD = configJson["yolo_settings"]["nms_threshold"];
+	INPUT_WIDTH = configs["yolo_settings"]["input_width"];
+	INPUT_HEIGHT = configs["yolo_settings"]["input_height"];
+	CONFIDENCE_THRESHOLD = configs["yolo_settings"]["confidence_threshold"];
+	SCORE_THRESHOLD = configs["yolo_settings"]["score_threshold"];
+	NMS_THRESHOLD = configs["yolo_settings"]["nms_threshold"];
 }
+

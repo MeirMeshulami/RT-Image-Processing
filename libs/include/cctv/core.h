@@ -10,31 +10,15 @@ private:
 	Yolo yolo;
 public:
 
-	explicit API() {
+	API() {
 		LOG_INFO("\n\n===============================================\nApplication start running...\n===============================================\n\n");
 	}
 
-	std::atomic<bool> IsConnect() { return client.isConnect.load(); }
+	void Connect(std::string serverAddress) { client.Connect(serverAddress); }
 
-	std::atomic<bool>& IsDrawLabel() { return yolo.isDrawLabel; }
+	bool TryToConnect() { return client.TryToConnect(); }
 
-	void Connect(std::string serverAddress) {
-		client.Connect(serverAddress);
-	}
-
-	bool RetryToConnect() {
-		return client.RetryToConnect();
-	}
-
-	void Disconnect() {
-		client.DestroyConnection();
-	}
-
-	cv::Mat Detect(cv::Mat& frame) { return yolo.Detect(frame); }
-
-	void DisplayFPS(cv::Mat& img, long long start) {
-		frameProcessor.DisplayFps(img, start);
-	}
+	void Disconnect() { client.DestroyConnection(); }
 
 	void StartStream() {
 		frameProcessor.InitVideoWriter();
@@ -45,6 +29,16 @@ public:
 		client.StopStreamFrames();
 		frameProcessor.ReleaseVideoWriter();
 	}
+
+	//void EnableGPU(bool mode) { yolo.enableGpu = true; }
+
+	cv::Mat Detect(cv::Mat& frame) { return yolo.Detect(frame); }
+
+	void DisplayFPS(cv::Mat& img, long long start) { frameProcessor.DisplayFps(img, start); }
+
+	std::atomic<bool> IsConnect() { return client.isConnect.load(); }
+
+	std::atomic<bool>& IsDrawLabel() { return yolo.isDrawLabel; }
 
 	std::shared_ptr<ThreadSafeQueue<std::shared_ptr<Frame>>> GetFrameShowQueue() {
 		return client.GetFrameShowQueue();

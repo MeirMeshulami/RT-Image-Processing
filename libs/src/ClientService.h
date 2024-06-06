@@ -22,14 +22,20 @@ public:
 	void StartStreamFrames();
 	void StopStreamFrames();
 	bool UpdateServerSettings(nlohmann::json& configs);
-	bool RetryToConnect();
-	void UpdateConnectionStatus();
+	void Reconnect();
+	void StopRetrying();
+	bool TryToConnect();
 
 	std::atomic<bool> stopStreaming;
 	std::atomic<bool> isConnect;
+
 
 private:
 	std::shared_ptr<grpc::Channel> channel;
 	std::unique_ptr<FrameService::Stub> stub;
 	std::shared_ptr<ThreadSafeQueue<std::shared_ptr<Frame>>> frameShowQueue;
+	std::atomic<bool> stopRetrying;
+	std::thread reconnectThread;
+
+	void UpdateConnectionStatus();
 };

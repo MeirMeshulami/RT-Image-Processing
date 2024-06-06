@@ -41,6 +41,7 @@ protected:
 	void displayFrame(const cv::Mat& frame);
 	void connectionDialog();
 	void setConnectionStatus();
+	void restart();
 public:
 	MainWindow(QWidget* parent = nullptr);
 	~MainWindow();
@@ -82,6 +83,8 @@ private slots:
 
 	void on_portNumberBox_valueChanged(int arg1);
 
+	void on_GpuComboBox_currentTextChanged(const QString& arg1);
+
 private:
 	Ui::MainWindow* ui;
 	API api;
@@ -99,6 +102,7 @@ private:
 	std::atomic<bool> record;
 	std::shared_ptr<spdlog::logger>logger;
 	std::thread connectStatusThread;
+	bool isRequiredRestart;
 };
 
 #endif // MAINWINDOW_H
